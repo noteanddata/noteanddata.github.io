@@ -55,6 +55,80 @@ var _hmt = _hmt || [];
     <div class="container">
 <div class="row">
 	<div class="col-sm-8">
+	  			<a href="leetcode-909-snakes-and-ladders.html"><h1>leetcode 909 snakes-and-ladders解题笔记</h1></a>
+	  			<p>25 September 2018</p>
+	  			<p><h2><a href="#题目-leetcode-909-snakes-and-ladders" id="题目-leetcode-909-snakes-and-ladders">题目: leetcode 909 snakes-and-ladders</a></h2> 
+<p>链接： <a href="https://leetcode.com/problems/snakes-and-ladders/">https://leetcode.com/problems/snakes-and-ladders/</a></p> 
+<p>a. 对于一个N<em>N的棋盘， 格子的左下角的id是1， 最后一行是1到N, 然后倒数第二行从右到左分别是N+1到2N,<br> 然后每往前一行分别切换一下方向。 格子里面的值可能是-1，也可能是在1到N^2之间的一个值<br> b. 从id是1的格子(也就是左下角)开始，然后可以选择向前走1到6步(也就是扔骰子)，如果选中的下一个格子的值是-1的话，<br> 就在这个选中的格子， 如果这个格子的值是1到N^2的值的话，那就直接跳到对应的格子<br> c. 求这个board从id是1的格子到id是N</em>N的格子需要的最少步数</p> 
+<h2><a href="#题目理解和分析" id="题目理解和分析">题目理解和分析</a></h2> 
+<p>a. 首先这个题目需要先写个函数转换一下坐标，现在这个1是在左下角，然后行的方向也是来回变的</p> 
+<p>行的代码比较简单，从最后一行到第一行分别是0到n-1, 那么可以用下面的函数计算</p> 
+<pre><code>public int getrow(int v, int n) {
+    return n-1-(v-1)/n;
+}
+
+</code></pre> 
+<p>列的代码需要判断一下方向，是向右的还是向左的，也就是从后向前数是奇数行还是偶数行</p> 
+<pre><code>public int getcol(int v, int n) {
+    return (((v-1)/n) % 2 == 0) ? ((v-1)%n) : (n-1-(v-1)%n);
+}
+</code></pre> 
+<p>b. 转换完来以后，这是一个求最小步骤的问题，那么是dfs就排除了， dfs不能求出最小步骤， 遍历的过程应该是bfs，从起点开始，然后依次往可能的6个坐标走，直到最先走到终点就是结果，如果在可以选择的范围内所有的节点都已经访问过了还是没有到终点，那就说明不能到终点。 当然，这里每次走都需要判断一下-1和跳跃节点的问题。<br> c. 最后的步数就是bfs的深度。</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>class Solution {
+   public int snakesAndLadders(int[][] board) {
+        int n = board.length;
+        if(n == 1) return 0;
+
+        int step = 0;
+        boolean[] visited = new boolean[n*n];
+        Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(1);
+        visited[0] = true;
+        while(queue.size() &gt; 0)  {
+            step++;
+            int qsize = queue.size();
+            while(qsize-- &gt; 0) {
+                int pos = queue.poll();
+                for(int i = 1; i &lt;= 6; ++i) {
+                    int next = pos + i;
+                    if(next == n * n) {
+                        return step;
+                    }
+                    int nextrow = getrow(next, n);
+                    int nextcol = getcol(next, n);
+                    if(board[nextrow][nextcol] != -1) {
+                        next =  board[nextrow][nextcol];
+                        if(next == n*n) {
+                            return step;
+                        }
+                        nextrow = getrow(next, n);
+                        nextcol = getcol(next, n);
+                    }
+
+                    if(!visited[next-1]) {
+                        queue.add(next);
+                        visited[next-1] = true;
+                    }                    
+                }
+            }
+        }
+        return -1;
+    }
+
+    public int getrow(int v, int n) {
+        return n-1-(v-1)/n;
+    }
+    public int getcol(int v, int n) {
+        return (((v-1)/n) % 2 == 0) ? ((v-1)%n) : (n-1-(v-1)%n);
+    }
+}
+</code></pre> 
+<h2><a href="#复杂度分析" id="复杂度分析">复杂度分析</a></h2> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>时间复杂度为O(N)， 因为每个节点最多访问一次</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>空间复杂度也是O(N), 需要N大小的visited数组以及一个最多为N大小的queue</p></p>
 	  			<a href="amon-another-linux-monitoring-tool.html"><h1>amon-又一个linux监控工具</h1></a>
 	  			<p>06 August 2018</p>
 	  			<p><p>周末写了一个非常初级的linux监控工具，监控cpu使用率的基本功能，具体使用说明和效果可以看这个README。<br> <a href="https://github.com/noteanddata/amon/blob/master/README.md">https://github.com/noteanddata/amon/blob/master/README.md</a></p></p>
