@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 917 snakes-and-ladders刷题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 917 snakes-and-ladders刷题笔记</h1>
+			</div>
+
+			<p><em>10 October 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-917-reverse-only-letters" id="题目-leetcode-917-reverse-only-letters">题目 leetcode 917 Reverse Only Letters</a></h2> 
+<p><a href="https://leetcode.com/problems/reverse-only-letters/description/">https://leetcode.com/problems/reverse-only-letters/description/</a></p> 
+<p>对于一个字符串，只对其中的英文字符进行reverse，比如"ab-cd"变成"dc-ba"</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<p>对于字符串反转，通常是用双指针，现在也是可以适用的，只是遇到非英文字符需要跳过, 所以实现代码如下</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public String reverseOnlyLetters(String s) {
+    char[] arr = new char[s.length()];
+    int begin = 0, end = s.length()-1;
+    int dbegin = 0, dend = s.length()-1;
+    while(begin &lt;= end) {
+        while(begin &lt;= end &amp;&amp; !Character.isLetter(s.charAt(begin))) {
+            arr[dbegin++] = s.charAt(begin++);
+        }
+        if(begin &gt; end) {
+            break;
+        }
+        while(begin &lt;= end &amp;&amp; !Character.isLetter(s.charAt(end))) {
+            arr[dend--] = s.charAt(end--);
+        }
+        if(begin &gt; end) {
+            break;
+        }
+        arr[dbegin++] = s.charAt(end--);
+        arr[dend--] = s.charAt(begin++);
+    }
+    return new String(arr);
+}
+
+</code></pre> 
+<h2><a href="#简化代码" id="简化代码">简化代码</a></h2> 
+<p>后来学习了一下其他人的解法，发现上面的代码略有繁琐，<br> 1. 主要是重新分配一个新的char数组，其实可以将s直接转换成一个数组，这样非英文字符就不需要拷贝了<br> 2. begin==end的情况不需要在while条件上， 因为是将s直接转换的，所以只处理需要reverse的地方就够了。 而里面的while去掉begin==end的<br> 条件判断以后，正好跳出的时候最多原地拷贝了一次，这样代码比较简洁一点</p> 
+<pre><code>public String reverseOnlyLetters(String s) {
+    char[] arr = s.toCharArray();
+    int begin = 0, end = s.length()-1;
+    while(begin &lt; end) {
+        while(begin &lt; end &amp;&amp; !Character.isLetter(s.charAt(begin))) {
+            begin++;
+        }
+        while(begin &lt; end &amp;&amp; !Character.isLetter(s.charAt(end))) {
+            end--;
+        }
+        char temp = arr[begin];
+        arr[begin] = arr[end];
+        arr[end] = temp;
+        begin++;
+        end--;
+    }
+    return new String(arr);
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
