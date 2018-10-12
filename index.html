@@ -55,6 +55,57 @@ var _hmt = _hmt || [];
     <div class="container">
 <div class="row">
 	<div class="col-sm-8">
+	  			<a href="leetcode-918-Maximum-Sum-Circular-Subarray.html"><h1>leetcode 918 Maximum Sum Circular Subarray解题笔记</h1></a>
+	  			<p>11 October 2018</p>
+	  			<p><h2><a href="#题目-leetcode-918-maximum-sum-circular-subarray" id="题目-leetcode-918-maximum-sum-circular-subarray">题目 leetcode 918 Maximum Sum Circular Subarray</a></h2> 
+<p><a href="https://leetcode.com/problems/maximum-sum-circular-subarray/description/">https://leetcode.com/problems/maximum-sum-circular-subarray/description/</a></p> 
+<p>给一个环形数组，也就是数组的尾部可以和头部相连，然后求子数组的最大和<br> 比如<br> Input: [5,-3,5]<br> Output: 10<br> Explanation: Subarray [5,5] has maximum sum 5 + 5 = 10</p> 
+<h2><a href="#分析和解法" id="分析和解法">分析和解法</a></h2> 
+<p>做这个题目首先我们需要熟悉普通数组的最大子数组和的解法，思路是动态规划，详细分析可以参考这个<br> <a href="http://www.noteanddata.com/leetcode-53-Maximum-Subarray.html">http://www.noteanddata.com/leetcode-53-Maximum-Subarray.html</a></p> 
+<p>然后呢，环形数组和普通数组的区别是环形数组多一种情况，就是子数组取了头尾相连的情况。<br> 也就是头部取从a[0]到a[i], 然后尾部取a[j]到a[N-1]， 然后0 &lt;= i &lt; j &lt;= N-1<br> 对于任何一个i，从a[0]到a[i]的和可以简单的从前向后遍历计算，可以建立表格left[i] = sum(a[0]….a[i])<br> 对于任何一个j，从a[j]到a[N-1]的和可以简单的从后向前计算, 可以建立表格right[j] = sum(a[j]…a[N-1])<br> 由于i &lt; j, 所以我们可以修改left和right表格，可以在遍历数组k=0…N-1的时候，<br> 对于任何一个k, left[k]表示从a[0]开始到a[i], 其中i &lt;=k 的最大和, right[k]表示从a[j]到a[N-1]，其中j &gt;k的最大和，<br> 这样的话，一次遍历, 然后取left[k] + right[k+1]的最大值，就可以了。</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int maxSubarraySumCircular(int[] A) {
+    int[] left = new int[A.length];
+    int sum = 0, maxsum = 0;
+    
+    for(int i = 0; i &lt; A.length; ++i) {
+        if(i == 0) {
+            left[i] = sum = maxsum = A[i];
+        }
+        else {
+            sum = Math.max(sum+A[i], A[i]);                
+            maxsum = Math.max(maxsum, sum);
+            left[i] = left[i-1] + A[i];
+        }
+    }
+    
+    for(int i = 1; i &lt; A.length; ++i) {
+        left[i] = Math.max(left[i-1], left[i]);
+    }
+    
+    
+    int[] right = new int[A.length];
+    for(int j = A.length-1; j &gt;= 0; --j) {
+        if(j == A.length-1) {
+            right[j] = A[j]; 
+        }
+        else {
+            right[j] = right[j+1] + A[j];
+        }
+    }
+    for(int j = A.length-2; j &gt;= 0; --j) {
+        right[j] = Math.max(right[j], right[j+1]);
+    }
+    
+    for(int i = 0; i &lt; A.length-1; ++i) {
+        maxsum = Math.max(maxsum, left[i] + right[i+1]);
+    }
+    
+    return maxsum;
+}
+
+
+</code></pre></p>
 	  			<a href="leetcode-53-Maximum-Subarray.html"><h1>leetcode 53 maximum subarray解题笔记</h1></a>
 	  			<p>11 October 2018</p>
 	  			<p><h2><a href="#题目-leetcode-53-maximum-subarray" id="题目-leetcode-53-maximum-subarray">题目 leetcode 53 Maximum Subarray</a></h2> 
