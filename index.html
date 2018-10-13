@@ -55,6 +55,53 @@ var _hmt = _hmt || [];
     <div class="container">
 <div class="row">
 	<div class="col-sm-8">
+	  			<a href="leetcode-915-Partition-Array-into-Disjoint-Intervals-solution-note.html"><h1>leetcode 915. Partition Array into Disjoint Intervals解题笔记</h1></a>
+	  			<p>13 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p><a href="https://leetcode.com/problems/partition-array-into-disjoint-intervals/description/">https://leetcode.com/problems/partition-array-into-disjoint-intervals/description/</a><br> 对于一个数组，找到一个位置把数组分成左右两部分，<br> 1. 使得左边的所有数都&lt;=右边的所有数<br> 2. 左边和右边都不是空的<br> 3. 左边的数组长度最小</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<ol> 
+ <li>对于第一个条件，对任意一个位置i，需要知道max(a[0]….a[i]) 和min(a[i+1]…a[N-1])，<br> 如果max(a[0]….a[i]) &lt;= min(a[i+1]…a[N-1]), 那么这个分法就是一个符合第一个要求的分法，</li> 
+ <li>所以问题就转换成如何构造max(a[0]….a[i])和min(a[i+1]…a[N-1]),<br> 对于max(a[0]….a[i])， 从左向右遍历一遍就可以建立这样一个leftmax的表格<br> 同理，对于min(a[i+1]…a[N-1])， 从右向左遍历一遍就可以建立这样一个rightmin的表格</li> 
+ <li>然后再遍历一次，找到第一个leftmax[i] &lt;= right[i+1]的位置，就是符合要求的位置</li> 
+</ol> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int partitionDisjoint(int[] A) {
+       int[] leftmax = new int[A.length];
+       int[] rightmin = new int[A.length];
+       for(int i = 0; i &lt; A.length; ++i) {
+           if(i == 0) {
+               leftmax[i] = A[i];
+           }
+           else {
+               leftmax[i] = Math.max(leftmax[i-1], A[i]);
+           }
+       }
+       for(int i = A.length-1; i &gt;= 0; --i) {
+           if(i == A.length-1) {
+               rightmin[i] = A[i];
+           }
+           else {
+               rightmin[i] = Math.min(rightmin[i+1], A[i]);
+           }
+       }
+       
+       for(int i = 0; i &lt; A.length-1; ++i) {
+           if(leftmax[i] &lt;= rightmin[i+1]) {
+               return i+1;
+           }
+       }
+       return -1;
+}
+
+</code></pre> 
+<h2><a href="#复杂度" id="复杂度">复杂度</a></h2> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#其他解法" id="其他解法">其他解法</a></h2> 
+<p>后续看到有人只遍历数组一遍就解了这个题目，只能叹为观止！</p></p>
 	  			<a href="leetcode-914-X-of-a-Kind-in-a-Deck-of-Cards-solution-notes.html"><h1>leetcode 914 X of a Kind in a Deck of Cards解题笔记</h1></a>
 	  			<p>13 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
