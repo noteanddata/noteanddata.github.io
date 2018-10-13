@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 919 Complete Binary Tree Inserter 解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 919 Complete Binary Tree Inserter 解题笔记</h1>
+			</div>
+
+			<p><em>12 October 2018</em></p>
+
+			<p><h1><a href="#leetcode-919-complete-binary-tree-inserter-解题笔记" id="leetcode-919-complete-binary-tree-inserter-解题笔记">Leetcode 919 Complete Binary Tree Inserter 解题笔记</a></h1> 
+<h2><a href="#题目" id="题目">题目</a></h2> 
+<p><a href="https://leetcode.com/problems/complete-binary-tree-inserter/description/">https://leetcode.com/problems/complete-binary-tree-inserter/description/</a><br> 对于一个二叉完全树(complete binary tree), 要求可以完成以下操作，<br> 1. 初始化<br> public CBTInserter(TreeNode root)<br> 2. 插入一个新节点，仍然保持这个树是二叉完全树， 同时返回新节点的父节点的值<br> public int insert(int v)<br> 3. 返回树的根节点<br> public TreeNode get_root()</p> 
+<p>所谓二叉完全树，是指如果一个树的高度是n, 那么从1到n-1的层都是满的， 然后最后一层(n层)的所有节点都在最左边， 空的都在最右边，没有出现穿插的情况。</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<ol> 
+ <li>对于一个complete binary tree, 插入新节点的时候，一定是从第一个有null子节点的节点开始，然后顺序往后插入节点，而且新插入的节点，也一定是放在这些candidate的最后面。</li> 
+ <li>所以，做level order的遍历，遇到有null子节点的节点就放到queue里面，</li> 
+ <li>insert每次从queue的peek节点开始，如果left是空的就放到left上，如果右边节点<br> 是空的就放到右边节点，然后poll出来。 同时，每次新插入的节点都放到queue的最后</li> 
+</ol> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>class CBTInserter {
+    private Queue&lt;TreeNode&gt; queue;
+    private TreeNode root;
+    public CBTInserter(TreeNode root) {
+        this.root = root;
+        queue = new LinkedList&lt;&gt;();
+        Queue&lt;TreeNode&gt; levelQueue = new LinkedList&lt;&gt;();
+        levelQueue.add(root);
+        while(levelQueue.size() &gt; 0) {
+            int size = levelQueue.size();
+            for(int i = 0; i &lt; size; ++i) {
+                TreeNode node = levelQueue.poll();
+                if(null == node.left || null == node.right) {
+                    queue.add(node);
+                }
+                if(null != node.left) {
+                    levelQueue.add(node.left);
+                }
+                if(null != node.right) {
+                    levelQueue.add(node.right);
+                }
+            }
+        }        
+    }
+    
+    public int insert(int v) {
+        TreeNode node = queue.peek();
+        TreeNode nnode = new TreeNode(v);
+        queue.add(nnode);
+        if(node.left == null) {
+            node.left = nnode;
+        }
+        else {
+            node.right = nnode;
+            queue.poll();
+        }
+        return node.val;
+    }
+    
+    public TreeNode get_root() {
+        return root;
+    }
+}
+
+</code></pre> 
+<h2><a href="#开始写的不太简洁的代码1" id="开始写的不太简洁的代码1">开始写的不太简洁的代码1</a></h2> 
+<p>a. 之前做的时候，也想到根据level order做bfs， 然后想到对于节点个数是N的完全二叉树， 可以先把N算出来。<br> b. 然后在bfs的时候，可以通过计数来判断把前面那些有两个子节点的节点都去掉。 但是这个计算过程边界条件不太直观，实际上调试了很长时间才AC。<br> 这里只是记录一下这个做法，不建议采用这个做法。</p> 
+<pre><code>class CBTInserter {
+    private TreeNode root;
+    private int count;
+
+    private Queue&lt;TreeNode&gt; queue;
+    public CBTInserter(TreeNode root) {
+        this.root = root;
+        this.count = getCount(root);    
+
+        initQueue();
+    }
+    
+    public void initQueue() {        
+        queue = new LinkedList&lt;&gt;();
+        queue.add(root);
+        int c= 1;
+        TreeNode node = root;
+        while(c*2+1 &lt;= count) {
+            node = queue.poll();
+            if(null != node.left) {
+                queue.add(node.left);
+            }
+            if(null != node.right) {
+                queue.add(node.right);
+            }
+            c++;
+        }     
+        if(c * 2 == count) {
+            queue.add(queue.peek().left);
+        }
+    }
+    
+    public int getCount(TreeNode node) {
+        if(node == null) return 0;
+        return 1 + getCount(node.left) + getCount(node.right);
+    }        
+    
+    public int insert(int v) {
+        TreeNode node = queue.peek();
+        TreeNode nnode = new TreeNode(v);
+        if(count%2 == 1) {
+            node.left = nnode;
+        }
+        else {
+            queue.poll();
+            node.right = nnode;            
+        }
+        count++;
+        queue.add(nnode);
+        return node.val;        
+    }
+    
+    public TreeNode get_root() {
+        return root;
+    }
+}
+
+</code></pre> 
+<h2><a href="#"></a></h2></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
