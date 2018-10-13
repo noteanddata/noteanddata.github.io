@@ -55,6 +55,61 @@ var _hmt = _hmt || [];
     <div class="container">
 <div class="row">
 	<div class="col-sm-8">
+	  			<a href="leetcode-914-X-of-a-Kind-in-a-Deck-of-Cards-solution-notes.html"><h1>leetcode 914 X of a Kind in a Deck of Cards解题笔记</h1></a>
+	  			<p>13 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>leetcode 914. X of a Kind in a Deck of Cards<br> <a href="https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/description/">https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/description/</a><br> 输入一个整数的数组，要求将这些整数分成1个或多个组，并且符合下面两个条件：<br> a. 每组的数字个数相同，并且至少有两个<br> b. 每组内部是同一个数字<br> 求对应输入是否能完成这样的分组</p> 
+<pre><code>Input: [1,2,3,4,4,3,2,1]
+Output: true
+Explanation: Possible partition [1,1],[2,2],[3,3],[4,4]
+</code></pre> 
+<pre><code>Input: [1,1,1,2,2,2,3,3]
+Output: false
+Explanation: No possible partition.
+</code></pre> 
+<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
+<ol> 
+ <li>首先看第二个条件，每组内的数字相同， 那么首先要算出每个数字出现多少次(频率)</li> 
+ <li>然后如果最小的频率如果是1的话，那一定是不能完成分组的</li> 
+ <li>取其中一个频率，然后取这个数的所有&gt;=2的因子，如果存在其中一个因子是其他所有频率的因子的话，那可以完成分组</li> 
+</ol> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public boolean hasGroupsSizeX(int[] deck) {
+       Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+       for(int i = 0; i &lt; deck.length; ++i) {            
+           countMap.put(deck[i], countMap.getOrDefault(deck[i], 0)+1);
+       }
+       
+       int min = Integer.MAX_VALUE;
+       for(int n : countMap.values()) {
+           min = Math.min(min, n);
+       }
+       if(min == 1) return false;
+       
+       List&lt;Integer&gt; factorList = new ArrayList&lt;&gt;();
+       for(int i = 2; i &lt;= min; ++i) {
+           if(min%i == 0) {
+               factorList.add(i);
+           }
+       }
+       
+       for(int factor: factorList) {
+           boolean valid = true;
+           for(int n: countMap.values()) {
+               if(n%factor != 0) {
+                   valid = false;
+                   break;
+               }
+           }
+           if(valid) {
+               return true;
+           }
+       }
+       
+       return false;
+   }
+
+</code></pre></p>
 	  			<a href="leetcode-919-Complete-Binary-Tree-Inserter.html"><h1>Leetcode 919 Complete Binary Tree Inserter 解题笔记</h1></a>
 	  			<p>12 October 2018</p>
 	  			<p><h1><a href="#leetcode-919-complete-binary-tree-inserter-解题笔记" id="leetcode-919-complete-binary-tree-inserter-解题笔记">Leetcode 919 Complete Binary Tree Inserter 解题笔记</a></h1> 
