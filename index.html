@@ -102,6 +102,37 @@ var _hmt = _hmt || [];
 <p>O(N)</p> 
 <h2><a href="#其他解法" id="其他解法">其他解法</a></h2> 
 <p>后续看到有人只遍历数组一遍就解了这个题目，只能叹为观止！</p></p>
+	  			<a href="leetcode-921-Minimum-Add-to-Make-Parentheses-Valid-solution-note.html"><h1>leetcode 921 Minimum Add to Make Parentheses Valid解题笔记</h1></a>
+	  			<p>13 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>leetcode 921 Minimum Add to Make Parentheses Valid<br> <a href="https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/description/">https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/description/</a><br> 输入一个只有左括号和右括号的字符串，返回需要最少添加多少个括号可以让这个字符串变成一个正常闭合的字符串，<br> 所谓正常闭合就是左右括号可以对应， 其中添加的括号可以是左括号，也可以是右括号。</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<p>首先想到的是能不能直接遍历一下字符串，然后返回Math.abs(leftcount-rightcount),<br> 但是看到"))(("这样的case显然不能通过，所以在遍历的过程中，如果右括号不能被匹配，那么就直接需要计数了。<br> 也就是常规的用stack的思路，如果遇到左括号就push，遇到右括号就pop。 但是如果遇到右括号的时候stack是空的，那就要计数了。<br> 还有最后剩下的左括号个数也需要加上。<br> 由于这里只需要返回个数，所以不需要用stack，直接用两个count就好。</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int minAddToMakeValid(String S) {
+    int leftcount = 0, missingleft = 0;
+    
+    for(int i = 0; i &lt; S.length(); ++i) {
+        if('(' == S.charAt(i)) {
+            leftcount++;
+        }
+        else {
+            leftcount--;
+            if(leftcount &lt; 0) {
+                missingleft++;
+                leftcount = 0;
+            }
+        }
+    }
+    return leftcount + missingleft;
+}
+
+</code></pre> 
+<h2><a href="#复杂度" id="复杂度">复杂度</a></h2> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>遍历一次，O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>只需要两个常量，O(1)</p></p>
 	  			<a href="leetcode-922-Sort-Array-By-Parity-II.html"><h1>Leetcode 922 Sort Array By Parity II 解题笔记</h1></a>
 	  			<p>13 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
