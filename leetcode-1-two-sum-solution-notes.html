@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1 two sum解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1 two sum解题笔记</h1>
+			</div>
+
+			<p><em>14 October 2018</em></p>
+
+			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>leetcode 1， two sum<br> <a href="https://leetcode.com/problems/two-sum/description/">https://leetcode.com/problems/two-sum/description/</a><br> 输入一个数组和一个target，返回两个index， 使得nums[index0] + nums[index1] = target<br> 题目保证输入的值一定有且仅有一个解，而且同一个元素不能被重复利用</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<ol> 
+ <li>如果数组已经排序，那么找target可以从头尾两个index开始往中间找。</li> 
+ <li>或者如果对每个nums[i]-&gt;i的index，那么也可以对每个nums[i]找target-nums[i]。</li> 
+ <li>注意输入一定有且仅有一个解，另外同一个元素不能重复利用， 而且数组中有可能会有相同的元素在不同的index，<br> 对于相同元素的处理，无论采用那种做法，都是需要注意的细节。</li> 
+</ol> 
+<h2><a href="#hashmap的解法" id="hashmap的解法">hashmap的解法</a></h2> 
+<h3><a href="#思路" id="思路">思路</a></h3> 
+<ol> 
+ <li>可以通过一个map来保存每个数字出现的index，然后对每个nums[i], 可以看target-nums[i]是否存在</li> 
+ <li>需要注意的两个地方是：<br> a. 数字可能会有重复，需要用一个set来保存每个数字对应的index<br> b. 不能把自己算进去，比如[3,3,7], 不能返回[0,0], 需要返回[0,1]</li> 
+</ol> 
+<h3><a href="#代码" id="代码">代码</a></h3> 
+<pre><code>public int[] twoSum(int[] nums, int target) {
+    Map&lt;Integer, Set&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;();
+    for(int i = 0; i &lt; nums.length; ++i) {
+        map.computeIfAbsent(nums[i], k-&gt;new HashSet&lt;&gt;()).add(i);
+    }
+    for(int i = 0; i &lt; nums.length; ++i) {
+        Set&lt;Integer&gt; set = map.get(target-nums[i]);
+        if(null != set) {                
+            for(int n: set) {
+                if(n != i) {
+                    return new int[]{i, n};                        
+                }
+            }                
+        }
+    }
+    return null;
+}
+
+</code></pre> 
+<h3><a href="#复杂度" id="复杂度">复杂度</a></h3> 
+<h4><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h4> 
+<p>数组遍历一次，复杂度是O(N)</p> 
+<h4><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h4> 
+<p>需要一个map保存所有数字的index，复杂度也是O(N)</p> 
+<h2><a href="#双指针的解法" id="双指针的解法">双指针的解法</a></h2> 
+<h3><a href="#思路" id="思路">思路</a></h3> 
+<p>如果将数组排序，那么用头尾两个指针来求target就比较简单。<br> 但是需要返回原来的index，所以需要先找到这两个数以后，然后再在原来的数组里面找到这两个值对应的index。<br> 同时，由于原来的数组里面的值会有重复值，所以找对应的值的情况也略有点tricky，需要找到不同的index，同时第一个index设置了以后不能在override</p> 
+<h3><a href="#代码" id="代码">代码</a></h3> 
+<pre><code>public int[] twoSum(int[] nums, int target) {
+    int[] original = Arrays.copyOf(nums, nums.length);
+    Arrays.sort(nums);
+    int begin = 0, end = nums.length-1;
+    
+    while(begin &lt; end) {
+        if(nums[begin] + nums[end] == target) {
+            break;
+        }
+        else if(nums[begin] + nums[end] &gt; target) {
+            end--;
+        }
+        else {
+            begin++;
+        }
+    }
+    int index0 = -1, index1 = -1;
+    for(int i = 0; i &lt; original.length; ++i) {
+        if(original[i] == nums[begin] &amp;&amp; index0 &lt; 0) {
+            index0 = i;
+        }
+         if(original[i] == nums[end] &amp;&amp; i != index0) {
+            index1 = i;
+        }
+        if(index0 &gt;= 0 &amp;&amp; index1 &gt;= 0) {
+            break;
+        }
+    }
+    
+    
+    return new int[]{index0, index1};
+}
+
+</code></pre> 
+<h3><a href="#复杂度" id="复杂度">复杂度</a></h3> 
+<h4><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h4> 
+<ol> 
+ <li>数组被排序一次， O(N * logN),</li> 
+ <li>然后再遍历一次, O(N)<br> 所以总的复杂度是O(N * logN)</li> 
+</ol> 
+<h4><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h4> 
+<p>因为需要返回原来的数组index，所以需要拷贝一份数组才可以返回原来的index， 所以空间复杂度是O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>

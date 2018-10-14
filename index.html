@@ -55,6 +55,148 @@ var _hmt = _hmt || [];
     <div class="container">
 <div class="row">
 	<div class="col-sm-8">
+	  			<a href="leetcode-1-two-sum-solution-notes.html"><h1>leetcode 1 two sum解题笔记</h1></a>
+	  			<p>14 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>leetcode 1， two sum<br> <a href="https://leetcode.com/problems/two-sum/description/">https://leetcode.com/problems/two-sum/description/</a><br> 输入一个数组和一个target，返回两个index， 使得nums[index0] + nums[index1] = target<br> 题目保证输入的值一定有且仅有一个解，而且同一个元素不能被重复利用</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<ol> 
+ <li>如果数组已经排序，那么找target可以从头尾两个index开始往中间找。</li> 
+ <li>或者如果对每个nums[i]-&gt;i的index，那么也可以对每个nums[i]找target-nums[i]。</li> 
+ <li>注意输入一定有且仅有一个解，另外同一个元素不能重复利用， 而且数组中有可能会有相同的元素在不同的index，<br> 对于相同元素的处理，无论采用那种做法，都是需要注意的细节。</li> 
+</ol> 
+<h2><a href="#hashmap的解法" id="hashmap的解法">hashmap的解法</a></h2> 
+<h3><a href="#思路" id="思路">思路</a></h3> 
+<ol> 
+ <li>可以通过一个map来保存每个数字出现的index，然后对每个nums[i], 可以看target-nums[i]是否存在</li> 
+ <li>需要注意的两个地方是：<br> a. 数字可能会有重复，需要用一个set来保存每个数字对应的index<br> b. 不能把自己算进去，比如[3,3,7], 不能返回[0,0], 需要返回[0,1]</li> 
+</ol> 
+<h3><a href="#代码" id="代码">代码</a></h3> 
+<pre><code>public int[] twoSum(int[] nums, int target) {
+    Map&lt;Integer, Set&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;();
+    for(int i = 0; i &lt; nums.length; ++i) {
+        map.computeIfAbsent(nums[i], k-&gt;new HashSet&lt;&gt;()).add(i);
+    }
+    for(int i = 0; i &lt; nums.length; ++i) {
+        Set&lt;Integer&gt; set = map.get(target-nums[i]);
+        if(null != set) {                
+            for(int n: set) {
+                if(n != i) {
+                    return new int[]{i, n};                        
+                }
+            }                
+        }
+    }
+    return null;
+}
+
+</code></pre> 
+<h3><a href="#复杂度" id="复杂度">复杂度</a></h3> 
+<h4><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h4> 
+<p>数组遍历一次，复杂度是O(N)</p> 
+<h4><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h4> 
+<p>需要一个map保存所有数字的index，复杂度也是O(N)</p> 
+<h2><a href="#双指针的解法" id="双指针的解法">双指针的解法</a></h2> 
+<h3><a href="#思路" id="思路">思路</a></h3> 
+<p>如果将数组排序，那么用头尾两个指针来求target就比较简单。<br> 但是需要返回原来的index，所以需要先找到这两个数以后，然后再在原来的数组里面找到这两个值对应的index。<br> 同时，由于原来的数组里面的值会有重复值，所以找对应的值的情况也略有点tricky，需要找到不同的index，同时第一个index设置了以后不能在override</p> 
+<h3><a href="#代码" id="代码">代码</a></h3> 
+<pre><code>public int[] twoSum(int[] nums, int target) {
+    int[] original = Arrays.copyOf(nums, nums.length);
+    Arrays.sort(nums);
+    int begin = 0, end = nums.length-1;
+    
+    while(begin &lt; end) {
+        if(nums[begin] + nums[end] == target) {
+            break;
+        }
+        else if(nums[begin] + nums[end] &gt; target) {
+            end--;
+        }
+        else {
+            begin++;
+        }
+    }
+    int index0 = -1, index1 = -1;
+    for(int i = 0; i &lt; original.length; ++i) {
+        if(original[i] == nums[begin] &amp;&amp; index0 &lt; 0) {
+            index0 = i;
+        }
+         if(original[i] == nums[end] &amp;&amp; i != index0) {
+            index1 = i;
+        }
+        if(index0 &gt;= 0 &amp;&amp; index1 &gt;= 0) {
+            break;
+        }
+    }
+    
+    
+    return new int[]{index0, index1};
+}
+
+</code></pre> 
+<h3><a href="#复杂度" id="复杂度">复杂度</a></h3> 
+<h4><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h4> 
+<ol> 
+ <li>数组被排序一次， O(N * logN),</li> 
+ <li>然后再遍历一次, O(N)<br> 所以总的复杂度是O(N * logN)</li> 
+</ol> 
+<h4><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h4> 
+<p>因为需要返回原来的数组index，所以需要拷贝一份数组才可以返回原来的index， 所以空间复杂度是O(N)</p></p>
+	  			<a href="leetcode-914-X-of-a-Kind-in-a-Deck-of-Cards-solution-notes.html"><h1>leetcode 914 X of a Kind in a Deck of Cards解题笔记</h1></a>
+	  			<p>13 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>leetcode 914. X of a Kind in a Deck of Cards<br> <a href="https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/description/">https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/description/</a><br> 输入一个整数的数组，要求将这些整数分成1个或多个组，并且符合下面两个条件：<br> a. 每组的数字个数相同，并且至少有两个<br> b. 每组内部是同一个数字<br> 求对应输入是否能完成这样的分组</p> 
+<pre><code>Input: [1,2,3,4,4,3,2,1]
+Output: true
+Explanation: Possible partition [1,1],[2,2],[3,3],[4,4]
+</code></pre> 
+<pre><code>Input: [1,1,1,2,2,2,3,3]
+Output: false
+Explanation: No possible partition.
+</code></pre> 
+<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
+<ol> 
+ <li>首先看第二个条件，每组内的数字相同， 那么首先要算出每个数字出现多少次(频率)</li> 
+ <li>然后如果最小的频率如果是1的话，那一定是不能完成分组的</li> 
+ <li>取其中一个频率，然后取这个数的所有&gt;=2的因子，如果存在其中一个因子是其他所有频率的因子的话，那可以完成分组</li> 
+</ol> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public boolean hasGroupsSizeX(int[] deck) {
+       Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+       for(int i = 0; i &lt; deck.length; ++i) {            
+           countMap.put(deck[i], countMap.getOrDefault(deck[i], 0)+1);
+       }
+       
+       int min = Integer.MAX_VALUE;
+       for(int n : countMap.values()) {
+           min = Math.min(min, n);
+       }
+       if(min == 1) return false;
+       
+       List&lt;Integer&gt; factorList = new ArrayList&lt;&gt;();
+       for(int i = 2; i &lt;= min; ++i) {
+           if(min%i == 0) {
+               factorList.add(i);
+           }
+       }
+       
+       for(int factor: factorList) {
+           boolean valid = true;
+           for(int n: countMap.values()) {
+               if(n%factor != 0) {
+                   valid = false;
+                   break;
+               }
+           }
+           if(valid) {
+               return true;
+           }
+       }
+       
+       return false;
+   }
+
+</code></pre></p>
 	  			<a href="leetcode-915-Partition-Array-into-Disjoint-Intervals-solution-note.html"><h1>leetcode 915. Partition Array into Disjoint Intervals解题笔记</h1></a>
 	  			<p>13 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
@@ -226,61 +368,6 @@ public Map&lt;Integer, Integer&gt; calcImpacted(int[][] graph, int initial) {
 <h2><a href="#复杂度分析" id="复杂度分析">复杂度分析</a></h2> 
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3></p>
-	  			<a href="leetcode-914-X-of-a-Kind-in-a-Deck-of-Cards-solution-notes.html"><h1>leetcode 914 X of a Kind in a Deck of Cards解题笔记</h1></a>
-	  			<p>13 October 2018</p>
-	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
-<p>leetcode 914. X of a Kind in a Deck of Cards<br> <a href="https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/description/">https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/description/</a><br> 输入一个整数的数组，要求将这些整数分成1个或多个组，并且符合下面两个条件：<br> a. 每组的数字个数相同，并且至少有两个<br> b. 每组内部是同一个数字<br> 求对应输入是否能完成这样的分组</p> 
-<pre><code>Input: [1,2,3,4,4,3,2,1]
-Output: true
-Explanation: Possible partition [1,1],[2,2],[3,3],[4,4]
-</code></pre> 
-<pre><code>Input: [1,1,1,2,2,2,3,3]
-Output: false
-Explanation: No possible partition.
-</code></pre> 
-<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
-<ol> 
- <li>首先看第二个条件，每组内的数字相同， 那么首先要算出每个数字出现多少次(频率)</li> 
- <li>然后如果最小的频率如果是1的话，那一定是不能完成分组的</li> 
- <li>取其中一个频率，然后取这个数的所有&gt;=2的因子，如果存在其中一个因子是其他所有频率的因子的话，那可以完成分组</li> 
-</ol> 
-<h2><a href="#代码" id="代码">代码</a></h2> 
-<pre><code>public boolean hasGroupsSizeX(int[] deck) {
-       Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
-       for(int i = 0; i &lt; deck.length; ++i) {            
-           countMap.put(deck[i], countMap.getOrDefault(deck[i], 0)+1);
-       }
-       
-       int min = Integer.MAX_VALUE;
-       for(int n : countMap.values()) {
-           min = Math.min(min, n);
-       }
-       if(min == 1) return false;
-       
-       List&lt;Integer&gt; factorList = new ArrayList&lt;&gt;();
-       for(int i = 2; i &lt;= min; ++i) {
-           if(min%i == 0) {
-               factorList.add(i);
-           }
-       }
-       
-       for(int factor: factorList) {
-           boolean valid = true;
-           for(int n: countMap.values()) {
-               if(n%factor != 0) {
-                   valid = false;
-                   break;
-               }
-           }
-           if(valid) {
-               return true;
-           }
-       }
-       
-       return false;
-   }
-
-</code></pre></p>
 	  			<a href="leetcode-919-Complete-Binary-Tree-Inserter.html"><h1>Leetcode 919 Complete Binary Tree Inserter 解题笔记</h1></a>
 	  			<p>12 October 2018</p>
 	  			<p><h1><a href="#leetcode-919-complete-binary-tree-inserter-解题笔记" id="leetcode-919-complete-binary-tree-inserter-解题笔记">Leetcode 919 Complete Binary Tree Inserter 解题笔记</a></h1> 
