@@ -102,6 +102,68 @@ var _hmt = _hmt || [];
 <p>O(N)</p> 
 <h2><a href="#其他解法" id="其他解法">其他解法</a></h2> 
 <p>后续看到有人只遍历数组一遍就解了这个题目，只能叹为观止！</p></p>
+	  			<a href="leetcode-924-Minimize-Malware-Spread.html"><h1>leetcode 924 Minimize Malware Spread 解题笔记</h1></a>
+	  			<p>13 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>leetcode 924, Minimize Malware Spread<br> <a href="https://leetcode.com/problems/minimize-malware-spread/description/">https://leetcode.com/problems/minimize-malware-spread/description/</a><br> 1. 给定一个用图表示的网络，如果graph[i][j] = 1, 说明节点i和j之间有连接<br> 2. 如果一个节点被病毒感染，所有和这个节点有连接的节点都会被病毒感染，并且会不断扩散<br> 3. 输入一个初始节点数组，表示已经感染病毒的节点</p> 
+<p>问题，假如从初始节点中删除一个节点，选择哪个节点会使得最后已感染病毒的节点最少？</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<ol> 
+ <li>对于初始节点中的每一个节点，可以通过bfs遍历得到能够访问到的所有节点</li> 
+ <li>对于这些节点，可以得到一个Map&lt;Integer, Integer&gt;, 就是从节点(node)到个数(count)的映射，其中这里所有的个数都相同</li> 
+ <li>对于初始节点中的任何一个， 如果对应map中的count是最大的，那么，删除这个节点最后感染病毒的节点就是最少的，也就是我们需要返回的那个节点</li> 
+</ol> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int minMalwareSpread(int[][] graph, int[] initial) {
+    Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+    for(int v: initial) {
+        if(!countMap.containsKey(v)) {
+            countMap.putAll(calcImpacted(graph, v));                                
+        }
+    }
+    Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+    for(int v: initial) {
+        set.add(v);
+    }
+    
+    int maxCount = -1, retv = 0;
+    for(Map.Entry&lt;Integer, Integer&gt; entry: countMap.entrySet()) {
+        if(!set.contains(entry.getKey())) continue;
+        if(entry.getValue() &gt; maxCount) {
+            retv = entry.getKey();
+            maxCount = entry.getValue();
+        }
+        else if(entry.getValue() == maxCount &amp;&amp; entry.getKey() &lt; retv) {
+            retv = entry.getKey();
+        }
+    }
+    return retv;
+}
+
+public Map&lt;Integer, Integer&gt; calcImpacted(int[][] graph, int initial) {
+    Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+    queue.add(initial);
+    Set&lt;Integer&gt; set = new HashSet&lt;Integer&gt;();        
+    while(queue.size() &gt; 0) {
+        int v = queue.poll();
+        set.add(v);
+        for(int j = 0; j &lt; graph.length; ++j) {
+            if(graph[v][j] == 1 &amp;&amp; !set.contains(j)) {
+                queue.add(j);
+            }
+        }
+    }
+    Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;Integer,Integer&gt;();
+    for(int v: set) {
+        countMap.put(v, set.size());
+    }
+    return countMap;    
+}
+
+</code></pre> 
+<h2><a href="#复杂度分析" id="复杂度分析">复杂度分析</a></h2> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3></p>
 	  			<a href="leetcode-914-X-of-a-Kind-in-a-Deck-of-Cards-solution-notes.html"><h1>leetcode 914 X of a Kind in a Deck of Cards解题笔记</h1></a>
 	  			<p>13 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
