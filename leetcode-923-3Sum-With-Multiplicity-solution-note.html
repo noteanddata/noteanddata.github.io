@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode Leetcode 923-3Sum With Multiplicity 解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode Leetcode 923-3Sum With Multiplicity 解题笔记</h1>
+			</div>
+
+			<p><em>14 October 2018</em></p>
+
+			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>Leetcode 923-3Sum With Multiplicity<br> <a href="https://leetcode.com/problems/3sum-with-multiplicity/description/">https://leetcode.com/problems/3sum-with-multiplicity/description/</a></p> 
+<p>输入一个整数数组A, 和一个target， 要求返回A[i] + A[j] + A[k]=target的个数，其中i，j，k不相等。<br> 例子中的一些数据已经表明这个数组里面会有重复的元素</p> 
+<pre><code>Input: A = [1,1,2,2,3,3,4,4,5,5], target = 8
+Output: 20
+Explanation: 
+Enumerating by the values (A[i], A[j], A[k]):
+(1, 2, 5) occurs 8 times;
+(1, 3, 4) occurs 8 times;
+(2, 2, 4) occurs 2 times;
+(2, 3, 3) occurs 2 times.
+</code></pre> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<p>类似的题目有leetcode 1–two sum ， <a href="http://www.noteanddata.com/leetcode-1-two-sum-solution-notes.html">http://www.noteanddata.com/leetcode-1-two-sum-solution-notes.html</a><br> leetcode 15–threesum, <a href="http://www.noteanddata.com/leetcode-15-3Sum-Solution-notes.html">http://www.noteanddata.com/leetcode-15-3Sum-Solution-notes.html</a><br> 这两题里面都提到hashmap法和双指针法，</p> 
+<p>这里也可以用hashmap法，把每个数字出现的次数记录下来， 然后把三种不同的情况的可能性都加起来就好<br> 1. a+a+a=target, 其中数字a出现至少3次， 这里就是组合公式counta * (counta-1) * (counta-2)/6,<br> 2. a+a+b=target, 其中， 数字a至少出现2次， 这里就是组合公式 counta * (counta-1) / 2 * countb<br> c. a+b+c=target, 那么就是counta<em>countb</em>countc, 这里记得去重， 我刚开始做的时候， 去重的版本写的非常复杂（见最后），<br> 后来整理思路了以后，其实只要遍历的过程保证a&lt;b&lt;c就好了，</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int threeSumMulti(int[] A, int target) {
+    Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+    for(int i = 0; i &lt; A.length; ++i) {
+        countMap.put(A[i], countMap.getOrDefault(A[i], 0) + 1);
+    }
+    long ret = 0;
+
+    Set&lt;Integer&gt; fvisited = new HashSet&lt;&gt;();
+    for(int v: countMap.keySet()) {
+        int count = countMap.get(v);
+        if(target == v * 3) {
+            if(count &gt;= 3) {
+                ret += ((long)count) * (count-1) * (count-2)/6;    
+            }                
+        }
+        else {
+            if(count &gt;= 2) {
+                ret += ((long)count) * (count-1)/2 * countMap.getOrDefault(target - 2 * v, 0);
+            }
+        }
+        for(int v2: countMap.keySet()) {
+            int v3 = target -v -v2;
+            if(v2 &lt;= v || v3 &lt;= v2) continue;
+            ret += ((long)count) * countMap.get(v2) * countMap.getOrDefault(v3, 0);
+        }            
+    }
+    return (int)(ret%1000000007);
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(K^2), 其中K是unique的数字的个数， 这里题目中已经限制了100了。</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(K), K是unique的数字的个数</p> 
+<h2><a href="#随想" id="随想">随想</a></h2> 
+<p>上面这个代码是后续整理的，其实一开始的版本虽然思路是略有类似，但是细节上对数据相同的情况和如何去重的判断并不是很清晰，导致代码比较<br> 冗余，而且当时也调试了很久才ac， 下面是刚开始的版本，只是做一个记录。由于代码过于冗余，一般不需要看.</p> 
+<pre><code>public int threeSumMulti(int[] A, int target) {
+    Map&lt;Integer, Long&gt; countMap = new HashMap&lt;&gt;();
+    for(int i = 0; i &lt; A.length; ++i) {
+        countMap.put(A[i], countMap.getOrDefault(A[i], 0L) + 1);
+    }
+    long ret = 0;
+
+    Set&lt;Integer&gt; fvisited = new HashSet&lt;&gt;();
+    for(int v: countMap.keySet()) {
+        long count = countMap.get(v);
+
+        ret += count * twoSumCount(countMap, v,  target-v, fvisited);
+        if(count &gt; 1) {
+            if(target - v * 2 != v) {
+                long combine = count * (count - 1) / 2;
+                long thirdCount = countMap.getOrDefault(target - v * 2, 0L);
+                ret += combine * thirdCount;
+            }
+            else {
+                if(count &gt; 2) {
+                    long combine = count * (count - 1) * (count - 2) / 6;
+                    ret += combine;
+                }
+            }
+        }
+        fvisited.add(v);
+    }
+    long mod = (long)Math.pow(10, 9) + 7;
+    return (int)(ret%mod);
+}
+
+public long twoSumCount(Map&lt;Integer, Long&gt; countMap, int exclude,  int target, Set&lt;Integer&gt; fvisited) {
+    int ret = 0;
+    Set&lt;Integer&gt; visited = new HashSet&lt;&gt;();
+    for(int v: countMap.keySet()) {
+        if(fvisited.contains(v) || fvisited.contains(target-v) || visited.contains(target-v) || visited.contains(v) || exclude == v || exclude == target-v || (target-v == v) ) continue;
+        long count = countMap.get(v);
+        long count2 = countMap.getOrDefault(target-v, 0L);
+        visited.add(v);
+        visited.add(target-v);
+        ret += count * count2;
+    }
+    return ret;
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
