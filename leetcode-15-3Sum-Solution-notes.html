@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 15 three sum解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 15 three sum解题笔记</h1>
+			</div>
+
+			<p><em>14 October 2018</em></p>
+
+			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>leetcode 第15题， 3 sum解题笔记<br> <a href="https://leetcode.com/problems/3sum/description/">https://leetcode.com/problems/3sum/description/</a><br> 输入一个整数数组，要求返回所有的unique的[a,b,c], 使得a+b+c=0, 其中a,b,c是数组里面的元素</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<p>在leetcode的two sum 里面，主要有两种解法，一种是hashmap，一种是排序一样用双指针<br> <a href="http://www.noteanddata.com/leetcode-1-two-sum-solution-notes.html">http://www.noteanddata.com/leetcode-1-two-sum-solution-notes.html</a></p> 
+<p>现在变成3-sum，但是同样的思路仍然可以应用的。可以用hashmap保存每个数出现的次数，也可以排序以后用双指针。<br> 同样的，这个题目主要要处理的一些tricky的数据就是数据一样的情况， 比如[a,a,a], [a,a,b],<br> 无论在排序还是在hashmap的情况下，都需要对这些情况做对应的处理，否则不能返回符合所有的unique的[a,b,c]的情况</p> 
+<h2><a href="#hashmap代码" id="hashmap代码">HashMap代码</a></h2> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; threeSum(int[] nums) {
+    Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+    for(int n : nums) {
+        countMap.put(n, countMap.getOrDefault(n, 0)+1);
+    }
+    List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+    for(Map.Entry&lt;Integer, Integer&gt; entry: countMap.entrySet()) {
+        int v0 = entry.getKey();
+        int count0 = entry.getValue();
+        if(count0 &gt;= 3) {
+            if(v0 == 0) {                
+                allList.add(Arrays.asList(0,0,0));    
+            }
+        }    
+        if(count0 &gt;= 2) {
+            int v2 = 0 - v0 * 2;
+            if(v2 != v0) {
+                if(countMap.get(v2) != null) {
+                    allList.add(Arrays.asList(v0,v0, v2));            
+                }                    
+            }                    
+        }
+        for(int v1: countMap.keySet()) {
+            int v2 = 0 - v1 - v0;
+            if(v1 &lt;= v0 || v2 &lt;= v1 || countMap.get(v2) == null) continue;
+            allList.add(Arrays.asList(v0, v1, v2));
+        }    
+    }
+    return allList;
+}
+
+</code></pre> 
+<h3><a href="#复杂度" id="复杂度">复杂度</a></h3> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>建立hashmap和遍历部分都是O(N), 所以是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N), 因为hashmap最大可能会和数组一样大</p> 
+<h2><a href="#排序双指针代码" id="排序双指针代码">排序+双指针代码</a></h2> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; threeSum(int[] nums) {
+    Arrays.sort(nums);
+    List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+    for(int i = 0; i &lt; nums.length; ) {
+        int begin = i+1, end = nums.length-1;
+        while(begin &lt; end) {
+            if(nums[begin] + nums[end] == 0 - nums[i]) {
+                allList.add(Arrays.asList(nums[i], nums[begin], nums[end]));                    
+                begin++;
+                while(nums[begin] == nums[begin-1] &amp;&amp; begin &lt; end) {
+                    begin++;
+                }
+                end--;
+                while(nums[end] == nums[end+1] &amp;&amp; begin &lt; end) {
+                    end--;
+                }
+            }
+            else if(nums[begin] + nums[end] &lt; 0 - nums[i]) {
+                begin++;
+            }
+            else {
+                end--;
+            }
+        }
+        
+        i++;
+        while(i &lt; nums.length &amp;&amp; nums[i] == nums[i-1]) {
+            i++;
+        }
+    }
+    return allList;
+}
+</code></pre> 
+<h3><a href="#复杂度" id="复杂度">复杂度</a></h3> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>排序部分是O(N*logN), 遍历的部分是O(N^2), 所以整体复杂度是O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>只使用了一些常量，所以是O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
