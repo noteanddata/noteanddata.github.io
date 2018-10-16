@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 911 Online Election解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 911 Online Election解题笔记</h1>
+			</div>
+
+			<p><em>16 October 2018</em></p>
+
+			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>Leetcode 911. Online Election<br> <a href="https://leetcode.com/problems/online-election/description/">https://leetcode.com/problems/online-election/description/</a></p> 
+<p>先输入两个同样长度的整数数组，分别代表时间(time)和人物(person), {time[i], person[i]}表示在time[i]投票给person[i]<br> 然后对任意一个时间， 返回当前时间谁的票数最多。<br> 下面是一个例子：</p> 
+<pre><code>Input: ["TopVotedCandidate","q","q","q","q","q","q"], [[[0,1,1,0,0,1,0],[0,5,10,15,20,25,30]],[3],[12],[25],[15],[24],[8]]
+Output: [null,0,1,1,0,0,1]
+Explanation: 
+At time 3, the votes are [0], and 0 is leading.
+At time 12, the votes are [0,1,1], and 1 is leading.
+At time 25, the votes are [0,1,1,0,0,1], and 1 is leading (as ties go to the most recent vote.)
+This continues for 3 more queries at time 15, 24, and 8.
+</code></pre> 
+<p>note:</p> 
+<pre><code>Note:
+
+    1 &lt;= persons.length = times.length &lt;= 5000
+    0 &lt;= persons[i] &lt;= persons.length
+    times is a strictly increasing array with all elements in [0, 10^9].
+    TopVotedCandidate.q is called at most 10000 times per test case.
+    TopVotedCandidate.q(int t) is always called with t &gt;= times[0].
+
+</code></pre> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<ol> 
+ <li>对于输入来说，在任意一个时间，领先者都是固定的， 所以可以建立一个表格，存储当前领先的人。</li> 
+ <li>对于查询来说，主要需要处理的问题是投票时间是不连续的，但是查询的时间是在任意一个时刻，但是我们建表格肯定不能对每个时间都存储一个值，<br> 这样内存就会爆。</li> 
+ <li>但是查询可以用二分来查询， 或者treemap有一个floor的函数, 可以返回map中&lt;=某个参数key的最大key， 就是当前时间的lead</li> 
+ <li>这个题目leetcode的运行时间很不稳定，无论是binarysearch还是treemap的做法，都会出现有时候可以ac有时候tle的情况</li> 
+</ol> 
+<h2><a href="#binary-search-代码" id="binary-search-代码">binary search 代码</a></h2> 
+<p>二分查询代码如下，<br> 1. 首先是建立一个countTable, 相当于Map&lt;Person, VoteCount&gt;<br> 2. 然后在遍历到每个位置的时候，可以保持更新leading person，<br> 3. 针对每个i，知道leadingPerson, 那就可以建立一个i-&gt;leadingPerson的表格<br> 4. 保存times表格，然后针对查询t， 二分查找到对应的index， 然后返回对应的值就好，<br> 这里直接用了Arrays.binarySearch, 如果存在正好的值就返回index， 如果不存在，那返回的是-insertionplace-1<br> 至于为什么api会这么返回呢？我猜比如insertion place=0， 这样可以返回-1， 不至于返回0，导致结果出现重叠。<br> 这里， 需要的是insertionplace-1, 所以返回-index-2.<br> // 当然，题目已经限定了查询的 t &gt;= times[0]， 否则的话用-index-2会抛异常</p> 
+<pre><code>class TopVotedCandidate {
+    private int[] leadingTable;
+    private int[] times;
+    public TopVotedCandidate(int[] persons, int[] times) {        
+        this.times = times;
+        int leadingPerson = 0;
+        int[] countTable = new int[persons.length];
+        leadingTable = new int[times.length];
+        for(int i = 0; i &lt; times.length; ++i) {
+            countTable[persons[i]]++;
+            if(countTable[persons[i]] &gt;= countTable[leadingPerson]) {
+                leadingPerson = persons[i];    
+            }
+            leadingTable[i] = leadingPerson;
+        }
+    }
+    
+    public int q(int time) {
+        int index = Arrays.binarySearch(times, time);
+        if(index &gt;= 0) return leadingTable[index];
+        else return leadingTable[-index-2];
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>建立表格的复杂度是O(N), 查询的复杂度是O(logN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>需要两个表格保存leadingtable和times， 相当于O(2*N)</p> 
+<h2><a href="#treemap-代码" id="treemap-代码">TreeMap 代码</a></h2> 
+<pre><code>class TopVotedCandidate {
+    private TreeMap&lt;Integer, Integer&gt; leadingPersonMap; // from time[i]--&gt;leadingperosn
+    private int[] times;
+    public TopVotedCandidate(int[] persons, int[] times) {        
+        this.times = times;
+        int leadingPerson = 0;
+        int[] countTable = new int[persons.length];
+        leadingPersonMap = new TreeMap&lt;&gt;();
+        for(int i = 0; i &lt; times.length; ++i) {
+            countTable[persons[i]]++;
+            if(countTable[persons[i]] &gt;= countTable[leadingPerson]) {
+                leadingPerson = persons[i];    
+            }
+            leadingPersonMap.put(times[i], leadingPerson);
+        }
+    }
+    
+    public int q(int time) {
+        return leadingPersonMap.floorEntry(time).getValue();
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>建立表格的复杂度是O(N*logN), 因为treemap的insert是logN<br> 查询的复杂度是O(logN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(2*N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
