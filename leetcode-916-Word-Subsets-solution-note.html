@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 916. Word Subsets解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 916. Word Subsets解题笔记</h1>
+			</div>
+
+			<p><em>15 October 2018</em></p>
+
+			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>leetcode 916. Word Subsets<br> <a href="https://leetcode.com/problems/word-subsets/description/">https://leetcode.com/problems/word-subsets/description/</a></p> 
+<ol> 
+ <li>输入两个数组A和B，数组里面的元素都是小写的英文字符串，</li> 
+ <li>如果一个字符串b里面的所有字符都在另外一个字符串a里面出现，并且考虑到个数的话，那么定义b是a的子集</li> 
+ <li>如果对于数组A里面的一个字符串a，数组B里面的所有字符串都是a的子集，那么定义这个字符串是universal的， 也就是我们要找的字符串</li> 
+ <li>返回数组A里面所有的universal的字符串</li> 
+</ol> 
+<pre><code>Note:
+    1 &lt;= A.length, B.length &lt;= 10000
+    1 &lt;= A[i].length, B[i].length &lt;= 10
+    A[i] and B[i] consist only of lowercase letters.
+    All words in A[i] are unique: there isn't i != j with A[i] == A[j].
+</code></pre> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<ol> 
+ <li>最简单的做法就是暴力法，对B里面的每个字符串都建立一个hashmap，从letter-&gt;count, 然后和A里面的字符串做对比, 我一开始<br> 也是这么做的，代码在最后，结果当然是TLE， 时间复杂度太高了, 主要是里面是至少M*N的复杂度，还要乘上字符串长度</li> 
+ <li>然后再分析一下这个，需要数组B里面的所有字符串都是a的子集，那么，其实数组B里面的字符串可以取union，找到针对26个字符里面每个字符<br> 的最大次数，就是A里面的字符串需要比较的对象， 这样的话，只要先建立这个表格，然后对A里面的字符串和这个表格做比较就好了，复杂度就小很多。</li> 
+</ol> 
+<h2><a href="#代码1" id="代码1">代码1</a></h2> 
+<p>这是当时写的一个版本，代码本身不是特别简洁， 但是复杂度是符合要求的。代码不是太简洁的原因是之前写的版本TLE了以后，<br> 这里多做了一点点小小的没有必要的自以为的优化，对于A里面的字符串，如果已经找到B的全集表以后，直接就返回了，不继续遍历。<br> 实际上, 1 &lt;= A[i].length, B[i].length &lt;= 10, 这些处理都是没有必要的。</p> 
+<pre><code>public List&lt;String&gt; wordSubsets(String[] A, String[] B) {
+    int[] table = processB(B);
+    List&lt;String&gt; ret = new ArrayList&lt;&gt;();
+    for(String s: A) {
+        if(valid(s, table)) {
+            ret.add(s);
+        }       
+    }
+    return ret;
+}
+
+public int[] processB(String[] B) {
+    int[] total = new int[27];
+    for(String s: B) {
+        int[] onetable = new int[26];
+        for(int i = 0; i &lt; s.length(); ++i) {
+            int index = (int)(s.charAt(i) - 'a');
+            onetable[index]++;
+        }
+        for(int i = 0; i &lt; 26; ++i) {
+            total[i] = Math.max(total[i], onetable[i]);
+        }
+    }
+    int count = 0;
+    for(int i = 0; i &lt; 26; ++i) {
+        if(total[i] &gt; 0) {
+            count++;
+        }
+    }
+    total[26] = count;
+    return total;
+}
+
+ 
+public boolean valid(String s, int[] table) {
+    int matchCount = 0;
+    int[] ntable = new int[26];
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        int index = (int)(ch - 'a');
+        if(table[index] &gt; 0) {                
+            ntable[index]++;                    
+            if(ntable[index] == table[index]) {
+                matchCount++;
+                if(matchCount == table[26]) {
+                    return true;
+                }
+            }                                
+        }
+    }
+    return false;
+}
+</code></pre> 
+<h3><a href="#复杂度" id="复杂度">复杂度</a></h3> 
+<ul> 
+ <li>时间复杂度<br> a. 对数组B建表的复杂度是O(M<em>P), 其中M是数组B的大小， P是数组B里面元素的平均长度<br> b. 然后数组A里面比较的部分复杂度是O(N</em>(Q + 26)), 其中N是数组A的大小, Q是数组A的元素的平均长度<br> 所以整体复杂度是O(M<em>P + N</em> (26+Q)), 和最原始的想法相比大大降低了复杂度</li> 
+ <li>空间复杂度<br> 每次都是建了一个26大小的数组，相当于常量, 所以空间复杂度是O(1)</li> 
+</ul> 
+<h2><a href="#简洁一点的代码2" id="简洁一点的代码2">简洁一点的代码2</a></h2> 
+<p>实际上，只要我们把复杂度降下来了以后，直接建表然后逐个比较就好，不需要做太多额外条件判断。下面是后续写的版本</p> 
+<pre><code>public List&lt;String&gt; wordSubsets(String[] A, String[] B) {
+    int[] totalB = new int[26];
+    for(String s: B) {
+        int[] table = buildTable(s);
+        for(int i = 0; i &lt; 26; ++i) {
+            totalB[i] = Math.max(totalB[i], table[i]);
+        }
+    }
+    
+    List&lt;String&gt; allList = new ArrayList&lt;&gt;();
+    for(String s: A) {
+        int[] table = buildTable(s);
+        int i = 0;
+        for(; i &lt; 26; i++) {
+            if(table[i] &lt; totalB[i]) {
+                break;
+            }
+        }
+        if(i == 26) {
+            allList.add(s);
+        }
+    }
+    return allList;
+}
+
+public int[] buildTable(String s) {
+    int[] table = new int[26];
+    for(int i = 0; i &lt; s.length(); ++i) {
+        table[(int)(s.charAt(i) - 'a')]++;
+    }
+    return table;
+}
+
+</code></pre> 
+<ul> 
+ <li>时间复杂度<br> a. 对数组B建表的复杂度是O(M<em>P), 其中M是数组B的大小， P是数组B里面元素的平均长度<br> b. 然后数组A里面比较的部分复杂度是O(N</em>(Q + 26)), 其中N是数组A的大小, Q是数组A的元素的平均长度<br> 所以整体复杂度是O(M<em>P + N</em> (26+Q)), 和最原始的想法相比大大降低了复杂度</li> 
+ <li>空间复杂度<br> 每次都是建了一个26大小的数组，相当于常量, 所以空间复杂度是O(1)</li> 
+</ul> 
+<h2><a href="#tle的代码3" id="tle的代码3">TLE的代码3</a></h2> 
+<p>一开始没有考虑复杂度，直接brute force，结果就TLE了。<br> 代码如下， 主要是对每个B里面的字符串都进行了建table， 然后对每个A里面的字符串都和每个B里面的字符串做比较，</p> 
+<ol> 
+ <li>第一次建B的表格是O(M*P), 其中M是数组B的大小， P是数组B里面元素的平均长度</li> 
+ <li>第二次两层循环的复杂度是O(N<em>M</em>26*Q), 其中N是数组A的大小, M是数组B的大小，Q是数组A的元素的平均长度</li> 
+</ol> 
+<p>时间复杂度太高，后来虽然对重复数组做了一些剔除等小细节的优化，仍然不解决问题。<br> 主要原因是这里对于A里面的每个元素，都需要和B里面都每个字符串做比较，有N*M在复杂度里面，对于1 &lt;= A.length, B.length &lt;= 10000，<br> 那就是至少一亿次起步了。</p> 
+<pre><code>public List&lt;String&gt; wordSubsets(String[] A, String[] B) {
+    List&lt;Map&lt;Character, Integer&gt;&gt; list = new ArrayList&lt;&gt;();
+    for(String s: B) {
+        list.add(calcCount(s));
+    }
+    List&lt;String&gt; ret = new ArrayList&lt;&gt;();
+    for(String s: A) {
+        boolean allvalid = true;
+        for(Map&lt;Character, Integer&gt; map: list) {
+            if(!valid(s, map)) {
+                allvalid = false;
+                break;
+            }
+        }
+        if(allvalid) {
+            ret.add(s);
+        }
+    }
+    return ret;            
+}
+
+public boolean valid(String s, Map&lt;Character, Integer&gt; map) {
+    int matchCount = 0;
+    Map&lt;Character, Integer&gt; cmap = new HashMap&lt;&gt;();
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        Integer c = map.get(ch);
+        if(null != c) {
+            int count = cmap.getOrDefault(ch, 0);
+            cmap.put(ch, count+1);
+            if(count+1 == c) {
+                matchCount++;
+                if(matchCount == map.size()) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+public Map&lt;Character, Integer&gt; calcCount(String s) {
+    Map&lt;Character, Integer&gt; map = new HashMap&lt;&gt;();
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        int count = map.getOrDefault(ch, 0);
+        map.put(ch, count+1);
+    }
+    return map;
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
