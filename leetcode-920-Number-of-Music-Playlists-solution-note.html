@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 920. Number of Music Playlists 解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 920. Number of Music Playlists 解题笔记</h1>
+			</div>
+
+			<p><em>18 October 2018</em></p>
+
+			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>Leetcode 920. Number of Music Playlists<br> <a href="https://leetcode.com/problems/number-of-music-playlists/description/">https://leetcode.com/problems/number-of-music-playlists/description/</a></p> 
+<ol> 
+ <li>音乐播放器，总共有N首不同的歌曲，有L个位置（就是总共在这N首歌里面循环放了L首），</li> 
+ <li>要求每首歌至少放一次，然后一首歌要想重复放，必须要有K首其他歌放过了才可以再放</li> 
+</ol> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<p>这个优化问题，求最多的可能性，需要用动态规划做，<br> 这里有三个变量， 状态比较复杂，但是可以固定N，始终在N首曲子里面选择。<br> 设置动态规划数组dp[i][j], 表示第i个位置，在N首歌曲里面，放了j首不同的歌曲的个数， 并且符合K的条件<br> 那么dp[L][N]就是有L个位置，放了N首不同的歌曲的结果。</p> 
+<p>那么，寻找递归关系， 对于dp[i][j], 递归关系一定是寻找和i-1的关系， 因为第i个位置还没有放歌曲，<br> 这时候，有两种情况，<br> a. 如果第i首曲子是之前没有放过的，那前一项就应该是dp[i-1][j-1], 然后这个时候可以选择的曲子是<br> N-(j-1), 所以那么这时候的可能性是dp[i-1][j-1] * (N-(j-1))<br> b. 如果第i首曲子是之前放过的，那么前一项就是dp[i-1][j], 这时候可以选择的曲子的范围是多少呢？<br> 因为要符合K的要求，那最近的这K个就不能选择了，所以是j-K个， 当然因为j-K有可能小于0， 所以要取Math.max(j-K, 0)</p> 
+<p>c. 对于b的情况这里可能会有个疑问，是不是最近这K个不选了以后一定是对的？有没有可能j-K前面的若干个里面会和最近的K个有冲突？<br> 我当时就有这个疑问，其实是这样， 对于dp[i-1][j]<br> 其实是这样， 这里最近的这K个曲子，因为已经符合要求了，所以最近的这K个曲子就一定是不重复的。<br> 然后这里选择的是j-K, 而不是i-K,<br> 所以是j首不同的曲子里面，去掉K首最近被用过的（一定是不重复的），这样剩下的曲子一定不会在最近的K个位置里面有冲突。</p> 
+<p>d. 综合a和b两种情况， 得出递推公式：<br> dp[i][j] = dp[i-1][j] * Math.max(j-K, 0) + dp[i-1][j-1] * (N-j+1)</p> 
+<p>e. 边界条件<br> 这里主要的边界条件是i=1和j=1的情况，<br> if i &lt; j, dp[i][j] = 0, 因为只有i个位置， 但是要放j首不同的曲子， 这个肯定不可能。<br> dp[1][1] = N, 因为1个位置， 从N首不同的曲子里面选择1首曲子， 那就有N种可能。<br> if i &gt; 1 &amp;&amp; j ==1<br> 这时候分两种情况， 如果K=0， 那么就是在N首曲子里面选一首，然后填满i个位置，就有N个选择，<br> 如果K &gt; 0, dp[i][1] = 0， 因为只有一首曲子，但是要符合K的条件，已经不可能了。</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int numMusicPlaylists(int N, int L, int K) {
+        long[][] dp = new long[L+1][N+1];
+        for(int i = 1; i &lt; L+1; ++i) {
+            for(int j = 1;j &lt; N+1; ++j) {
+                if(i &lt; j) dp[i][j] = 0;
+                else if(i == 1 &amp;&amp; j == 1) dp[i][j] = N;
+                else if(i &gt; 1 &amp;&amp; j == 1) {
+                    if(K == 0) dp[i][j] = N;
+                    else dp[i][j] = 0;
+                }
+                else {
+                    dp[i][j] = dp[i-1][j-1] * (N-j+1) + dp[i-1][j] * Math.max(j-K, 0);
+                    dp[i][j] %= 1_000_000_007;
+                }
+                
+            }
+        }
+        return (int)dp[L][N];
+}
+
+</code></pre> 
+<h2><a href="#复杂度" id="复杂度">复杂度</a></h2> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(L*N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(L*N)</p> 
+<h2><a href="#其他解" id="其他解">其他解</a></h2> 
+<p>官方解里面的边界条件非常简单，直接设置了dp[0][0] = 1以后就开始dp了， 这个我没有搞明白为什么设置这个值，为什么这个值设了以后就可以递归了，所以就没有按照这个来。</p> 
+<h2><a href="#一些sample表格" id="一些sample表格">一些sample表格</a></h2> 
+<h3><a href="#case-1" id="case-1">case 1</a></h3> 
+<p>N=3， L=3， K=1<br> 0,0,0,0<br> 0,3,0,0<br> 0,0,6,0<br> 0,0,6,6</p> 
+<h3><a href="#case-2" id="case-2">case 2</a></h3> 
+<p>N=2, L=3, K=0</p> 
+<p>0 0 0<br> 0 2 0<br> 0 2 2<br> 0 2 6</p> 
+<h2><a href="#代码2" id="代码2">代码2</a></h2> 
+<p>实际上，后面测试了一些，只要设置了dp[1][1] = N以后，就可以直接进入递推模式了，<br> dp[i][1] 和dp[1][j] 就已经在递推中完全完成了。<br> 因为所有的dp[0][j] = 0, 所以对于j &gt; 1, 所有的dp[1][j] = 0<br> 而对dp[i][1], 也就是j= 1, 如果i &gt; 1的话， 因为dp[i-1][0] 都是0，<br> 而如果K = 0, Math.max(j-K, 0)= 1, 所以dp[i][1] = N,<br> 如果K &gt;= 1, Math.max(j-K, 0) = 0,所以整个递推关系是完全成立的。</p> 
+<pre><code>public int numMusicPlaylists(int N, int L, int K) {
+    long[][] dp = new long[L+1][N+1];
+    for(int i = 1; i &lt; L+1; ++i) {
+        for(int j = 1;j &lt; N+1; ++j) {
+            if(i == 1 &amp;&amp; j == 1) {
+                dp[i][j] = N;
+            }
+            else {
+                dp[i][j] = dp[i-1][j-1] * (N-j+1) + dp[i-1][j] * Math.max(j-K, 0);
+                dp[i][j] %= 1_000_000_007;                    
+            }                
+        }
+    }
+    return (int)dp[L][N];
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
