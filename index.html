@@ -55,6 +55,79 @@ var _hmt = _hmt || [];
     <div class="container">
 <div class="row">
 	<div class="col-sm-8">
+	  			<a href="leetcode-2-Add-Two-Numbers-solution-note.html"><h1>leetcode 2. Add Two Numbers解题笔记</h1></a>
+	  			<p>19 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p><a href="https://leetcode.com/problems/add-two-numbers/description/">https://leetcode.com/problems/add-two-numbers/description/</a><br> 两个链表， 分别存储了两个非负整数， 每个node是一位， 但是链表都是reverse的，就是个位数在最前面，<br> 返回两个数的和，同样用链表表示。</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<p>链表已经是个位数在最开头了，所以可以直接从前往后遍历，需要注意的是两个链表可能不一样长。</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+    ListNode root = null, node = null;
+    int add = 0;
+    while(l1 != null &amp;&amp; l2 != null) {
+        int v = l1.val + l2.val + add;
+        if(null == node) {
+            root = node = new ListNode(v%10);
+        }
+        else {
+            node = node.next = new ListNode(v%10);
+        }
+        
+        add = v/10;
+        l1 = l1.next;
+        l2 = l2.next;
+    }
+    ListNode l = l1 != null ? l1 : l2;
+    while(null != l) {
+        int v = l.val + add;
+        if(null == node) {
+            root = node = new ListNode(v%10);                
+        }
+        else {
+            node = node.next = new ListNode(v%10);
+        }
+        add = v/10;
+        l = l.next;
+    }
+    if(add &gt; 0) {
+        node.next = new ListNode(add);
+    }
+    return root;
+}
+</code></pre> 
+<h2><a href="#复杂度" id="复杂度">复杂度</a></h2> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>两个链表分别遍历一次，O(M+N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>结果存储了两个链表中的较大值，O(Math.max(M,N))</p> 
+<h2><a href="#其他想法" id="其他想法">其他想法</a></h2> 
+<p>上面的代码略有繁琐，主要是针对两个链表长度不一样有特殊逻辑，其实可以把两段代码合并起来。</p> 
+<pre><code>public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+    ListNode root = null, node = null;
+    int add = 0;
+    while(l1 != null || l2 != null) {
+        int v1 = l1 != null ? l1.val : 0;
+        int v2 = l2 != null ? l2.val : 0;
+        int v = v1 + v2 + add;
+        if(null == node) {
+            root = node = new ListNode(v%10);
+        }
+        else {
+            node = node.next = new ListNode(v%10);
+        }
+        
+        add = v/10;
+        l1 = l1 != null ? l1.next : l1;
+        l2 = l2 != null ? l2.next : l2;
+    }        
+    if(add &gt; 0) {
+        node.next = new ListNode(add);
+    }
+    return root;
+}
+
+</code></pre></p>
 	  			<a href="leetcode-920-Number-of-Music-Playlists-solution-note.html"><h1>Leetcode 920. Number of Music Playlists 解题笔记</h1></a>
 	  			<p>18 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
@@ -506,6 +579,90 @@ public Map&lt;Character, Integer&gt; calcCount(String s) {
 </ol> 
 <h4><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h4> 
 <p>因为需要返回原来的数组index，所以需要拷贝一份数组才可以返回原来的index， 所以空间复杂度是O(N)</p></p>
+	  			<a href="leetcode-15-3Sum-Solution-notes.html"><h1>leetcode 15 three sum解题笔记</h1></a>
+	  			<p>14 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>leetcode 第15题， 3 sum解题笔记<br> <a href="https://leetcode.com/problems/3sum/description/">https://leetcode.com/problems/3sum/description/</a><br> 输入一个整数数组，要求返回所有的unique的[a,b,c], 使得a+b+c=0, 其中a,b,c是数组里面的元素</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<p>在leetcode的two sum 里面，主要有两种解法，一种是hashmap，一种是排序一样用双指针<br> <a href="http://www.noteanddata.com/leetcode-1-two-sum-solution-notes.html">http://www.noteanddata.com/leetcode-1-two-sum-solution-notes.html</a></p> 
+<p>现在变成3-sum，但是同样的思路仍然可以应用的。可以用hashmap保存每个数出现的次数，也可以排序以后用双指针。<br> 同样的，这个题目主要要处理的一些tricky的数据就是数据一样的情况， 比如[a,a,a], [a,a,b],<br> 无论在排序还是在hashmap的情况下，都需要对这些情况做对应的处理，否则不能返回符合所有的unique的[a,b,c]的情况</p> 
+<h2><a href="#hashmap代码" id="hashmap代码">HashMap代码</a></h2> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; threeSum(int[] nums) {
+    Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+    for(int n : nums) {
+        countMap.put(n, countMap.getOrDefault(n, 0)+1);
+    }
+    List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+    for(Map.Entry&lt;Integer, Integer&gt; entry: countMap.entrySet()) {
+        int v0 = entry.getKey();
+        int count0 = entry.getValue();
+        if(count0 &gt;= 3) {
+            if(v0 == 0) {                
+                allList.add(Arrays.asList(0,0,0));    
+            }
+        }    
+        if(count0 &gt;= 2) {
+            int v2 = 0 - v0 * 2;
+            if(v2 != v0) {
+                if(countMap.get(v2) != null) {
+                    allList.add(Arrays.asList(v0,v0, v2));            
+                }                    
+            }                    
+        }
+        for(int v1: countMap.keySet()) {
+            int v2 = 0 - v1 - v0;
+            if(v1 &lt;= v0 || v2 &lt;= v1 || countMap.get(v2) == null) continue;
+            allList.add(Arrays.asList(v0, v1, v2));
+        }    
+    }
+    return allList;
+}
+
+</code></pre> 
+<h3><a href="#复杂度" id="复杂度">复杂度</a></h3> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>建立hashmap和遍历部分都是O(N), 所以是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N), 因为hashmap最大可能会和数组一样大</p> 
+<h2><a href="#排序双指针代码" id="排序双指针代码">排序+双指针代码</a></h2> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; threeSum(int[] nums) {
+    Arrays.sort(nums);
+    List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+    for(int i = 0; i &lt; nums.length; ) {
+        int begin = i+1, end = nums.length-1;
+        while(begin &lt; end) {
+            if(nums[begin] + nums[end] == 0 - nums[i]) {
+                allList.add(Arrays.asList(nums[i], nums[begin], nums[end]));                    
+                begin++;
+                while(nums[begin] == nums[begin-1] &amp;&amp; begin &lt; end) {
+                    begin++;
+                }
+                end--;
+                while(nums[end] == nums[end+1] &amp;&amp; begin &lt; end) {
+                    end--;
+                }
+            }
+            else if(nums[begin] + nums[end] &lt; 0 - nums[i]) {
+                begin++;
+            }
+            else {
+                end--;
+            }
+        }
+        
+        i++;
+        while(i &lt; nums.length &amp;&amp; nums[i] == nums[i-1]) {
+            i++;
+        }
+    }
+    return allList;
+}
+</code></pre> 
+<h3><a href="#复杂度" id="复杂度">复杂度</a></h3> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>排序部分是O(N*logN), 遍历的部分是O(N^2), 所以整体复杂度是O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>只使用了一些常量，所以是O(1)</p></p>
 	  			<a href="leetcode-923-3Sum-With-Multiplicity-solution-note.html"><h1>Leetcode Leetcode 923-3Sum With Multiplicity 解题笔记</h1></a>
 	  			<p>14 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
@@ -605,90 +762,6 @@ public long twoSumCount(Map&lt;Integer, Long&gt; countMap, int exclude,  int tar
 }
 
 </code></pre></p>
-	  			<a href="leetcode-15-3Sum-Solution-notes.html"><h1>leetcode 15 three sum解题笔记</h1></a>
-	  			<p>14 October 2018</p>
-	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
-<p>leetcode 第15题， 3 sum解题笔记<br> <a href="https://leetcode.com/problems/3sum/description/">https://leetcode.com/problems/3sum/description/</a><br> 输入一个整数数组，要求返回所有的unique的[a,b,c], 使得a+b+c=0, 其中a,b,c是数组里面的元素</p> 
-<h2><a href="#分析" id="分析">分析</a></h2> 
-<p>在leetcode的two sum 里面，主要有两种解法，一种是hashmap，一种是排序一样用双指针<br> <a href="http://www.noteanddata.com/leetcode-1-two-sum-solution-notes.html">http://www.noteanddata.com/leetcode-1-two-sum-solution-notes.html</a></p> 
-<p>现在变成3-sum，但是同样的思路仍然可以应用的。可以用hashmap保存每个数出现的次数，也可以排序以后用双指针。<br> 同样的，这个题目主要要处理的一些tricky的数据就是数据一样的情况， 比如[a,a,a], [a,a,b],<br> 无论在排序还是在hashmap的情况下，都需要对这些情况做对应的处理，否则不能返回符合所有的unique的[a,b,c]的情况</p> 
-<h2><a href="#hashmap代码" id="hashmap代码">HashMap代码</a></h2> 
-<pre><code>public List&lt;List&lt;Integer&gt;&gt; threeSum(int[] nums) {
-    Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
-    for(int n : nums) {
-        countMap.put(n, countMap.getOrDefault(n, 0)+1);
-    }
-    List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
-    for(Map.Entry&lt;Integer, Integer&gt; entry: countMap.entrySet()) {
-        int v0 = entry.getKey();
-        int count0 = entry.getValue();
-        if(count0 &gt;= 3) {
-            if(v0 == 0) {                
-                allList.add(Arrays.asList(0,0,0));    
-            }
-        }    
-        if(count0 &gt;= 2) {
-            int v2 = 0 - v0 * 2;
-            if(v2 != v0) {
-                if(countMap.get(v2) != null) {
-                    allList.add(Arrays.asList(v0,v0, v2));            
-                }                    
-            }                    
-        }
-        for(int v1: countMap.keySet()) {
-            int v2 = 0 - v1 - v0;
-            if(v1 &lt;= v0 || v2 &lt;= v1 || countMap.get(v2) == null) continue;
-            allList.add(Arrays.asList(v0, v1, v2));
-        }    
-    }
-    return allList;
-}
-
-</code></pre> 
-<h3><a href="#复杂度" id="复杂度">复杂度</a></h3> 
-<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
-<p>建立hashmap和遍历部分都是O(N), 所以是O(N)</p> 
-<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>O(N), 因为hashmap最大可能会和数组一样大</p> 
-<h2><a href="#排序双指针代码" id="排序双指针代码">排序+双指针代码</a></h2> 
-<pre><code>public List&lt;List&lt;Integer&gt;&gt; threeSum(int[] nums) {
-    Arrays.sort(nums);
-    List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
-    for(int i = 0; i &lt; nums.length; ) {
-        int begin = i+1, end = nums.length-1;
-        while(begin &lt; end) {
-            if(nums[begin] + nums[end] == 0 - nums[i]) {
-                allList.add(Arrays.asList(nums[i], nums[begin], nums[end]));                    
-                begin++;
-                while(nums[begin] == nums[begin-1] &amp;&amp; begin &lt; end) {
-                    begin++;
-                }
-                end--;
-                while(nums[end] == nums[end+1] &amp;&amp; begin &lt; end) {
-                    end--;
-                }
-            }
-            else if(nums[begin] + nums[end] &lt; 0 - nums[i]) {
-                begin++;
-            }
-            else {
-                end--;
-            }
-        }
-        
-        i++;
-        while(i &lt; nums.length &amp;&amp; nums[i] == nums[i-1]) {
-            i++;
-        }
-    }
-    return allList;
-}
-</code></pre> 
-<h3><a href="#复杂度" id="复杂度">复杂度</a></h3> 
-<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
-<p>排序部分是O(N*logN), 遍历的部分是O(N^2), 所以整体复杂度是O(N^2)</p> 
-<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>只使用了一些常量，所以是O(1)</p></p>
 	  			<a href="leetcode-921-Minimum-Add-to-Make-Parentheses-Valid-solution-note.html"><h1>leetcode 921 Minimum Add to Make Parentheses Valid解题笔记</h1></a>
 	  			<p>13 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
@@ -1034,6 +1107,57 @@ public Map&lt;Integer, Integer&gt; calcImpacted(int[][] graph, int initial) {
 
 </code></pre> 
 <h2><a href="#"></a></h2></p>
+	  			<a href="leetcode-918-Maximum-Sum-Circular-Subarray.html"><h1>leetcode 918 Maximum Sum Circular Subarray解题笔记</h1></a>
+	  			<p>11 October 2018</p>
+	  			<p><h2><a href="#题目-leetcode-918-maximum-sum-circular-subarray" id="题目-leetcode-918-maximum-sum-circular-subarray">题目 leetcode 918 Maximum Sum Circular Subarray</a></h2> 
+<p><a href="https://leetcode.com/problems/maximum-sum-circular-subarray/description/">https://leetcode.com/problems/maximum-sum-circular-subarray/description/</a></p> 
+<p>给一个环形数组，也就是数组的尾部可以和头部相连，然后求子数组的最大和<br> 比如<br> Input: [5,-3,5]<br> Output: 10<br> Explanation: Subarray [5,5] has maximum sum 5 + 5 = 10</p> 
+<h2><a href="#分析和解法" id="分析和解法">分析和解法</a></h2> 
+<p>做这个题目首先我们需要熟悉普通数组的最大子数组和的解法，思路是动态规划，详细分析可以参考这个<br> <a href="http://www.noteanddata.com/leetcode-53-Maximum-Subarray.html">http://www.noteanddata.com/leetcode-53-Maximum-Subarray.html</a></p> 
+<p>然后呢，环形数组和普通数组的区别是环形数组多一种情况，就是子数组取了头尾相连的情况。<br> 也就是头部取从a[0]到a[i], 然后尾部取a[j]到a[N-1]， 然后0 &lt;= i &lt; j &lt;= N-1<br> 对于任何一个i，从a[0]到a[i]的和可以简单的从前向后遍历计算，可以建立表格left[i] = sum(a[0]….a[i])<br> 对于任何一个j，从a[j]到a[N-1]的和可以简单的从后向前计算, 可以建立表格right[j] = sum(a[j]…a[N-1])<br> 由于i &lt; j, 所以我们可以修改left和right表格，可以在遍历数组k=0…N-1的时候，<br> 对于任何一个k, left[k]表示从a[0]开始到a[i], 其中i &lt;=k 的最大和, right[k]表示从a[j]到a[N-1]，其中j &gt;k的最大和，<br> 这样的话，一次遍历, 然后取left[k] + right[k+1]的最大值，就可以了。</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int maxSubarraySumCircular(int[] A) {
+    int[] left = new int[A.length];
+    int sum = 0, maxsum = 0;
+    
+    for(int i = 0; i &lt; A.length; ++i) {
+        if(i == 0) {
+            left[i] = sum = maxsum = A[i];
+        }
+        else {
+            sum = Math.max(sum+A[i], A[i]);                
+            maxsum = Math.max(maxsum, sum);
+            left[i] = left[i-1] + A[i];
+        }
+    }
+    
+    for(int i = 1; i &lt; A.length; ++i) {
+        left[i] = Math.max(left[i-1], left[i]);
+    }
+    
+    
+    int[] right = new int[A.length];
+    for(int j = A.length-1; j &gt;= 0; --j) {
+        if(j == A.length-1) {
+            right[j] = A[j]; 
+        }
+        else {
+            right[j] = right[j+1] + A[j];
+        }
+    }
+    for(int j = A.length-2; j &gt;= 0; --j) {
+        right[j] = Math.max(right[j], right[j+1]);
+    }
+    
+    for(int i = 0; i &lt; A.length-1; ++i) {
+        maxsum = Math.max(maxsum, left[i] + right[i+1]);
+    }
+    
+    return maxsum;
+}
+
+
+</code></pre></p>
 	  			<a href="leetcode-53-Maximum-Subarray.html"><h1>leetcode 53 maximum subarray解题笔记</h1></a>
 	  			<p>11 October 2018</p>
 	  			<p><h2><a href="#题目-leetcode-53-maximum-subarray" id="题目-leetcode-53-maximum-subarray">题目 leetcode 53 Maximum Subarray</a></h2> 
@@ -1108,57 +1232,6 @@ public Map&lt;Integer, Integer&gt; calcImpacted(int[][] graph, int initial) {
     }
     return max;
 }
-</code></pre></p>
-	  			<a href="leetcode-918-Maximum-Sum-Circular-Subarray.html"><h1>leetcode 918 Maximum Sum Circular Subarray解题笔记</h1></a>
-	  			<p>11 October 2018</p>
-	  			<p><h2><a href="#题目-leetcode-918-maximum-sum-circular-subarray" id="题目-leetcode-918-maximum-sum-circular-subarray">题目 leetcode 918 Maximum Sum Circular Subarray</a></h2> 
-<p><a href="https://leetcode.com/problems/maximum-sum-circular-subarray/description/">https://leetcode.com/problems/maximum-sum-circular-subarray/description/</a></p> 
-<p>给一个环形数组，也就是数组的尾部可以和头部相连，然后求子数组的最大和<br> 比如<br> Input: [5,-3,5]<br> Output: 10<br> Explanation: Subarray [5,5] has maximum sum 5 + 5 = 10</p> 
-<h2><a href="#分析和解法" id="分析和解法">分析和解法</a></h2> 
-<p>做这个题目首先我们需要熟悉普通数组的最大子数组和的解法，思路是动态规划，详细分析可以参考这个<br> <a href="http://www.noteanddata.com/leetcode-53-Maximum-Subarray.html">http://www.noteanddata.com/leetcode-53-Maximum-Subarray.html</a></p> 
-<p>然后呢，环形数组和普通数组的区别是环形数组多一种情况，就是子数组取了头尾相连的情况。<br> 也就是头部取从a[0]到a[i], 然后尾部取a[j]到a[N-1]， 然后0 &lt;= i &lt; j &lt;= N-1<br> 对于任何一个i，从a[0]到a[i]的和可以简单的从前向后遍历计算，可以建立表格left[i] = sum(a[0]….a[i])<br> 对于任何一个j，从a[j]到a[N-1]的和可以简单的从后向前计算, 可以建立表格right[j] = sum(a[j]…a[N-1])<br> 由于i &lt; j, 所以我们可以修改left和right表格，可以在遍历数组k=0…N-1的时候，<br> 对于任何一个k, left[k]表示从a[0]开始到a[i], 其中i &lt;=k 的最大和, right[k]表示从a[j]到a[N-1]，其中j &gt;k的最大和，<br> 这样的话，一次遍历, 然后取left[k] + right[k+1]的最大值，就可以了。</p> 
-<h2><a href="#代码" id="代码">代码</a></h2> 
-<pre><code>public int maxSubarraySumCircular(int[] A) {
-    int[] left = new int[A.length];
-    int sum = 0, maxsum = 0;
-    
-    for(int i = 0; i &lt; A.length; ++i) {
-        if(i == 0) {
-            left[i] = sum = maxsum = A[i];
-        }
-        else {
-            sum = Math.max(sum+A[i], A[i]);                
-            maxsum = Math.max(maxsum, sum);
-            left[i] = left[i-1] + A[i];
-        }
-    }
-    
-    for(int i = 1; i &lt; A.length; ++i) {
-        left[i] = Math.max(left[i-1], left[i]);
-    }
-    
-    
-    int[] right = new int[A.length];
-    for(int j = A.length-1; j &gt;= 0; --j) {
-        if(j == A.length-1) {
-            right[j] = A[j]; 
-        }
-        else {
-            right[j] = right[j+1] + A[j];
-        }
-    }
-    for(int j = A.length-2; j &gt;= 0; --j) {
-        right[j] = Math.max(right[j], right[j+1]);
-    }
-    
-    for(int i = 0; i &lt; A.length-1; ++i) {
-        maxsum = Math.max(maxsum, left[i] + right[i+1]);
-    }
-    
-    return maxsum;
-}
-
-
 </code></pre></p>
 	  			<a href="leetcode-917-ReverseOnlyLetters.html"><h1>leetcode 917 snakes-and-ladders刷题笔记</h1></a>
 	  			<p>10 October 2018</p>
