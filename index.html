@@ -55,6 +55,91 @@ var _hmt = _hmt || [];
     <div class="container">
 <div class="row">
 	<div class="col-sm-8">
+	  			<a href="leetcode-926-Flip-String-to-Monotone-Increasing-solution-note.html"><h1>Leetcode 926 Flip String to Monotone Increasing解题笔记</h1></a>
+	  			<p>20 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>Leetcode 926. Flip String to Monotone Increasing<br> <a href="https://leetcode.com/problems/flip-string-to-monotone-increasing/description/">https://leetcode.com/problems/flip-string-to-monotone-increasing/description/</a><br> 1. 输入二进制字符串，就是只有0和1，<br> 2. 如果这个字符串的1（如果有1的话）都在最后面，我们称一个字符串是“monotone increasing”<br> 3. 输入一格二进制字符串，返回最少需要flip多少位就可以让这个字符串变成“monotone increasing”</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<ol> 
+ <li>这类最佳问题，通常是需要动态规划。</li> 
+ <li>尝试求解递推关系， 假设已经有min[i-1], 如何求得min[i]?<br> a. 如果当前位是1， 那么min[i] = min[i-1], 因为1在最后面就不需要flip<br> b. 如果当前位是0， 那么有两种情况，<br> 如果前面取得min[i-1]的时候都是0， 那么min[i] = min[i-1]<br> 如果前面取得min[i-1]的时候最后已经是1了，那么min[i] = min[i-1]+1, 就是最后一位要flip一下<br> 所以min数组只是一维那是不够的，要分min[i][0]和min[i][1], 分别表示在i位最后变成0和1的时候的最小值</li> 
+</ol> 
+<p>所以递推关系如下:</p> 
+<pre><code>if(S.charAt(i-1) == '1') {
+    min[i][0] = min[i-1][0] + 1;
+    min[i][1] = Math.min(min[i-1][1], min[i-1][0]);                                    
+}
+else { // '0'
+    min[i][0] = min[i-1][0];
+    min[i][1] = Math.min(min[i-1][0], min[i-1][1]) + 1;                    
+}            
+</code></pre> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int minFlipsMonoIncr(String S) {
+    int[][] min = new int[S.length()][2];
+    for(int i = 0; i &lt; S.length(); ++i) {
+        if(S.charAt(i) == '1') {
+            if(i == 0) {
+                min[i][0] = 1;
+                min[i][1] = 0;
+            }
+            else {
+                min[i][0] = min[i-1][0] + 1;
+                min[i][1] = Math.min(min[i-1][1], min[i-1][0]);                                    
+            }
+        }
+        else { // '0'
+            if(i == 0) {
+                min[i][0] = 0;
+                min[i][1] = 1;
+            }
+            else {
+                min[i][0] = min[i-1][0];
+                min[i][1] = Math.min(min[i-1][0], min[i-1][1]) + 1;                    
+            }
+        }            
+    }
+    return Math.min(min[S.length()-1][0], min[S.length()-1][1]);
+}
+</code></pre> 
+<h2><a href="#简化代码" id="简化代码">简化代码</a></h2> 
+<p>实际上，上面的代码，针对i==0的特殊处理，只是只要把数组开大一格，就可以去掉这个特殊处理，因为这个处理就是当前需要flip的情况</p> 
+<pre><code>public int minFlipsMonoIncr(String S) {
+    int[][] min = new int[S.length()+1][2];
+    for(int i = 1; i &lt;= S.length(); ++i) {
+        if(S.charAt(i-1) == '1') {
+            min[i][0] = min[i-1][0] + 1;
+            min[i][1] = Math.min(min[i-1][1], min[i-1][0]);                                    
+        }
+        else { // '0'
+            min[i][0] = min[i-1][0];
+            min[i][1] = Math.min(min[i-1][0], min[i-1][1]) + 1;                    
+        }            
+    }
+    return Math.min(min[S.length()][0], min[S.length()][1]);
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>字符串只遍历一次，所以复杂度是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>设置了一个dp数组，所以需要O(2*N)的复杂度</p> 
+<h2><a href="#优化版本的代码" id="优化版本的代码">优化版本的代码</a></h2> 
+<p>从前面的递推关系可以看到， 每次递推只需要用到min[i-1][0] 和min[i-1][1]，<br> 所以，可以优化空间复杂度到这两个变量</p> 
+<pre><code>public int minFlipsMonoIncr(String S) {
+    int flipCountEnd0 = 0, flipCountEnd1 = 0;
+    for(int i = 0; i &lt; S.length(); ++i) {
+        if(S.charAt(i) == '1') {                
+            flipCountEnd1 = Math.min(flipCountEnd0, flipCountEnd1);
+            flipCountEnd0++;
+        }
+        else { // '0'
+            flipCountEnd1 = Math.min(flipCountEnd0, flipCountEnd1) + 1;
+        }            
+    }
+    return Math.min(flipCountEnd0, flipCountEnd1);
+}
+
+</code></pre></p>
 	  			<a href="leetcode-925-Long-Pressed-Name-solution-note.html"><h1>Leetcode 925  Long Pressed Name解题笔记</h1></a>
 	  			<p>20 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
