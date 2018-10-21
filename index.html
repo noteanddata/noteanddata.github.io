@@ -55,6 +55,43 @@ var _hmt = _hmt || [];
     <div class="container">
 <div class="row">
 	<div class="col-sm-8">
+	  			<a href="leetcode-925-Long-Pressed-Name-solution-note.html"><h1>Leetcode 925  Long Pressed Name解题笔记</h1></a>
+	  			<p>20 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>Leetcode 925. Long Pressed Name<br> <a href="https://leetcode.com/problems/long-pressed-name/description/">https://leetcode.com/problems/long-pressed-name/description/</a><br> 输入name，然后在键盘上打字， 如果打某个字母的时候按的时间太长，会把一个字母多打几个，这时候仍然判断正确。<br> 输入两个字符串分别代表name和typed， 判断是否是一个正确的type</p> 
+<pre><code>Input: name = "alex", typed = "aaleex"
+Output: true
+Explanation: 'a' and 'e' in 'alex' were long pressed.
+</code></pre> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<p>这个一开始我做错了， 直接建了一个频率表Map&lt;Character, Integer&gt;的map就开始比较判断了。 实际上，这个题目对顺序有要求，<br> 所以必须两个字符串一起遍历，而且，typed里面多出来的字符必须和前面的一样。</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public boolean isLongPressedName(String name, String typed) {
+    int i = 0, j = 0;
+    while(i &lt; name.length() &amp;&amp; j &lt; typed.length()) {
+        if(name.charAt(i) == typed.charAt(j)) {
+            i++;
+            j++;
+        }
+        else {
+            if(j == 0 || typed.charAt(j) != typed.charAt(j-1)) return false;
+            j++;                                
+        }
+    }
+    if(i != name.length()) return false;
+    while(j &lt; typed.length()) {
+        if(typed.charAt(j) != typed.charAt(j-1)) return false;
+        j++;
+    }
+    return true;
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(Math.max(M, N)), M是name的长度， N是typed的长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p></p>
 	  			<a href="leetcode-2-Add-Two-Numbers-solution-note.html"><h1>leetcode 2. Add Two Numbers解题笔记</h1></a>
 	  			<p>19 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
