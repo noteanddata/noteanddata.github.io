@@ -144,6 +144,71 @@ else { // '0'
 <p>仍然是O(N)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
 <p>O(1)</p></p>
+	  			<a href="leetcode-928-Minimize-Malware-Spread-II-solution-note.html"><h1>Leetcode 928. Minimize Malware Spread II解题笔记</h1></a>
+	  			<p>20 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>Leetcode 928. Minimize Malware Spread II<br> <a href="https://leetcode.com/problems/minimize-malware-spread-ii/description/">https://leetcode.com/problems/minimize-malware-spread-ii/description/</a></p> 
+<p>一堆网络节点中有一些initial节点会导致其他相连的节点都被污染, 然后每次从initial中移除节点，并且同时在这个<br> graph中把这个节点相关的connection也移除掉，求移除那个节点以后被污染的节点最少。</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<p>这个和leetcode 924类似 <a href="http://www.noteanddata.com/leetcode-924-Minimize-Malware-Spread.html">http://www.noteanddata.com/leetcode-924-Minimize-Malware-Spread.html</a><br> 但是区别是不仅从initial中移除节点， 而且还从graph中把这个节点相关的connection全部移除掉。<br> “completely removing it and any connections from this node to any other node.”</p> 
+<ol> 
+ <li>首先可以用一个暴力做法， 就是每次拷贝一个图，然后把要移除的connection去掉，</li> 
+ <li>然后在这个图上把initial中的这个节点去掉， 计算有多少个节点被病毒感染(bfs可以计算)</li> 
+ <li>比较所有的initial节点的count取最小就可以</li> 
+</ol> 
+<p>这个办法复杂度比较高，我以为肯定不能过的，没想到tle以后，稍微优化一下，还是可以ac的。</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int minMalwareSpread(int[][] graph, int[] initial) {
+    int minCount = graph.length+1, min = graph.length;
+    for(int node: initial) {
+        int[][] ngraph = copy(graph, node);
+        int count = calcCount(ngraph, initial, node);
+        if(count &lt; minCount ||(count == minCount &amp;&amp;  node &lt; min)) {
+            minCount = count;
+            min = node;
+        }
+    }
+    return min;
+}
+
+public int calcCount(int[][] graph, int[] initial, int remove) {
+    Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+    Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+    for(int node: initial) {
+        if(node != remove)  {
+            queue.add(node);
+        }
+    }
+    while(queue.size() &gt; 0) {
+        int node = queue.poll();
+        set.add(node);
+        for(int i = 0; i &lt; graph.length; ++i) {
+            if(graph[node][i] == 1 &amp;&amp; !set.contains(i) ) {
+                queue.add(i);
+            }
+        }
+    }
+    return set.size();
+}
+
+public int[][] copy(int[][] graph,  int remove) {
+    int[][] ngraph = new int[graph.length][graph.length];
+    for(int i = 0; i &lt; graph.length; ++i) {
+        for(int j = 0;j &lt; graph[i].length; ++j) {
+            if(i != remove &amp;&amp; j != remove &amp;&amp; graph[i][j] == 1) {
+                ngraph[i][j] = 1;
+            }
+        }
+    }
+    return ngraph;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>对于每个initial节点，都有一次graph的拷贝，然后还有一次bfs<br> O(M*(N*N + N)), 其中M是initial的个数， N是node的个数， 而M&lt;=N,<br> 所以复杂度可以是O(N^3)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>每次需要拷贝一个新的图，然后又需要一个queue和一个set保存已经访问过的节点。<br> O(N<em>N+2</em>N), 相当于O(N*N)</p> 
+<h2><a href="#其他做法" id="其他做法">其他做法</a></h2> 
+<p>现在这个做法肯定不好，更加优化一点的做法有待后续学习</p></p>
 	  			<a href="leetcode-925-Long-Pressed-Name-solution-note.html"><h1>Leetcode 925  Long Pressed Name解题笔记</h1></a>
 	  			<p>20 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
