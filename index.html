@@ -1178,7 +1178,9 @@ public Map&lt;Integer, Integer&gt; calcImpacted(int[][] graph, int initial) {
 </code></pre> 
 <h2><a href="#复杂度分析" id="复杂度分析">复杂度分析</a></h2> 
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
-<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3></p>
+<p>首先对每一个initial节点做了一次bfs， 如果有M个initial节点， 每次bfs的复杂度是N（N是图的节点的个数）， 那么就是O(M<em>N)<br> 后续的操作都是O(M), 所以整体的复杂度还是O(M</em>N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>每个initial节点bfs的时候需要O(2*N)的空间做queue和set, 但是每次都释放， 最后生成了O(M)大小的map, 所以空间复杂度是O(N)</p></p>
 	  			<a href="leetcode-919-Complete-Binary-Tree-Inserter.html"><h1>Leetcode 919 Complete Binary Tree Inserter 解题笔记</h1></a>
 	  			<p>12 October 2018</p>
 	  			<p><h1><a href="#leetcode-919-complete-binary-tree-inserter-解题笔记" id="leetcode-919-complete-binary-tree-inserter-解题笔记">Leetcode 919 Complete Binary Tree Inserter 解题笔记</a></h1> 
