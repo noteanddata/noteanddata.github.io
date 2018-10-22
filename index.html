@@ -118,7 +118,7 @@ var _hmt = _hmt || [];
 
 </code></pre> 
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
-<p>所有操作是O(M+M<em>N+N)， 也就是O(M</em>N), 其中M是initial的个数， N是graph的节点数</p> 
+<p>所有操作是O(M+M<em>N</em>N+N)， 也就是O(M<em>N</em>N), 其中M是initial的个数， N是graph的节点数</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
 <p>O(M+N*2+N), 也就是O(N)</p> 
 <h2><a href="#其他思考" id="其他思考">其他思考</a></h2> 
@@ -272,7 +272,7 @@ public int[][] copy(int[][] graph,  int remove) {
 }
 </code></pre> 
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
-<p>对于每个initial节点，都有一次graph的拷贝，然后还有一次bfs<br> O(M*(N*N + N)), 其中M是initial的个数， N是node的个数， 而M&lt;=N,<br> 所以复杂度可以是O(N^3)</p> 
+<p>对于每个initial节点，都有一次graph的拷贝，然后还有一次bfs<br> O(M*(N<em>N + N</em>N)), 其中M是initial的个数， N是node的个数， 而M&lt;=N,<br> 所以复杂度可以是O(N^3)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
 <p>每次需要拷贝一个新的图，然后又需要一个queue和一个set保存已经访问过的节点。<br> O(N<em>N+2</em>N), 相当于O(N*N)</p> 
 <h2><a href="#其他做法" id="其他做法">其他做法</a></h2> 
