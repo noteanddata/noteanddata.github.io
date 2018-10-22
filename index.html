@@ -55,6 +55,74 @@ var _hmt = _hmt || [];
     <div class="container">
 <div class="row">
 	<div class="col-sm-8">
+	  			<a href="leetcode-928-Minimize-Malware-Spread-II-java-solution-note-2.html"><h1>Leetcode 928. Minimize Malware Spread II 非brute force版本解题笔记</h1></a>
+	  			<p>21 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>leetcode 928. Minimize Malware Spread II<br> <a href="https://leetcode.com/problems/minimize-malware-spread-ii/description/">https://leetcode.com/problems/minimize-malware-spread-ii/description/</a></p> 
+<h2><a href="#leetcode-928-minimize-malware-spread-ii解法分析" id="leetcode-928-minimize-malware-spread-ii解法分析">leetcode 928 Minimize Malware Spread II解法分析</a></h2> 
+<ol> 
+ <li> <p>这个题目之前写了一个brute force的版本，可以ac，但是复杂度比较高，效率不是很好。<br> <a href="http://www.noteanddata.com/leetcode-928-Minimize-Malware-Spread-II-solution-note.html">http://www.noteanddata.com/leetcode-928-Minimize-Malware-Spread-II-solution-note.html</a><br> 现在写了一个非brute force的版本。</p> </li> 
+ <li> <p>这里主要的区别是重复的部分， 也就是两个initial会连到一起，然后污染同一批机器<br> 假如有如下图， 然后initial是[1,5]<br> 如果删除1， 就是剩下5，被感染的机器是[2,3,4,5,6]<br> 如果删除5， 就是剩下1，被感染的机器是[1,2,3,4]</p> </li> 
+</ol> 
+<pre><code>1---2---3---4
+    |
+    |
+    5---6
+</code></pre> 
+<p>从这个例子可以看出，有一些节点可能会被两个initial都感染到，而有一些节点只能被某一些initial感染到。<br> 如果移除某个initial并且把相关的连接都切断以后， 那么那些只能被这个initial感染的节点就不能被感染， 这实际上就是真正被移除的节点。</p> 
+<ol> 
+ <li>所以， 可以bfs访问每个initial节点，然后看只能被这个节点感染的节点有哪些。<br> a. 如果在bfs的过程中遇到其他initial节点就不访问<br> b. 如果任意某一个节点被一个initial节点访问到过，那就不算是“只能被某个initial节点感染的节点”， 应该从记录中删除</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">Java代码</a></h2> 
+<pre><code>public int minMalwareSpread(int[][] graph, int[] initial) {
+    Set&lt;Integer&gt; initialSet = new HashSet&lt;&gt;();
+    for(int node: initial) {
+        initialSet.add(node);
+    }
+    Map&lt;Integer,Integer&gt; uniqueSourceMap = new HashMap&lt;&gt;();
+    Set&lt;Integer&gt; uniqueSourceSet = new HashSet&lt;&gt;();
+    for(int node: initial) {
+        Set&lt;Integer&gt; visited = new HashSet&lt;&gt;();
+        Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(node);
+        while(queue.size() &gt; 0) {
+            int v = queue.poll();
+            visited.add(v);
+
+            if(!uniqueSourceSet.contains(v)) {
+                uniqueSourceSet.add(v);                    
+                uniqueSourceMap.put(v, node);
+            }
+            else {
+                uniqueSourceMap.remove(v);
+            }
+
+            for(int i = 0; i &lt; graph.length; ++i) {
+                if(graph[v][i] == 1 &amp;&amp; !initialSet.contains(i) &amp;&amp; !visited.contains(i)) {
+                    queue.add(i);                        
+                }
+            }
+        }
+    }
+    int[] countTable = new int[graph.length];
+    int maxi = 0;
+    
+    for(Map.Entry&lt;Integer, Integer&gt; entry: uniqueSourceMap.entrySet()) {
+        int i = entry.getValue();
+        countTable[i]++;            
+        if(countTable[i] &gt; countTable[maxi]) maxi = i;
+        else if(countTable[i] == countTable[maxi] &amp;&amp; i &lt; maxi) maxi = i;            
+    }
+    return maxi;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>所有操作是O(M+M<em>N+N)， 也就是O(M</em>N), 其中M是initial的个数， N是graph的节点数</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M+N*2+N), 也就是O(N)</p> 
+<h2><a href="#其他思考" id="其他思考">其他思考</a></h2> 
+<p>写完这个以后， 感觉好像之前的924虽然可以ac但是似乎做错了？，<a href="http://www.noteanddata.com/leetcode-924-Minimize-Malware-Spread.html">http://www.noteanddata.com/leetcode-924-Minimize-Malware-Spread.html</a><br> 对于重复情况的判断似乎没有考虑， 那个正确的做法应该是用union find来做， 后面准备验证一下。<br> 或者如果bfs的话还是需要每次把一个节点移除然后再做处理， 直接计数应该不对的。</p></p>
 	  			<a href="leetcode-926-Flip-String-to-Monotone-Increasing-solution-note.html"><h1>Leetcode 926 Flip String to Monotone Increasing解题笔记</h1></a>
 	  			<p>20 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
