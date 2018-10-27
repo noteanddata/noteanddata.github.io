@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 893. Groups of Special-Equivalent Strings解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 893. Groups of Special-Equivalent Strings解题笔记</h1>
+			</div>
+
+			<p><em>27 October 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-893-groups-of-special-equivalent-strings" id="题目-leetcode-893-groups-of-special-equivalent-strings">题目-Leetcode 893. Groups of Special-Equivalent Strings</a></h2> 
+<p><a href="https://leetcode.com/problems/groups-of-special-equivalent-strings/description/">https://leetcode.com/problems/groups-of-special-equivalent-strings/description/</a></p> 
+<ol> 
+ <li>输入一个字符串数组，</li> 
+ <li>定义两个字符串a和b是 special-equivalent： 如果一个字符串的奇数位和奇数位互换，偶数位和偶数位互换以后，可以变成b，</li> 
+ <li>要求返回这个字符串数组里面有几个不同的group， 每个group里面都是special equivalent的</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>对于两个字符串，可以统计奇数位和偶数位的不同字符，然后分别做比较。</li> 
+ <li>因为这个是easy题，所以一般不会有大数据，所以直接两层循环逐个比较应该就可以。</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>public int numSpecialEquivGroups(String[] A) {
+    int[][][] allTables = buildAllTables(A);        
+    boolean[] used = new boolean[A.length];
+    int gcount = 0;
+    for(int i = 0; i&lt; A.length; ++i) {
+        if(used[i]) continue;
+        used[i] = true;
+        for(int j = i+1; j &lt; A.length; ++j) {
+            if(used[j]) continue;
+            if(specialEqual(allTables[i], allTables[j])) {
+                used[j] = true;
+            }
+        }
+        gcount++;
+    }
+    return gcount;
+}
+public int[][][] buildAllTables(String[] A) {
+    int[][][] allTables = new int[A.length][2][A[0].length()];
+    for(int i = 0;i &lt; A.length; ++i) {
+        allTables[i] = buildTable(A[i]);
+    }
+    return allTables;
+}
+
+public int[][] buildTable(String a) {
+    int[][] table = new int[2][26];
+    for(int i = 0; i &lt; a.length(); i++) {
+        int index = (int)(a.charAt(i) - 'a');
+        table[i%2][index]++;
+    }
+    return table;
+}    
+public boolean specialEqual(int[][] table1, int[][] table2) {
+    for(int i = 0; i &lt; 2; ++i) {
+        for(int j = 0;j &lt; table1[0].length; ++j) {
+            if(table1[i][j] != table2[i][j]) return false;
+        }
+    }
+    return true;        
+}
+
+</code></pre> 
+<h2><a href="#复杂度" id="复杂度">复杂度</a></h2> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>建立表格是O(N<em>M), 其中N是数组的长度，M是字符串的长度， 然后比较部分是O(N</em>N<em>26</em>2), 所以整体复杂度还是O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>建立了一个alltable，所以空间复杂度是O(N<em>M</em>2)</p> 
+<h2><a href="#其他思考" id="其他思考">其他思考</a></h2> 
+<p>实现的不是很简洁，复杂度也比较高， 但是因为这个是简单题，所以猜测没有大数据测试，就写了这样一个，后续再改成简洁一点的</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
