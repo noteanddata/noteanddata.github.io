@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 698. Partition to K Equal Sum Subsets解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 698. Partition to K Equal Sum Subsets解题笔记</h1>
+			</div>
+
+			<p><em>27 October 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-698-partition-to-k-equal-sum-subsets" id="题目-leetcode-698-partition-to-k-equal-sum-subsets">题目 – leetcode 698. Partition to K Equal Sum Subsets</a></h2> 
+<p>输入一个正整数数组和一个k， 看看能不能把这个正整数分成k个组， 使得每个组的和相同</p> 
+<pre><code>Input: nums = [4, 3, 2, 3, 5, 2, 1], k = 4
+Output: True
+Explanation: It's possible to divide it into 4 subsets (5), (1, 4), (2,3), (2,3) with equal sums.
+</code></pre> 
+<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
+<ol> 
+ <li>首先把所有的和加起来，看看能不能被k整除， 如果不能那就返回false</li> 
+ <li>如果可以被k整除，那么可以用回溯(backtrack)的方法， 每次取几个数，然后取到一个平均数(totalsum/k)， 就可以对剩下的数再递归<br> 这时候，对剩下的数需要从头开始递归</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>public boolean canPartitionKSubsets(int[] nums, int k) {
+
+  int total = 0;
+  for(int i = 0; i &lt; nums.length; ++i) {
+      total += nums[i];
+  }
+  if(total%k != 0) {
+      return false;
+  }
+  int avg = total /k ;
+
+  return dfs(k, avg, nums, 0, 0, 0, new boolean[nums.length]);
+}
+
+public boolean dfs(int k, int expected, int[] nums, int from,  int sum, int matchCount, boolean[] used) {
+  if(sum &gt; expected) {
+      return false;
+  }
+  else if(sum == expected) {
+      matchCount++;
+      if(matchCount == k) {
+          return true;
+      }
+      return dfs(k, expected, nums, 0, 0, matchCount, used);
+  }
+
+  for(int i = from; i &lt; nums.length; i++) {
+      if(used[i]) continue;
+
+      used[i] = true;
+      if(dfs(k, expected, nums, i+1, sum + nums[i], matchCount, used)) {
+          return true;
+      }
+
+      used[i] = false;
+  }
+  return false;
+}
+</code></pre> 
+<h2><a href="#思考" id="思考">思考</a></h2> 
+<ol> 
+ <li>这个backtrack的过程和枚举，组合等类似，但是有略有不同，但是核心过程还是要搞清楚backtrack的具体逻辑和过程。</li> 
+ <li>这个题目还有其他解法，后续再慢慢学习</li> 
+</ol></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
