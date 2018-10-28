@@ -178,6 +178,37 @@ public boolean specialEqual(int[][] table1, int[][] table2) {
 <p>建立了一个alltable，所以空间复杂度是O(N<em>M</em>2)</p> 
 <h2><a href="#其他思考" id="其他思考">其他思考</a></h2> 
 <p>实现的不是很简洁，复杂度也比较高， 但是因为这个是简单题，所以猜测没有大数据测试，就写了这样一个，后续再改成简洁一点的</p></p>
+	  			<a href="leetcode-929-Unique-Email-Addresses-java-solution-note.html"><h1>leetcode 929 Unique Email Addresses解题笔记</h1></a>
+	  			<p>27 October 2018</p>
+	  			<p><h2><a href="#题目leetcode-929-unique-email-addresses" id="题目leetcode-929-unique-email-addresses">题目–leetcode 929. Unique Email Addresses</a></h2> 
+<p>输入一串email地址， 其中@前面的部分做特殊处理， 如果是"+“， 那所有+后面的都忽略， 如果是”.“, 那么”."就去掉，<br> 然后判断输出的email地址里面有多少个不同的email</p> 
+<pre><code>Input: ["test.email+alex@leetcode.com","test.e.mail+bob.cathy@leetcode.com","testemail+david@lee.tcode.com"]
+Output: 2
+Explanation: "testemail@leetcode.com" and "testemail@lee.tcode.com" actually receive mails
+</code></pre> 
+<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
+<p>这个题目没有任何trick，就把@前面的部分对+和"." 分别做处理，然后放到set里面就好</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int numUniqueEmails(String[] emails) {
+  Set&lt;String&gt; set = new HashSet&lt;&gt;();
+  for(String email: emails) {
+      String[] arr = email.split("@");
+      String local = arr[0];
+      int index = local.indexOf("+");
+      if(index &gt;= 0) {
+          local = local.substring(0, index);
+      }
+      local = local.replaceAll("\\.", "");
+      set.add(local + "@" + arr[1]);
+  }
+  return set.size();
+}
+</code></pre> 
+<h2><a href="#复杂度" id="复杂度">复杂度</a></h2> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组遍历一次， 每个字符串遍历2-3次(indexOf, substring, replaceAll), 所以复杂度是O(N*M), N是数组的长度， M是字符串的长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>用了一个set， 所以空间复杂度是O(N)</p></p>
 	  			<a href="leetcode-927-Three-Equal-Parts-solution-note.html"><h1>Leetcode 927 Three Equal Parts解题笔记</h1></a>
 	  			<p>25 October 2018</p>
 	  			<p><h2><a href="#题目-leetcode-927-three-equal-parts" id="题目-leetcode-927-three-equal-parts">题目 - Leetcode 927. Three Equal Parts</a></h2> 
