@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 930. Binary Subarrays With Sum解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 930. Binary Subarrays With Sum解题笔记</h1>
+			</div>
+
+			<p><em>27 October 2018</em></p>
+
+			<p><h2><a href="#题目leetcode-930-binary-subarrays-with-sum" id="题目leetcode-930-binary-subarrays-with-sum">题目–Leetcode 930. Binary Subarrays With Sum</a></h2> 
+<p>In an array A of 0s and 1s, how many non-empty subarrays have sum S?<br> 输入一个只有0和1的数组，输出多少个非空的subarray的和是S</p> 
+<pre><code>Input: A = [1,0,1,0,1], S = 2
+Output: 4
+Explanation: 
+The 4 subarrays are bolded below:
+[1,0,1,0,1]
+[1,0,1,0,1]
+[1,0,1,0,1]
+[1,0,1,0,1]
+
+
+</code></pre> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目其实就是Leetcode 560的简化版<br> <a href="http://www.noteanddata.com/leetcode-560-Subarray-Sum-Equals-K-java-solution-note.html">http://www.noteanddata.com/leetcode-560-Subarray-Sum-Equals-K-java-solution-note.html</a></li> 
+ <li>不过我之前没做过这个题目，所以当时搞了一个非常复杂的代码（见本文最后）调试了很久才AC，</li> 
+ <li>见过思路以后，只需要建立一个presum-&gt;count的map， 每次只要看presum-k有几个就好。</li> 
+ <li>要注意的细节就是要把presumMap.put(0, 1)加上，就是0始终有一个， 相当于presum==k的时候，count要加1</li> 
+</ol> 
+<h2><a href="#java解题代码" id="java解题代码">Java解题代码</a></h2> 
+<pre><code>public int numSubarraysWithSum(int[] A, int S) {
+    Map&lt;Integer, Integer&gt; presumMap = new HashMap&lt;&gt;();
+    int sum = 0;
+    int totalCount = 0;
+    presumMap.put(0, 1);
+    for(int i = 0; i &lt; A.length; ++i) {
+        sum += A[i];
+        totalCount += presumMap.getOrDefault(sum - S, 0);
+        presumMap.put(sum, presumMap.getOrDefault(sum, 0) + 1);
+    }
+    return totalCount;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组只遍历一次， 其中的hashmap可以认为是O(1)， 所以整体复杂度是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>开辟一个hashmap，最多可以是N大小， 所以空间复杂度也是O(N)</p> 
+<h2><a href="#另外一个可以ac的代码" id="另外一个可以ac的代码">另外一个可以ac的代码</a></h2> 
+<ol> 
+ <li>这个题目最开始写的时候，尝试了暴力O(N^3)的解法不通过，</li> 
+ <li>尝试用双指针，思路是遇到sum=k的1以后， 数一下有多少个leading 0和多少个tail 0， 然后两者相乘，<br> 最终结果是可以ac，但是细节过于复杂，比赛的时候调试了很久很久，最后然后又针对全部是0的情况特殊hack了一下，才最终ac，很是郁闷。<br> 主要是练习的还比较少，对于一些解题套路和技巧还不熟悉。<br> 双指针的复杂度应该是小于O(N^2)的。 主循环只有一层, 然后每次计算begin和end数那些0的时候，是小于N的。<br> 另外，后来这个题目还尝试了先计算presum表，然后两层循环O(N^2)的做法，这里已经要TLE了</li> 
+</ol> 
+<pre><code>public int numSubarraysWithSum(int[] A, int S) {
+  if(S == 0) {
+      return numSubarraysWithSum2(A, S);
+  }
+  
+  int count = 0;
+  int sum = 0;
+  int begin1 = 0, begin2 = 0;
+  for(int i = 0; i &lt; A.length; ++i) {
+      sum += A[i];
+      if(sum == S) {
+          int end1 = i, end2 = i+1;
+          while(end2 &lt; A.length &amp;&amp; A[end2] == 0) {
+              end2++;
+          }
+          int enddiff = end2 - end1;
+          if(A[begin1] == 1) {
+              count += enddiff;
+              begin1++;
+              sum--;
+          }
+          else {
+              begin2 = begin1;
+              while(begin2 &lt; i &amp;&amp; A[begin2] == 0) {
+                  begin2++;
+              }
+              int begindiff = begin2 - begin1+1;
+              count += begindiff * enddiff;
+              if(A[begin2] == 1) {
+                  sum--;
+              }
+              begin1 = begin2+1;
+          }
+      }
+  }
+  return count;
+}
+public int numSubarraysWithSum2(int[] A, int S) {
+  int count = 0;
+  for(int i = 0; i &lt; A.length; ++i) {
+      for(int j = i; j &lt; A.length; ++j) {
+          if(sum(A, i, j) == S) {
+              count++;
+          }
+      }
+  }
+  return count;
+}
+public int sum(int[] A, int from, int to) {
+  int sum = 0;
+  for(int i = from; i &lt;= to; ++i) {
+      sum += A[i];
+  }
+  return sum;
+}
+
+</code></pre> 
+<h2><a href="#思考" id="思考">思考</a></h2></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
