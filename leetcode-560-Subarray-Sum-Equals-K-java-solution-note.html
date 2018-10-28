@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 560. Subarray Sum Equals K解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 560. Subarray Sum Equals K解题笔记</h1>
+			</div>
+
+			<p><em>28 October 2018</em></p>
+
+			<p><h2><a href="#题目leetcode-560-subarray-sum-equals-k" id="题目leetcode-560-subarray-sum-equals-k">题目–Leetcode 560. Subarray Sum Equals K</a></h2> 
+<p>输入一个整数数组， 求有多少个连续子数组的和是K</p> 
+<pre><code>Input:nums = [1,1,1], k = 2
+Output: 2
+</code></pre> 
+<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
+<ol> 
+ <li>如果直接brute force， 对任意的i, j 求其中的和， 那样复杂度会是O(N^3), 所以肯定不能通过。</li> 
+ <li>可以看到每次计算sum(i,j)的时候有很多重复的计算，所以我们需要想怎么样减少重复计算，<br> 对于数组中的sum(i, j), 可以想到其实是sum(0, j) - sum(0, i-1), 如果这样的话， 可以把这些presum先求出来，<br> 然后在针对每个(i, j)计算的时候，值已经有了， 所以复杂度可以下降到O(N^2)<br> 这种presum的思想，应该熟悉并作为一种常用的技巧， 或者可以先想想O(N)的范围内可以计算什么， 然后能不能在这个基础上应用。</li> 
+</ol> 
+<h2><a href="#java代码解法1" id="java代码解法1">java代码解法1</a></h2> 
+<p>实现上，略有点tricky的是我们需要的是sum(j) - sum(i-1), 为了适合0的情况，可以把数组开大一格， 这样就可以把最开始的情况包含进去。</p> 
+<pre><code>public int subarraySum(int[] nums, int k) {
+    int[] sum = new int[nums.length+1];
+    int s = 0;
+    for(int i = 0; i &lt; nums.length; ++i) {
+        s += nums[i];
+        sum[i+1] = s;
+    }
+    
+    int count = 0;
+    for(int i = 0;i &lt; nums.length; ++i) {
+        for(int j = i; j &lt; nums.length; ++j) {
+            if(sum[j+1] - sum[i] == k) {
+                count++;
+            }
+        }
+    }
+    return count;
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组先遍历了一次计算sum， 复杂度是O(N), 然后有一个两层循环, 这里的复杂度是O(N^2)， 所以整体的复杂度是O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>用了一个sum数组， 所以空间复杂度是O(N)</p> 
+<h2><a href="#java解法代码2" id="java解法代码2">java解法代码2</a></h2> 
+<ol> 
+ <li>前面的计算做了presum表格， 然后每次计算的时候， 用sum(j) - sum(i-1),<br> 这时候，因为我们需要统计的是sum(j) - sum(i-1) == k的情况， 反过来， 如果我们对每个sum统计count，<br> 那可以直接把sum(j) - k的个数加上就好了, 那么可以将时间复杂度优化到O(N),</li> 
+ <li>具体代码如下， 略有tricky的细节是需要把0先统计一个进去， 这个和前面的代码数组多开一格的原因是一样的。<br> 比如对于[1，2], k=3, 相当于对于每个presum=k的情况都需要加1</li> 
+</ol> 
+<pre><code>public int subarraySum(int[] nums, int k) {
+    Map&lt;Integer, Integer&gt; presumMap = new HashMap&lt;&gt;();
+    int sum = 0;
+    int totalCount = 0;
+    presumMap.put(0, 1);
+    for(int i = 0; i &lt; nums.length; ++i) {
+        sum += nums[i];
+        totalCount += presumMap.getOrDefault(sum-k, 0);    
+        presumMap.put(sum, presumMap.getOrDefault(sum, 0) + 1);
+    }
+    return totalCount;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组遍历一次, O(N)， hashmap可以相当于是O(1), 所以整体复杂度也是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>开辟了一个presum数组， 空间复杂度可以是O(N)</p> 
+<h2><a href="#思考" id="思考">思考</a></h2> 
+<p>对于数组的各种套路和技巧，还需要多加练习和总结</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
