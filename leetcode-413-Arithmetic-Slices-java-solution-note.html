@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 413 Arithmetic Slices解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 413 Arithmetic Slices解题笔记</h1>
+			</div>
+
+			<p><em>30 October 2018</em></p>
+
+			<p><h2><a href="#题目leetcode-413-arithmetic-slices" id="题目leetcode-413-arithmetic-slices">题目–Leetcode 413. Arithmetic Slices</a></h2> 
+<p><a href="https://leetcode.com/problems/arithmetic-slices/description/">https://leetcode.com/problems/arithmetic-slices/description/</a><br> 输入一个整数数组，定义其中的一个长度至少为3的连续子数组为a[i], a[i+1], a[i+2]….a[j],<br> 使得其中的所有相邻两个数的差都是相等的（等差数列），<br> 要求返回总共有多少个等差数列.</p> 
+<pre><code>A = [1, 2, 3, 4]
+
+return: 3, for 3 arithmetic slices in A: [1, 2, 3], [2, 3, 4] and [1, 2, 3, 4] itself.
+
+</code></pre> 
+<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
+<ol> 
+ <li>因为是需要连续子数组，所以不是特别复杂，遍历的时候保存两个相邻数的差，和前面的差做比较， 如果一样的就继续，直到遇到不一样的，</li> 
+ <li>然后计算这个长度的等差数列总共有多少个连续子数组也是等差数列，基本上就是把从3到N的可能性都取一遍</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<p>版本1</p> 
+<pre><code>public int numberOfArithmeticSlices(int[] A) {
+    if(A.length &lt;= 2) return 0;
+    boolean valid = true;
+    int begin = 0;
+    int total = 0;
+    for(int i = 2; i &lt; A.length; ++i) {
+        if(A[i] - A[i-1] == A[i-1]-A[i-2]) {
+            if(!valid) {
+                begin = i-2;
+            }
+            valid = true;
+        }
+        else {
+            if(valid) {
+                int len = i - begin;
+                total += calcCount(len);
+            }
+            valid = false;
+        }
+    }    
+    if(valid) {
+        int len = A.length - begin;
+        total += calcCount(len);
+    }
+    
+    return total;
+}
+
+public int calcCount(int len) {
+    return (len-1) * (len-2)/2;
+}
+
+</code></pre> 
+<p>其中，计算长度的函数，一开始是这样写的, 后来才改成上面的形式，</p> 
+<pre><code>public int calcCount(int len) {
+    int count = 0;
+    for(int i = 3; i &lt;= len; ++i) {
+        if(len-i+1 &gt;= 0) {
+            count += len-i+1;
+        }
+    } 
+    return count;
+}
+
+
+</code></pre> 
+<p>推算公式如下：<br> i=len –&gt; 1<br> i=len-1 –&gt; 2<br> i=len-2 –&gt; 3<br> …<br> i=3 –&gt; len-3+1 = len-2</p> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组遍历了一次， 时间复杂度是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>只需要常量， 空间复杂度是O(1)</p> 
+<h2><a href="#其他想法" id="其他想法">其他想法</a></h2> 
+<p>这里要求的是连续子数组， 如果不是要求连续子数组， 可以任意取几个数做子数组， 那就会变成另外一道题目，<br> 这个思路有待后续再慢慢想。</p> 
+<h2><a href="#开始写的一个错误的版本" id="开始写的一个错误的版本">开始写的一个错误的版本</a></h2> 
+<p>一开始写的一个版本是错误的，这里有两个地方都有逻辑错误，导致不能ac， 这里把错误的代码贴在这里以做记录</p> 
+<pre><code>public int numberOfArithmeticSlices(int[] A) {
+    if(A.length &lt;= 2) return 0;
+    int curdiff = A[1] - A[0];
+    boolean valid = true;
+    int begin = 0;
+    int total = 0;
+    for(int i = 2; i &lt; A.length; ++i) {
+        int diff = A[i] - A[i-1];
+        if(diff == curdiff) {
+            if(!valid) {
+                begin = i-1;
+            }
+            valid = true;
+        }
+        else {
+            if(valid) {
+                int len = i - begin;
+                total += calcCount(len);
+            }
+            valid = false;
+        }
+    }    
+    if(valid) {
+        int len = A.length - begin;
+        total += calcCount(len);
+    }
+    
+    return total;
+}
+
+public int calcCount(int len) {
+    int count = 0;
+    for(int i = 3; i &lt;= len; ++i) {
+        if(len-i+1 &gt;= 0) {
+            count += len-i+1;
+        }
+    } 
+    return count;
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>

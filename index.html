@@ -55,6 +55,118 @@ var _hmt = _hmt || [];
     <div class="container">
 <div class="row">
 	<div class="col-sm-8">
+	  			<a href="leetcode-413-Arithmetic-Slices-java-solution-note.html"><h1>leetcode 413 Arithmetic Slices解题笔记</h1></a>
+	  			<p>30 October 2018</p>
+	  			<p><h2><a href="#题目leetcode-413-arithmetic-slices" id="题目leetcode-413-arithmetic-slices">题目–Leetcode 413. Arithmetic Slices</a></h2> 
+<p><a href="https://leetcode.com/problems/arithmetic-slices/description/">https://leetcode.com/problems/arithmetic-slices/description/</a><br> 输入一个整数数组，定义其中的一个长度至少为3的连续子数组为a[i], a[i+1], a[i+2]….a[j],<br> 使得其中的所有相邻两个数的差都是相等的（等差数列），<br> 要求返回总共有多少个等差数列.</p> 
+<pre><code>A = [1, 2, 3, 4]
+
+return: 3, for 3 arithmetic slices in A: [1, 2, 3], [2, 3, 4] and [1, 2, 3, 4] itself.
+
+</code></pre> 
+<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
+<ol> 
+ <li>因为是需要连续子数组，所以不是特别复杂，遍历的时候保存两个相邻数的差，和前面的差做比较， 如果一样的就继续，直到遇到不一样的，</li> 
+ <li>然后计算这个长度的等差数列总共有多少个连续子数组也是等差数列，基本上就是把从3到N的可能性都取一遍</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<p>版本1</p> 
+<pre><code>public int numberOfArithmeticSlices(int[] A) {
+    if(A.length &lt;= 2) return 0;
+    boolean valid = true;
+    int begin = 0;
+    int total = 0;
+    for(int i = 2; i &lt; A.length; ++i) {
+        if(A[i] - A[i-1] == A[i-1]-A[i-2]) {
+            if(!valid) {
+                begin = i-2;
+            }
+            valid = true;
+        }
+        else {
+            if(valid) {
+                int len = i - begin;
+                total += calcCount(len);
+            }
+            valid = false;
+        }
+    }    
+    if(valid) {
+        int len = A.length - begin;
+        total += calcCount(len);
+    }
+    
+    return total;
+}
+
+public int calcCount(int len) {
+    return (len-1) * (len-2)/2;
+}
+
+</code></pre> 
+<p>其中，计算长度的函数，一开始是这样写的, 后来才改成上面的形式，</p> 
+<pre><code>public int calcCount(int len) {
+    int count = 0;
+    for(int i = 3; i &lt;= len; ++i) {
+        if(len-i+1 &gt;= 0) {
+            count += len-i+1;
+        }
+    } 
+    return count;
+}
+
+
+</code></pre> 
+<p>推算公式如下：<br> i=len –&gt; 1<br> i=len-1 –&gt; 2<br> i=len-2 –&gt; 3<br> …<br> i=3 –&gt; len-3+1 = len-2</p> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组遍历了一次， 时间复杂度是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>只需要常量， 空间复杂度是O(1)</p> 
+<h2><a href="#其他想法" id="其他想法">其他想法</a></h2> 
+<p>这里要求的是连续子数组， 如果不是要求连续子数组， 可以任意取几个数做子数组， 那就会变成另外一道题目，<br> 这个思路有待后续再慢慢想。</p> 
+<h2><a href="#开始写的一个错误的版本" id="开始写的一个错误的版本">开始写的一个错误的版本</a></h2> 
+<p>一开始写的一个版本是错误的，这里有两个地方都有逻辑错误，导致不能ac， 这里把错误的代码贴在这里以做记录</p> 
+<pre><code>public int numberOfArithmeticSlices(int[] A) {
+    if(A.length &lt;= 2) return 0;
+    int curdiff = A[1] - A[0];
+    boolean valid = true;
+    int begin = 0;
+    int total = 0;
+    for(int i = 2; i &lt; A.length; ++i) {
+        int diff = A[i] - A[i-1];
+        if(diff == curdiff) {
+            if(!valid) {
+                begin = i-1;
+            }
+            valid = true;
+        }
+        else {
+            if(valid) {
+                int len = i - begin;
+                total += calcCount(len);
+            }
+            valid = false;
+        }
+    }    
+    if(valid) {
+        int len = A.length - begin;
+        total += calcCount(len);
+    }
+    
+    return total;
+}
+
+public int calcCount(int len) {
+    int count = 0;
+    for(int i = 3; i &lt;= len; ++i) {
+        if(len-i+1 &gt;= 0) {
+            count += len-i+1;
+        }
+    } 
+    return count;
+}
+
+</code></pre></p>
 	  			<a href="leetcode-560-Subarray-Sum-Equals-K-java-solution-note.html"><h1>Leetcode 560. Subarray Sum Equals K解题笔记</h1></a>
 	  			<p>28 October 2018</p>
 	  			<p><h2><a href="#题目leetcode-560-subarray-sum-equals-k" id="题目leetcode-560-subarray-sum-equals-k">题目–Leetcode 560. Subarray Sum Equals K</a></h2> 
@@ -119,6 +231,37 @@ Output: 2
 <p>开辟了一个presum数组， 空间复杂度可以是O(N)</p> 
 <h2><a href="#思考" id="思考">思考</a></h2> 
 <p>对于数组的各种套路和技巧，还需要多加练习和总结</p></p>
+	  			<a href="leetcode-929-Unique-Email-Addresses-java-solution-note.html"><h1>leetcode 929 Unique Email Addresses解题笔记</h1></a>
+	  			<p>27 October 2018</p>
+	  			<p><h2><a href="#题目leetcode-929-unique-email-addresses" id="题目leetcode-929-unique-email-addresses">题目–leetcode 929. Unique Email Addresses</a></h2> 
+<p>输入一串email地址， 其中@前面的部分做特殊处理， 如果是"+“， 那所有+后面的都忽略， 如果是”.“, 那么”."就去掉，<br> 然后判断输出的email地址里面有多少个不同的email</p> 
+<pre><code>Input: ["test.email+alex@leetcode.com","test.e.mail+bob.cathy@leetcode.com","testemail+david@lee.tcode.com"]
+Output: 2
+Explanation: "testemail@leetcode.com" and "testemail@lee.tcode.com" actually receive mails
+</code></pre> 
+<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
+<p>这个题目没有任何trick，就把@前面的部分对+和"." 分别做处理，然后放到set里面就好</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int numUniqueEmails(String[] emails) {
+  Set&lt;String&gt; set = new HashSet&lt;&gt;();
+  for(String email: emails) {
+      String[] arr = email.split("@");
+      String local = arr[0];
+      int index = local.indexOf("+");
+      if(index &gt;= 0) {
+          local = local.substring(0, index);
+      }
+      local = local.replaceAll("\\.", "");
+      set.add(local + "@" + arr[1]);
+  }
+  return set.size();
+}
+</code></pre> 
+<h2><a href="#复杂度" id="复杂度">复杂度</a></h2> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组遍历一次， 每个字符串遍历2-3次(indexOf, substring, replaceAll), 所以复杂度是O(N*M), N是数组的长度， M是字符串的长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>用了一个set， 所以空间复杂度是O(N)</p></p>
 	  			<a href="leetcode-930-Binary-Subarrays-With-Sum-java-solution-note.html"><h1>Leetcode 930. Binary Subarrays With Sum解题笔记</h1></a>
 	  			<p>27 October 2018</p>
 	  			<p><h2><a href="#题目leetcode-930-binary-subarrays-with-sum" id="题目leetcode-930-binary-subarrays-with-sum">题目–Leetcode 930. Binary Subarrays With Sum</a></h2> 
@@ -390,37 +533,6 @@ public boolean specialEqual(int[][] table1, int[][] table2) {
 <p>建立了一个alltable，所以空间复杂度是O(N<em>M</em>2)</p> 
 <h2><a href="#其他思考" id="其他思考">其他思考</a></h2> 
 <p>实现的不是很简洁，复杂度也比较高， 但是因为这个是简单题，所以猜测没有大数据测试，就写了这样一个，后续再改成简洁一点的</p></p>
-	  			<a href="leetcode-929-Unique-Email-Addresses-java-solution-note.html"><h1>leetcode 929 Unique Email Addresses解题笔记</h1></a>
-	  			<p>27 October 2018</p>
-	  			<p><h2><a href="#题目leetcode-929-unique-email-addresses" id="题目leetcode-929-unique-email-addresses">题目–leetcode 929. Unique Email Addresses</a></h2> 
-<p>输入一串email地址， 其中@前面的部分做特殊处理， 如果是"+“， 那所有+后面的都忽略， 如果是”.“, 那么”."就去掉，<br> 然后判断输出的email地址里面有多少个不同的email</p> 
-<pre><code>Input: ["test.email+alex@leetcode.com","test.e.mail+bob.cathy@leetcode.com","testemail+david@lee.tcode.com"]
-Output: 2
-Explanation: "testemail@leetcode.com" and "testemail@lee.tcode.com" actually receive mails
-</code></pre> 
-<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
-<p>这个题目没有任何trick，就把@前面的部分对+和"." 分别做处理，然后放到set里面就好</p> 
-<h2><a href="#代码" id="代码">代码</a></h2> 
-<pre><code>public int numUniqueEmails(String[] emails) {
-  Set&lt;String&gt; set = new HashSet&lt;&gt;();
-  for(String email: emails) {
-      String[] arr = email.split("@");
-      String local = arr[0];
-      int index = local.indexOf("+");
-      if(index &gt;= 0) {
-          local = local.substring(0, index);
-      }
-      local = local.replaceAll("\\.", "");
-      set.add(local + "@" + arr[1]);
-  }
-  return set.size();
-}
-</code></pre> 
-<h2><a href="#复杂度" id="复杂度">复杂度</a></h2> 
-<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
-<p>数组遍历一次， 每个字符串遍历2-3次(indexOf, substring, replaceAll), 所以复杂度是O(N*M), N是数组的长度， M是字符串的长度</p> 
-<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>用了一个set， 所以空间复杂度是O(N)</p></p>
 	  			<a href="leetcode-927-Three-Equal-Parts-solution-note.html"><h1>Leetcode 927 Three Equal Parts解题笔记</h1></a>
 	  			<p>25 October 2018</p>
 	  			<p><h2><a href="#题目-leetcode-927-three-equal-parts" id="题目-leetcode-927-three-equal-parts">题目 - Leetcode 927. Three Equal Parts</a></h2> 
@@ -1472,6 +1584,92 @@ public long twoSumCount(Map&lt;Integer, Long&gt; countMap, int exclude,  int tar
 <p>排序部分是O(N*logN), 遍历的部分是O(N^2), 所以整体复杂度是O(N^2)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
 <p>只使用了一些常量，所以是O(1)</p></p>
+	  			<a href="leetcode-914-X-of-a-Kind-in-a-Deck-of-Cards-solution-notes.html"><h1>leetcode 914 X of a Kind in a Deck of Cards解题笔记</h1></a>
+	  			<p>13 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>leetcode 914. X of a Kind in a Deck of Cards<br> <a href="https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/description/">https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/description/</a><br> 输入一个整数的数组，要求将这些整数分成1个或多个组，并且符合下面两个条件：<br> a. 每组的数字个数相同，并且至少有两个<br> b. 每组内部是同一个数字<br> 求对应输入是否能完成这样的分组</p> 
+<pre><code>Input: [1,2,3,4,4,3,2,1]
+Output: true
+Explanation: Possible partition [1,1],[2,2],[3,3],[4,4]
+</code></pre> 
+<pre><code>Input: [1,1,1,2,2,2,3,3]
+Output: false
+Explanation: No possible partition.
+</code></pre> 
+<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
+<ol> 
+ <li>首先看第二个条件，每组内的数字相同， 那么首先要算出每个数字出现多少次(频率)</li> 
+ <li>然后如果最小的频率如果是1的话，那一定是不能完成分组的</li> 
+ <li>取其中一个频率，然后取这个数的所有&gt;=2的因子，如果存在其中一个因子是其他所有频率的因子的话，那可以完成分组</li> 
+</ol> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public boolean hasGroupsSizeX(int[] deck) {
+       Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+       for(int i = 0; i &lt; deck.length; ++i) {            
+           countMap.put(deck[i], countMap.getOrDefault(deck[i], 0)+1);
+       }
+       
+       int min = Integer.MAX_VALUE;
+       for(int n : countMap.values()) {
+           min = Math.min(min, n);
+       }
+       if(min == 1) return false;
+       
+       List&lt;Integer&gt; factorList = new ArrayList&lt;&gt;();
+       for(int i = 2; i &lt;= min; ++i) {
+           if(min%i == 0) {
+               factorList.add(i);
+           }
+       }
+       
+       for(int factor: factorList) {
+           boolean valid = true;
+           for(int n: countMap.values()) {
+               if(n%factor != 0) {
+                   valid = false;
+                   break;
+               }
+           }
+           if(valid) {
+               return true;
+           }
+       }
+       
+       return false;
+   }
+
+</code></pre></p>
+	  			<a href="leetcode-922-Sort-Array-By-Parity-II.html"><h1>Leetcode 922 Sort Array By Parity II 解题笔记</h1></a>
+	  			<p>13 October 2018</p>
+	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<p>Leetcode 922 Sort Array By Parity II<br> <a href="https://leetcode.com/problems/sort-array-by-parity-ii/description/">https://leetcode.com/problems/sort-array-by-parity-ii/description/</a></p> 
+<p>输入一个数组，一半是奇数，一半是偶数，要求将数组重新排序，使得在奇数index上的数是奇数，偶数index上的数是偶数</p> 
+<h2><a href="#分析" id="分析">分析</a></h2> 
+<p>可以开一个新数组，维护两个index，分别用来表示存下一个奇数和偶数的位置，然后依次前进就好</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int[] sortArrayByParityII(int[] A) {
+    int[] ret = new int[A.length];
+    int oindex = 1, eindex = 0;
+    for(int i = 0; i &lt; A.length; ++i) {
+        if(A[i]%2 == 0) {
+            ret[eindex] = A[i];
+            eindex += 2;
+        }
+        else {
+            ret[oindex] = A[i];
+            oindex += 2;
+        }
+    }
+    return ret;
+}
+</code></pre> 
+<h2><a href="#复杂度" id="复杂度">复杂度</a></h2> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>开了一个新数组，O(N)</p> 
+<h2><a href="#其他思路" id="其他思路">其他思路</a></h2> 
+<p>看到其他人的思路有直接in place修改原来的数组了，在空间复杂度上变成了O(1), 后续可以再思考一下</p></p>
 	  			<a href="leetcode-915-Partition-Array-into-Disjoint-Intervals-solution-note.html"><h1>leetcode 915. Partition Array into Disjoint Intervals解题笔记</h1></a>
 	  			<p>13 October 2018</p>
 	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
@@ -1690,92 +1888,6 @@ public Map&lt;Integer, Integer&gt; calcImpacted(int[][] graph, int initial) {
 <p>遍历一次，O(N)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
 <p>只需要两个常量，O(1)</p></p>
-	  			<a href="leetcode-914-X-of-a-Kind-in-a-Deck-of-Cards-solution-notes.html"><h1>leetcode 914 X of a Kind in a Deck of Cards解题笔记</h1></a>
-	  			<p>13 October 2018</p>
-	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
-<p>leetcode 914. X of a Kind in a Deck of Cards<br> <a href="https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/description/">https://leetcode.com/problems/x-of-a-kind-in-a-deck-of-cards/description/</a><br> 输入一个整数的数组，要求将这些整数分成1个或多个组，并且符合下面两个条件：<br> a. 每组的数字个数相同，并且至少有两个<br> b. 每组内部是同一个数字<br> 求对应输入是否能完成这样的分组</p> 
-<pre><code>Input: [1,2,3,4,4,3,2,1]
-Output: true
-Explanation: Possible partition [1,1],[2,2],[3,3],[4,4]
-</code></pre> 
-<pre><code>Input: [1,1,1,2,2,2,3,3]
-Output: false
-Explanation: No possible partition.
-</code></pre> 
-<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
-<ol> 
- <li>首先看第二个条件，每组内的数字相同， 那么首先要算出每个数字出现多少次(频率)</li> 
- <li>然后如果最小的频率如果是1的话，那一定是不能完成分组的</li> 
- <li>取其中一个频率，然后取这个数的所有&gt;=2的因子，如果存在其中一个因子是其他所有频率的因子的话，那可以完成分组</li> 
-</ol> 
-<h2><a href="#代码" id="代码">代码</a></h2> 
-<pre><code>public boolean hasGroupsSizeX(int[] deck) {
-       Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
-       for(int i = 0; i &lt; deck.length; ++i) {            
-           countMap.put(deck[i], countMap.getOrDefault(deck[i], 0)+1);
-       }
-       
-       int min = Integer.MAX_VALUE;
-       for(int n : countMap.values()) {
-           min = Math.min(min, n);
-       }
-       if(min == 1) return false;
-       
-       List&lt;Integer&gt; factorList = new ArrayList&lt;&gt;();
-       for(int i = 2; i &lt;= min; ++i) {
-           if(min%i == 0) {
-               factorList.add(i);
-           }
-       }
-       
-       for(int factor: factorList) {
-           boolean valid = true;
-           for(int n: countMap.values()) {
-               if(n%factor != 0) {
-                   valid = false;
-                   break;
-               }
-           }
-           if(valid) {
-               return true;
-           }
-       }
-       
-       return false;
-   }
-
-</code></pre></p>
-	  			<a href="leetcode-922-Sort-Array-By-Parity-II.html"><h1>Leetcode 922 Sort Array By Parity II 解题笔记</h1></a>
-	  			<p>13 October 2018</p>
-	  			<p><h2><a href="#题目" id="题目">题目</a></h2> 
-<p>Leetcode 922 Sort Array By Parity II<br> <a href="https://leetcode.com/problems/sort-array-by-parity-ii/description/">https://leetcode.com/problems/sort-array-by-parity-ii/description/</a></p> 
-<p>输入一个数组，一半是奇数，一半是偶数，要求将数组重新排序，使得在奇数index上的数是奇数，偶数index上的数是偶数</p> 
-<h2><a href="#分析" id="分析">分析</a></h2> 
-<p>可以开一个新数组，维护两个index，分别用来表示存下一个奇数和偶数的位置，然后依次前进就好</p> 
-<h2><a href="#代码" id="代码">代码</a></h2> 
-<pre><code>public int[] sortArrayByParityII(int[] A) {
-    int[] ret = new int[A.length];
-    int oindex = 1, eindex = 0;
-    for(int i = 0; i &lt; A.length; ++i) {
-        if(A[i]%2 == 0) {
-            ret[eindex] = A[i];
-            eindex += 2;
-        }
-        else {
-            ret[oindex] = A[i];
-            oindex += 2;
-        }
-    }
-    return ret;
-}
-</code></pre> 
-<h2><a href="#复杂度" id="复杂度">复杂度</a></h2> 
-<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
-<p>O(N)</p> 
-<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>开了一个新数组，O(N)</p> 
-<h2><a href="#其他思路" id="其他思路">其他思路</a></h2> 
-<p>看到其他人的思路有直接in place修改原来的数组了，在空间复杂度上变成了O(1), 后续可以再思考一下</p></p>
 	  			<a href="leetcode-919-Complete-Binary-Tree-Inserter.html"><h1>Leetcode 919 Complete Binary Tree Inserter 解题笔记</h1></a>
 	  			<p>12 October 2018</p>
 	  			<p><h1><a href="#leetcode-919-complete-binary-tree-inserter-解题笔记" id="leetcode-919-complete-binary-tree-inserter-解题笔记">Leetcode 919 Complete Binary Tree Inserter 解题笔记</a></h1> 
@@ -1895,57 +2007,6 @@ Explanation: No possible partition.
 
 </code></pre> 
 <h2><a href="#"></a></h2></p>
-	  			<a href="leetcode-918-Maximum-Sum-Circular-Subarray.html"><h1>leetcode 918 Maximum Sum Circular Subarray解题笔记</h1></a>
-	  			<p>11 October 2018</p>
-	  			<p><h2><a href="#题目-leetcode-918-maximum-sum-circular-subarray" id="题目-leetcode-918-maximum-sum-circular-subarray">题目 leetcode 918 Maximum Sum Circular Subarray</a></h2> 
-<p><a href="https://leetcode.com/problems/maximum-sum-circular-subarray/description/">https://leetcode.com/problems/maximum-sum-circular-subarray/description/</a></p> 
-<p>给一个环形数组，也就是数组的尾部可以和头部相连，然后求子数组的最大和<br> 比如<br> Input: [5,-3,5]<br> Output: 10<br> Explanation: Subarray [5,5] has maximum sum 5 + 5 = 10</p> 
-<h2><a href="#分析和解法" id="分析和解法">分析和解法</a></h2> 
-<p>做这个题目首先我们需要熟悉普通数组的最大子数组和的解法，思路是动态规划，详细分析可以参考这个<br> <a href="http://www.noteanddata.com/leetcode-53-Maximum-Subarray.html">http://www.noteanddata.com/leetcode-53-Maximum-Subarray.html</a></p> 
-<p>然后呢，环形数组和普通数组的区别是环形数组多一种情况，就是子数组取了头尾相连的情况。<br> 也就是头部取从a[0]到a[i], 然后尾部取a[j]到a[N-1]， 然后0 &lt;= i &lt; j &lt;= N-1<br> 对于任何一个i，从a[0]到a[i]的和可以简单的从前向后遍历计算，可以建立表格left[i] = sum(a[0]….a[i])<br> 对于任何一个j，从a[j]到a[N-1]的和可以简单的从后向前计算, 可以建立表格right[j] = sum(a[j]…a[N-1])<br> 由于i &lt; j, 所以我们可以修改left和right表格，可以在遍历数组k=0…N-1的时候，<br> 对于任何一个k, left[k]表示从a[0]开始到a[i], 其中i &lt;=k 的最大和, right[k]表示从a[j]到a[N-1]，其中j &gt;k的最大和，<br> 这样的话，一次遍历, 然后取left[k] + right[k+1]的最大值，就可以了。</p> 
-<h2><a href="#代码" id="代码">代码</a></h2> 
-<pre><code>public int maxSubarraySumCircular(int[] A) {
-    int[] left = new int[A.length];
-    int sum = 0, maxsum = 0;
-    
-    for(int i = 0; i &lt; A.length; ++i) {
-        if(i == 0) {
-            left[i] = sum = maxsum = A[i];
-        }
-        else {
-            sum = Math.max(sum+A[i], A[i]);                
-            maxsum = Math.max(maxsum, sum);
-            left[i] = left[i-1] + A[i];
-        }
-    }
-    
-    for(int i = 1; i &lt; A.length; ++i) {
-        left[i] = Math.max(left[i-1], left[i]);
-    }
-    
-    
-    int[] right = new int[A.length];
-    for(int j = A.length-1; j &gt;= 0; --j) {
-        if(j == A.length-1) {
-            right[j] = A[j]; 
-        }
-        else {
-            right[j] = right[j+1] + A[j];
-        }
-    }
-    for(int j = A.length-2; j &gt;= 0; --j) {
-        right[j] = Math.max(right[j], right[j+1]);
-    }
-    
-    for(int i = 0; i &lt; A.length-1; ++i) {
-        maxsum = Math.max(maxsum, left[i] + right[i+1]);
-    }
-    
-    return maxsum;
-}
-
-
-</code></pre></p>
 	  			<a href="leetcode-53-Maximum-Subarray.html"><h1>leetcode 53 maximum subarray解题笔记</h1></a>
 	  			<p>11 October 2018</p>
 	  			<p><h2><a href="#题目-leetcode-53-maximum-subarray" id="题目-leetcode-53-maximum-subarray">题目 leetcode 53 Maximum Subarray</a></h2> 
@@ -2020,6 +2081,57 @@ Explanation: No possible partition.
     }
     return max;
 }
+</code></pre></p>
+	  			<a href="leetcode-918-Maximum-Sum-Circular-Subarray.html"><h1>leetcode 918 Maximum Sum Circular Subarray解题笔记</h1></a>
+	  			<p>11 October 2018</p>
+	  			<p><h2><a href="#题目-leetcode-918-maximum-sum-circular-subarray" id="题目-leetcode-918-maximum-sum-circular-subarray">题目 leetcode 918 Maximum Sum Circular Subarray</a></h2> 
+<p><a href="https://leetcode.com/problems/maximum-sum-circular-subarray/description/">https://leetcode.com/problems/maximum-sum-circular-subarray/description/</a></p> 
+<p>给一个环形数组，也就是数组的尾部可以和头部相连，然后求子数组的最大和<br> 比如<br> Input: [5,-3,5]<br> Output: 10<br> Explanation: Subarray [5,5] has maximum sum 5 + 5 = 10</p> 
+<h2><a href="#分析和解法" id="分析和解法">分析和解法</a></h2> 
+<p>做这个题目首先我们需要熟悉普通数组的最大子数组和的解法，思路是动态规划，详细分析可以参考这个<br> <a href="http://www.noteanddata.com/leetcode-53-Maximum-Subarray.html">http://www.noteanddata.com/leetcode-53-Maximum-Subarray.html</a></p> 
+<p>然后呢，环形数组和普通数组的区别是环形数组多一种情况，就是子数组取了头尾相连的情况。<br> 也就是头部取从a[0]到a[i], 然后尾部取a[j]到a[N-1]， 然后0 &lt;= i &lt; j &lt;= N-1<br> 对于任何一个i，从a[0]到a[i]的和可以简单的从前向后遍历计算，可以建立表格left[i] = sum(a[0]….a[i])<br> 对于任何一个j，从a[j]到a[N-1]的和可以简单的从后向前计算, 可以建立表格right[j] = sum(a[j]…a[N-1])<br> 由于i &lt; j, 所以我们可以修改left和right表格，可以在遍历数组k=0…N-1的时候，<br> 对于任何一个k, left[k]表示从a[0]开始到a[i], 其中i &lt;=k 的最大和, right[k]表示从a[j]到a[N-1]，其中j &gt;k的最大和，<br> 这样的话，一次遍历, 然后取left[k] + right[k+1]的最大值，就可以了。</p> 
+<h2><a href="#代码" id="代码">代码</a></h2> 
+<pre><code>public int maxSubarraySumCircular(int[] A) {
+    int[] left = new int[A.length];
+    int sum = 0, maxsum = 0;
+    
+    for(int i = 0; i &lt; A.length; ++i) {
+        if(i == 0) {
+            left[i] = sum = maxsum = A[i];
+        }
+        else {
+            sum = Math.max(sum+A[i], A[i]);                
+            maxsum = Math.max(maxsum, sum);
+            left[i] = left[i-1] + A[i];
+        }
+    }
+    
+    for(int i = 1; i &lt; A.length; ++i) {
+        left[i] = Math.max(left[i-1], left[i]);
+    }
+    
+    
+    int[] right = new int[A.length];
+    for(int j = A.length-1; j &gt;= 0; --j) {
+        if(j == A.length-1) {
+            right[j] = A[j]; 
+        }
+        else {
+            right[j] = right[j+1] + A[j];
+        }
+    }
+    for(int j = A.length-2; j &gt;= 0; --j) {
+        right[j] = Math.max(right[j], right[j+1]);
+    }
+    
+    for(int i = 0; i &lt; A.length-1; ++i) {
+        maxsum = Math.max(maxsum, left[i] + right[i+1]);
+    }
+    
+    return maxsum;
+}
+
+
 </code></pre></p>
 	  			<a href="leetcode-917-ReverseOnlyLetters.html"><h1>leetcode 917 snakes-and-ladders刷题笔记</h1></a>
 	  			<p>10 October 2018</p>
