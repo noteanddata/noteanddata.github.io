@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 93. Restore IP Addresses解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 93. Restore IP Addresses解题笔记</h1>
+			</div>
+
+			<p><em>31 October 2018</em></p>
+
+			<p><h2><a href="#题目leetcode-93-restore-ip-addresses" id="题目leetcode-93-restore-ip-addresses">题目–Leetcode 93. Restore IP Addresses</a></h2> 
+<p>输入一个字符串，要求输出所有合法的ip地址</p> 
+<pre><code>Input: "25525511135"
+Output: ["255.255.11.135", "255.255.111.35"]
+
+</code></pre> 
+<h2><a href="#解题分析" id="解题分析">解题分析</a></h2> 
+<ol> 
+ <li> <p>还是经典的backtrack问题（回溯法）， 解题思路和回溯经典题枚举题类似 <a href="http://www.noteanddata.com/leetcode-46-Permutations-java-solution-note.html">http://www.noteanddata.com/leetcode-46-Permutations-java-solution-note.html</a><br> 基本思路：<br> a. 每次从前面取1到3个字符，看看是否合法，<br> b. 如果合法的话，对后面的进行递归<br> c. 递归完成后reset状态<br> d. 递归到有4个字符被取出来以后的话， 开始判断递归退出的条件</p> </li> 
+ <li> <p>这里稍微有一点tricky的是什么是合法的ip地址， 我开始认为每段0-255都是合法的， 结果如果有一段是010的话被判断也是非法的，<br> 就是如果有两位或者三位的话，不能是用0开头的。 这类问题如果面试中遇到的话可以先确定需求，通常不会影响结果反而会有加分，就是<br> 会先确认需求然后再实现，因为在实际软件开发过程中也经常遇到这样的模糊不清的需求。当然，前提是代码写对了。</p> </li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>public List&lt;String&gt; restoreIpAddresses(String s) {
+    List&lt;String&gt; allList = new ArrayList&lt;&gt;();
+    helper(new ArrayList&lt;&gt;(), s, allList);
+    return allList;
+}
+
+public void helper(List&lt;String&gt; cur, String remain, List&lt;String&gt; allList) {
+    if(cur.size() == 4) {
+        if(remain.length() == 0) { // valid
+            StringBuilder sb = new StringBuilder();
+            for(int i= 0; i &lt; 4; ++i) {
+                sb.append(cur.get(i));
+                if(i &lt; 3) sb.append(".");
+            }                
+            allList.add(sb.substring(0, sb.length()).toString());
+        }
+        return;
+    }
+    for(int i = 1; i &lt;= 3 &amp;&amp; i &lt;= remain.length(); ++i) {
+        String part = remain.substring(0, i);
+        if(part.length() &gt; 1 &amp;&amp; part.startsWith("0")) continue;
+        int v  = Integer.valueOf(part);
+        if(v &lt; 0 || v &gt; 255) continue;
+        
+        cur.add(part);
+        helper(cur, remain.substring(i), allList);
+        cur.remove(cur.size()-1);            
+    }
+    
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>在枚举那个问题中已经说过， 这类回溯算法的时间复杂度是O(N！）， 这里N=4</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>空间复杂度也是O(N!), 当然， 因为很多都是非法的，可能实际没有那么大</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
