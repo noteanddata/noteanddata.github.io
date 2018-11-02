@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>306. Additive Number解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>306. Additive Number解题笔记</h1>
+			</div>
+
+			<p><em>01 November 2018</em></p>
+
+			<p><h2><a href="#题目-306-additive-number" id="题目-306-additive-number">题目 306. Additive Number</a></h2> 
+<p>输入一个字符串， 里面都是数字， 问能不能将这个字符串分割成一个数字的数组， 并且符合:<br> 1. 数组的长度至少是3<br> 2. 对于数组里面的任何i， 都有 a[i] + a[i+1] = a[i+2]</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>仍然是经典的backtrack， 递归所有的可能性， 如果遇到有可能的就返回true</li> 
+ <li>这里，很多情况下可以直接返回false， 而不需要递归下去， 比如只要遇到有不符合a[i]+a[i+1] = a[i+2]的就可以返回false</li> 
+ <li>题目还有一个条件是leading zero不是合法的数字， 需要额外判断一下</li> 
+ <li>这个题目还有大数字， 用long也不能通过，改成了BigInteger</li> 
+</ol> 
+<p>类似经典backtrack题目解题分析， 基本上用的都是同一套代码模版<br> <a href="http://www.noteanddata.com/leetcode-46-Permutations-java-solution-note.html">http://www.noteanddata.com/leetcode-46-Permutations-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-93-Restore-IP-Addresses-java-solution-note.html">http://www.noteanddata.com/leetcode-93-Restore-IP-Addresses-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-131-Palindrome-Partitioning-java-solution-note.html">http://www.noteanddata.com/leetcode-131-Palindrome-Partitioning-java-solution-note.html</a></p> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>import java.math.*;
+class Solution {
+    public boolean isAdditiveNumber(String num) {
+        return helper(num, new ArrayList&lt;BigInteger&gt;());
+    }
+    
+    public boolean helper(String remain, List&lt;BigInteger&gt; cur) {
+        if(remain.length() == 0) {
+            return cur.size() &gt;= 3;
+        }
+        if(cur.size() &lt; 2) {
+            for(int i = 0; i &lt; remain.length(); ++i) {
+                String part = remain.substring(0, i+1);
+                if(part.length() &gt; 1 &amp;&amp; part.startsWith("0")) {  // no leading zero 
+                    continue; 
+                }
+                cur.add(new BigInteger(part));
+                if(helper(remain.substring(i+1), cur)) {
+                    return true;
+                }
+                cur.remove(cur.size()-1);
+            }
+        }
+        else {
+            BigInteger nextval = cur.get(cur.size()-1).add(cur.get(cur.size()-2));
+            String next = String.valueOf(nextval);
+            if(remain.startsWith(next)) {
+                cur.add(nextval);
+                if(helper(remain.substring(next.length()), cur)) {
+                    return true;
+                }
+                cur.remove(cur.size()-1);
+            }
+        }
+        return false;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>按照backtrack的复杂度， 仍然是O(N!), 其中N是分解以后的数的个数， 当然这个地方有很多条件是提前return false了，<br> 尤其是从第三个数字开始， 只要不符合就直接返回了。</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N), 这里只要有一个成功就返回， 所以最大长度是N</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
