@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 936. Stamping The Sequence解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 936. Stamping The Sequence解题笔记</h1>
+			</div>
+
+			<p><em>04 November 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-936-stamping-the-sequence" id="题目-leetcode-936-stamping-the-sequence">题目 Leetcode 936. Stamping The Sequence</a></h2> 
+<ol> 
+ <li>输入两个字符串，一个target， 一个stamp， 都是小写字母， 并且1 &lt;= stamp.length &lt;= target.length &lt;= 1000</li> 
+ <li>其中target是目标字符串，初始字符串全部都是?, 长度和target一样长</li> 
+ <li>每次操作是在这个字符串的某一个位置上做一个stamp操作，就是把stamp中的所有字符都拷贝到被操作字符串上,<br> 其中，也要求stamp的时候必须可以全部被stamp进去， 就是尾部的时候</li> 
+ <li>通过许多次操作之后，如果最终变换到target字符串，就是操作结束了</li> 
+</ol> 
+<p>例子<br> stamp: abc<br> target: ababc<br> 可以分别在index=0和2上做操作<br> ?????-&gt;abc??-&gt;ababc</p> 
+<ol> 
+ <li> <p>要求返回一个int[]，<br> 如果可以成功的从初始字符串stamp到target字符串， 那么返回从初始字符串stamp到target字符串的索引数组，<br> 如果不存在这样一个转换， 那么返回一个空数组</p> </li> 
+ <li> <p>题目规定如果存在这样一个转换，一定可以在10*target.length的步骤内完成， 如果答案超过这个长度，就不被接受</p> </li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>首先，每次转换的时候，可以在任意位置上转换， 如果直接从初始字符串的每个位置全局暴力排列组合，那一定会超时</li> 
+ <li>同时可以想到，如果存在这样一个转换，那么最多在target的每个位置上，都最多只需要stamp一次，<br> 因为如果在同一个位置上stamp两次的话，前一次操作就白做了，所以没有必要。<br> 并且如果后一次会在同一个位置上再次stamp的话，前一次操作不会对中间结果产生任何不同的影响</li> 
+ <li>然后可以想到如果从前向后转换的话，会有很多种可能，然后会走到一些fail的case， 需要做backtrack，同时因为状态太多肯定也会超时<br> 但是如果从后往前转换的话，应该比较固定，<br> a. 考虑最后一步转换，因为stamp会被完整的替换上去，所以最后一步的转换一定是在target上找一个子字符串完全和stamp相同来转换，<br> 否则就不会符合要求。 就想stamp=abc, target=ababc， 最后一步肯定是在尾部stamp一个<br> b. 如果target有两个子字符串都是和stamp一样的话，最后一步可以选择两个里面的任何一个，对结果没有影响<br> c. 如果最后这一步做了以后， 那么，再往前一步，可以选择其他位置的地方做stamp， 其中，可以覆盖已经stamp过的位置，<br> 也就是说，倒数第二步如果和最后一步有部分位置重叠的话，也没有关系， 因为倒数第二步的结果会被最后一步覆盖。<br> d. 同样，可以依次从后往前不停的找位置做stamp，直到全部字符都被匹配过了，或者是尝试了所有的位置都不能得到可以正确解。<br> e. 在从后向前遍历的过程中，为了做到后面的操作可以覆盖前面的操作，可以把每次stamp的字符串变成*,<br> 这样，前面的stamp操作就是匹配至少一个或多个字符，其他的可以是匹配*， 相当于先stamp一次以后， 后面的stamp可以再上面叠加<br> 但是每次都至少要匹配一个字符串，否则这个stamp就是一个重复的stamp，没有意义。<br> 同时，stamp的时候，如果不是*的字符，又必须完全匹配，否则stamp就和结果不一样<br> f. 为了减少循环次数，可以利用一个数组保存已经stamp过的位置，也就是应用不能在一个位置上重复stamp的特点</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>public int[] movesToStamp(String stamp, String target) {
+  boolean[] visited = new boolean[target.length()];
+  char[] arr = target.toCharArray();
+  List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+  int matchCount = 0;
+  while(matchCount != target.length() ) {
+      boolean matched = false;
+      for(int i = 0; i &lt; arr.length &amp;&amp; !matched; ++i) {
+          if(visited[i]) continue;
+          if(match(arr, i, stamp)) {
+              matched = true;
+              for(int j = 0; j &lt; stamp.length(); ++j) {
+                  if(arr[i+j] != '*') {
+                      matchCount++;
+                      arr[i+j] = '*';
+                  }                  
+              }
+              visited[i] = true;
+              list.add(i);
+          }
+
+      }
+      if(!matched) {
+          break;
+      }
+  }
+
+  if(matchCount != target.length()) return new int[]{};
+
+  int[] ret = new int[list.size()];
+  for(int i = 0; i &lt; list.size(); ++i) {
+      ret[i] = list.get(list.size()-i-1);
+  }
+  return ret;
+}
+public boolean match(char[] arr, int index, String stamp) {
+  int i = 0;
+  for(; i &lt; stamp.length() &amp;&amp; i + index &lt; arr.length; ++i) {
+      if(arr[i + index] != stamp.charAt(i) &amp;&amp; arr[i+index] != '*') {
+          return false;
+      }
+  }
+  return i == stamp.length();
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N<em>N</em>M*M), 循环有4层， 其中target.length的最多有两层， 然后stamp.length的最多有两层</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>用了O(N)的长度空间</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
