@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>经典算法代码实现-排列算法的java代码实现</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>经典算法代码实现-排列算法的java代码实现</h1>
+			</div>
+
+			<p><em>07 November 2018</em></p>
+
+			<p><h2><a href="#经典算法代码实现从n个数里面选k个排列" id="经典算法代码实现从n个数里面选k个排列">经典算法代码实现–从n个数里面选k个排列</a></h2> 
+<p>要求返回从1….n里面的k个数的组合</p> 
+<p>leetcode 上有全排列， 组合， 重复数组里面的全排列， 但是似乎还没有从n个数里面选k个数的排列，<br> <a href="http://www.noteanddata.com/leetcode-46-Permutations-java-solution-note.html">http://www.noteanddata.com/leetcode-46-Permutations-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-47-Permutations-II-java-solution-note.html">http://www.noteanddata.com/leetcode-47-Permutations-II-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-77-Combinations-java-solution-note.html">http://www.noteanddata.com/leetcode-77-Combinations-java-solution-note.html</a><br> 所以就写了这个题目， 这样可以比较起来， 巩固提高</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>可以先看前面几个题目的例子，了解backtrack的基本模版，<br> 1. 每次选1个数， 然后再在剩下的数里面选， 然后是顺序相关， 所以需要swap， 因为选了[1,2]以后还需要[2,1],<br> 如果不swap的话， 不能做到这一点<br> 2. 因为swap了，所以每次还是必须从from开始，否则就会漏数，<br> 3. 这个和leetcode 46的唯一区别就是递归的退出条件不一样， 只要cur的size到k就退出。<br> 实际上，观察全排列可以看到， 全排列的结果如果取前面几位， 就是取k个数的排列。</p> 
+<h2><a href="#java代码实现" id="java代码实现">java代码实现</a></h2> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; permutation(int n, int k) {
+  int[] arr = new int[n];
+  for(int i = 0; i &lt; arr.length; ++i) {
+    arr[i] = i+1;
+  }
+  List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+  dfs(arr, 0, k, new ArrayList&lt;Integer&gt;(), allList);
+  return allList;
+}
+
+public void dfs(int[] arr, int from, int k, List&lt;Integer&gt; cur, List&lt;List&lt;Integer&gt;&gt; allList) {
+  if(cur.size() == k) {
+    allList.add(new ArrayList&lt;&gt;(cur));
+    return;
+  }
+  for(int i = from; i &lt; arr.length; ++i) {
+    swap(arr, from, i);
+    cur.add(arr[from]);
+    dfs(arr, from+1, k, cur, allList);
+    cur.remove(cur.size()-1);
+    swap(arr, from, i);
+  }
+}
+
+void swap(int[] arr, int i, int j) {
+  int temp = arr[i];
+  arr[i] = arr[j];
+  arr[j] = temp;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(K!)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(K!)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
