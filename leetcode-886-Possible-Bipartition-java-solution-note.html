@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 886 Possible Bipartition解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 886 Possible Bipartition解题笔记</h1>
+			</div>
+
+			<p><em>10 November 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-886-possible-bipartition" id="题目-leetcode-886-possible-bipartition">题目 Leetcode 886. Possible Bipartition</a></h2> 
+<ol> 
+ <li>有N个人，分别用1…N表示，</li> 
+ <li>然后输入dislike数组， dislike[i] = [a,b]则表示a和b互相不喜欢</li> 
+ <li>目标是把N个人分成两组，使得每组中的人不会互相不喜欢， 问能否完成这样一个分组</li> 
+</ol> 
+<pre><code>Example 1:
+
+Input: N = 4, dislikes = [[1,2],[1,3],[2,4]]
+Output: true
+Explanation: group1 [1,4], group2 [2,3]
+
+Example 2:
+
+Input: N = 3, dislikes = [[1,2],[1,3],[2,3]]
+Output: false
+
+
+</code></pre> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目的意思是二分图问题（我之前并不知道这个），关于二分图有一系列问题和对应的算法，后面有时间准备系统学习一下</li> 
+ <li>对于这个分组，首先第一个人，可以在两个组里面随意选一个，结果并不会有不同，所以不需要完全枚举所有的可能性</li> 
+ <li>选了第一个人以后，所有这个人dislike的人，只能选第二组，否则就冲突</li> 
+ <li>进一步，那些被放到第二组里面的人dislike的那些人，只能放会第一组。然后可以继续循环</li> 
+ <li> <p>所以， 这个过程就是一个dfs的过程， 选了第一个人以后，可以把后面所有能够关联到的人都分好组。<br> 然后对于每一个节点，如果已经在前面的dfs被分组， 那么就不能在随意分了，<br> 如果并没有被分组， 那么意味着这个节点，以及所有这个节点能够关联到的所有节点，以及按index访问后面没有被分组的节点，都和前面已经被分组的所有节点没有关联，<br> 否则的话一定已经被分组了。 这时候，又相当于回到步骤2， 可以在两个组里面随意选一个组，结果不会有不同</p> </li> 
+ <li> <p>如果在上面dfs的过程中，遇到了冲突， 那么就不能分组。 如果所有节点都放完了没有冲突，那就可以分组</p> </li> 
+ <li>所谓冲突， 就是一个人已经被放到一个组里面，然后在dfs的过程中，发现应该要放到另外一个组里面<br> 比如[[1,2],[1,3],[2,3]], 首先把1放到组1， 把2放到组2， 然后把3放到组1， 这时候到[1,3], 发现要把3放到组2， 但是3已经在组2了，<br> 所以就冲突了</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>public boolean possibleBipartition(int N, int[][] dislikes) {
+        List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+        for(int i = 0; i &lt; N; ++i) {
+            allList.add(new ArrayList&lt;&gt;());            
+        }
+        for(int i = 0; i &lt; dislikes.length; ++i) {
+            int a = dislikes[i][0]-1, b = dislikes[i][1]-1;
+            allList.get(a).add(b);
+            allList.get(b).add(a);
+        }
+        boolean[] grouped = new boolean[N];
+        int[] groupTable = new int[N];
+        for(int i = 0; i &lt; N; ++i) {
+            if(groupTable[i] != 0) continue;  // it's already set
+            if(!dfs(grouped, groupTable, allList, i, 1)) {
+                return false;
+            }
+        }
+        return true;
+        
+    }
+    
+    public boolean dfs(boolean[] grouped, int[] groupTable, List&lt;List&lt;Integer&gt;&gt; allList, int i, int groupId) {
+        if(grouped[i]) {        
+            return groupTable[i] == groupId;
+        } 
+        
+        grouped[i] = true;
+        groupTable[i] = groupId;
+        List&lt;Integer&gt; dislikeList = allList.get(i);
+        
+        int nextGroupId = (groupId == 1) ? 2 : 1;
+        
+        for(int dislike: dislikeList) {
+            if(!dfs(grouped, groupTable, allList, dislike, nextGroupId)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+</code></pre> 
+<p>当然，细节上可以稍微简洁一点</p> 
+<pre><code>public boolean possibleBipartition(int N, int[][] dislikes) {
+    List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+    for(int i = 0; i &lt; N; ++i) {
+        allList.add(new ArrayList&lt;&gt;());            
+    }
+    for(int i = 0; i &lt; dislikes.length; ++i) {
+        int a = dislikes[i][0]-1, b = dislikes[i][1]-1;
+        allList.get(a).add(b);
+        allList.get(b).add(a);
+    }
+    int[] groupTable = new int[N];
+    for(int i = 0; i &lt; N; ++i) {
+        if(groupTable[i] != 0) continue;  // it's already set
+        if(!dfs(groupTable, allList, i, 1)) {
+            return false;
+        }
+    }
+    return true;
+    
+}
+
+public boolean dfs(int[] groupTable, List&lt;List&lt;Integer&gt;&gt; allList, int i, int groupId) {
+    if(groupTable[i] != 0) {        
+        return groupTable[i] == groupId;
+    } 
+    
+    groupTable[i] = groupId;
+    List&lt;Integer&gt; dislikeList = allList.get(i);        
+    
+    for(int dislike: allList.get(i)) {
+        if(!dfs(groupTable, allList, dislike, (groupId == 1) ? 2 : 1)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>每个节点访问一次， 每个dislike也访问一次， 相当于O(N+E), N是节点个数， E是边的个数</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>新建了一个allList, 相当于E<em>2的大小, 然后一个groupTable的大小是N, 那就是O(E</em>2+N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
