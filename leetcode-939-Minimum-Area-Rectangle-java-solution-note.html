@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 939. Minimum Area Rectangle解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 939. Minimum Area Rectangle解题笔记</h1>
+			</div>
+
+			<p><em>17 November 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-939-minimum-area-rectangle" id="题目-leetcode-939-minimum-area-rectangle">题目 Leetcode 939. Minimum Area Rectangle</a></h2> 
+<p>输入一些在二维坐标上的点， 如果这些点能够组成一个与x轴平行，也和y轴平行的的长方形，返回这样的长方形中最小的面积<br> 如果这样的长方形不存在，返回0</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>我的做法并不是很好, 代码比较繁琐，不过也可以ac，这里先记录一下，后面学习一下其他人的解法再来总结。</li> 
+ <li>基本就是暴力解法，把所有的x和y建立hashmap， 然后对每一个点，找x相同的点，然后对这两个点的y找对应的剩下两个点，<br> 然后求面积。</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>public int minAreaRect(int[][] points) {
+    Map&lt;Integer, List&lt;int[]&gt;&gt; xmap = new HashMap&lt;&gt;();
+    Map&lt;Integer, List&lt;int[]&gt;&gt; ymap = new HashMap&lt;&gt;();
+    Map&lt;Integer, Map&lt;Integer, int[]&gt;&gt; xymap = new HashMap&lt;&gt;();
+    for(int[] point: points) {
+        int x= point[0], y = point[1];
+        List&lt;int[]&gt; list1 = xmap.get(x);
+        if(list1 == null) {
+            list1 = new ArrayList&lt;&gt;();
+            xmap.put(x, list1);
+        }
+        
+        list1.add(point);
+        
+        List&lt;int[]&gt; list2 = ymap.get(y);            
+        if(null == list2) {
+            list2 = new ArrayList&lt;&gt;();
+            ymap.put(y, list2);
+        }
+        list2.add(point);
+        
+        Map&lt;Integer, int[]&gt; map = xymap.get(x);
+        if(null == map) {
+            map = new HashMap&lt;&gt;();
+            xymap.put(x, map);
+        }
+        map.put(y, point);
+    }
+    
+    int minArea = Integer.MAX_VALUE;
+    for(int x1: xmap.keySet()) {
+        List&lt;int[]&gt; list1 = xmap.get(x1);
+        
+        for(int i = 0; i &lt; list1.size(); ++i) {
+            for(int j = i+1; j &lt; list1.size(); ++j) {
+                int[] pi = list1.get(i);
+                int[] pj = list1.get(j);
+                List&lt;int[]&gt; pplist = ymap.get(pi[1]);
+                if(null == pplist) continue;
+                for(int[] pp: pplist) {
+                    int x = pp[0];
+                    Map&lt;Integer, int[]&gt; map = xymap.get(x);
+                    if(null == map) continue;
+
+                    int y = pj[1];
+                    
+                    int[] pq = map.get(y);
+                    if(null == pq) continue;
+
+                    int diffx = pp[0] - pi[0];
+                    int diffy = pj[1] - pi[1];
+
+                    int area = Math.abs(diffx * diffy);
+                    if(area == 0) continue;
+                    minArea = Math.min(area, minArea);
+                }                                        
+            }
+        }
+    }
+    
+    if(minArea == Integer.MAX_VALUE) {
+        return 0;
+    }
+    return minArea;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>有三层循环，最差情况下可能会到O(N^3), 但是实际可能并不会那么差，因为每层循环不可能同时很大</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>建立了三个map存储所有的点， O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
