@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 417 Pacific Atlantic Water Flow解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 417 Pacific Atlantic Water Flow解题笔记</h1>
+			</div>
+
+			<p><em>19 November 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-417-pacific-atlantic-water-flow" id="题目-leetcode-417-pacific-atlantic-water-flow">题目 Leetcode 417 Pacific Atlantic Water Flow</a></h2> 
+<ol> 
+ <li>输入一个非负整数组成的矩阵，上面和左边是太平洋， 右边和下面是大西洋</li> 
+ <li>对于每一个格子， 水只能从高处往低流（相等也可以）， 方向只有上下左右</li> 
+ <li>要求返回所有既可以流入太平洋，也可以流入大西洋的格子</li> 
+</ol> 
+<pre><code>Given the following 5x5 matrix:
+
+  Pacific ~   ~   ~   ~   ~ 
+       ~  1   2   2   3  (5) *
+       ~  3   2   3  (4) (4) *
+       ~  2   4  (5)  3   1  *
+       ~ (6) (7)  1   4   5  *
+       ~ (5)  1   1   2   4  *
+          *   *   *   *   * Atlantic
+
+Return:
+
+[[0, 4], [1, 3], [1, 4], [2, 2], [3, 0], [3, 1], [4, 0]] (positions with parentheses in above matrix).
+
+</code></pre> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>矩阵的题目之前写了三个，其中两个是用dfs的方法做的<br> <a href="http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html">Leetcode 200 Number of Islands</a></li> 
+</ol> 
+<p><a href="http://www.noteanddata.com/leetcode-463-Island-Perimeter-java-solution-note.html">Leetcode 463 Island Perimeter</a><br> <a href="http://www.noteanddata.com/leetcode-329-Longest-Increasing-Path-in-a-Matrix-java-solution-note.html">Leetcode 329 Longest Increasing Path in a Matrix</a></p> 
+<ol> 
+ <li>这里也需要dfs，需要深度优先搜索判断能否流入太平洋和大西洋</li> 
+ <li>但是这个题目其实是考察dfs是否理解的一个比较好的题目，因为我一开始就写错了（错误代码在本文最后）。<br> 尤其是和<a href="http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html">Leetcode 200 Number of Islands</a>这个题目做对比，仔细思考其中的差异可以有更好的体会。</li> 
+</ol> 
+<p>我上来也是用常规套路对每个位置进行dfs，看看能不能通过旁边更低的节点流入到太平洋或者大西洋。<br> 同样， 也用了一个visited矩阵保存已经访问过的节点，避免无限循环。<br> 但是结果是不对的，重要的原因在于, 如果对每个节点进行dfs，一个节点的状态还没有计算完，另外一个节点又依赖于这个节点的状态，<br> 因为visited的存在，直接就返回了, 具体反例可以看最后的错误代码对应的例子<br> 同样类似的问题还有Leetcode 913 Cat and Mouse, 所有用dfs的做法应该都是错的，里面会涉及到状态循环依赖的问题。</p> 
+<ol> 
+ <li>这个题目， 正确的做法应该是从四条边上的每个节点开始dfs，然后反过去看每个节点是否符合。<br> 总结一下就是， dfs因为要避免循环依赖无限递归，必然会用一个visited表来保存状态，避免无限递归，<br> 但是这样就导致dfs只能从确定性的点出发，否则从不确定性的点出发，会有状态的循环依赖关系，一个节点的所有分支还没有遍历完，<br> 它的子节点会dfs到自己，因为visited提前退出，会设置到错误的值。</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>public List&lt;int[]&gt; pacificAtlantic(int[][] matrix) {
+    if(null == matrix || 0 == matrix.length || 0 == matrix[0].length) return new ArrayList&lt;&gt;();
+    
+    boolean[][] p = new boolean[matrix.length][matrix[0].length];
+    boolean[][] a = new boolean[matrix.length][matrix[0].length];
+    boolean[][] visited = new boolean[matrix.length][matrix[0].length];
+    for(int i = 0; i &lt; matrix[0].length; ++i) {        
+        dfs(matrix, 0, i, p, visited, true);            
+    }
+    for(int i = 0; i &lt; matrix.length; ++i) {        
+        dfs(matrix, i, 0, p, visited, true);            
+    }
+    
+    visited = new boolean[matrix.length][matrix[0].length];
+    for(int i = 0; i &lt; matrix[0].length; ++i) {        
+        dfs(matrix, matrix.length-1, i, a, visited, false);            
+    }
+    
+    for(int i = 0; i &lt; matrix.length; ++i) {             
+        dfs(matrix, i, matrix[i].length-1, a, visited, false);                        
+    }
+    
+    List&lt;int[]&gt; list = new ArrayList&lt;&gt;();
+    for(int i = 0; i &lt; matrix.length;++i) {
+        for(int j = 0; j &lt; matrix[0].length; ++j) {
+            if(p[i][j] &amp;&amp; a[i][j]) {
+                list.add(new int[]{i, j});
+            }
+        }
+    }
+    return list;
+}
+
+public void dfs(int[][] matrix, int x, int y, boolean[][] o,  boolean[][] visited, boolean isp) {        
+    if(visited[x][y]) return;
+    
+    visited[x][y] = true;
+    
+    if(x == 0 || y == 0) {
+        if(isp) {
+            o[x][y] = true;    
+        }
+        
+    }
+    if(x == matrix.length-1 || y == matrix[0].length-1) {
+        if(!isp) {
+            o[x][y] = true;    
+        }            
+    }
+    
+    if(x &gt; 0 &amp;&amp; matrix[x][y] &lt;= matrix[x-1][y]) {
+        o[x-1][y] = true;
+        dfs(matrix, x-1, y, o, visited, isp);
+        
+    }
+    
+    if(y &gt; 0 &amp;&amp; matrix[x][y] &lt;= matrix[x][y-1]) {
+        o[x][y-1] = true;
+        dfs(matrix, x, y-1, o, visited, isp);                    
+    }
+    
+    if(x &lt; matrix.length-1 &amp;&amp; matrix[x][y] &lt;= matrix[x+1][y]) {
+        o[x+1][y] = true;
+        dfs(matrix, x+1, y, o, visited, isp);            
+    }
+    
+    if(y &lt; matrix[0].length-1 &amp;&amp; matrix[x][y] &lt;= matrix[x][y+1]) {
+        o[x][y+1] = true;
+        dfs(matrix, x, y+1, o, visited, isp);
+    }
+    
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>整个矩阵遍历了5次， 但是从时间复杂度上来说还是O(M*N), 其中M是行数，N是列数</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>用了3个矩阵保存状态，复杂度上还是O(M*N)</p> 
+<h2><a href="#一份错误的代码" id="一份错误的代码">一份错误的代码</a></h2> 
+<p>下面是一份错误的代码， 比如对这个test case就不能通过<br> [[3,3,3,3,3,3],[3,0,3,3,0,3],[3,3,3,3,3,3]]</p> 
+<pre><code>public List&lt;int[]&gt; pacificAtlantic(int[][] matrix) {
+    if(null == matrix || 0 == matrix.length || 0 == matrix[0].length) return new ArrayList&lt;&gt;();
+    
+    boolean[][] p = new boolean[matrix.length][matrix[0].length];
+    boolean[][] a = new boolean[matrix.length][matrix[0].length];
+    boolean[][] visited = new boolean[matrix.length][matrix[0].length];
+    for(int i = 0; i &lt; matrix.length; ++i) {
+        for(int j = 0; j &lt; matrix[0].length; ++j) {
+            dfs(matrix, i, j, p, a, visited);
+        }
+    }
+    
+    List&lt;int[]&gt; list = new ArrayList&lt;&gt;();
+    for(int i = 0; i &lt; matrix.length;++i) {
+        for(int j = 0; j &lt; matrix[0].length; ++j) {
+            if(p[i][j] &amp;&amp; a[i][j]) {
+                list.add(new int[]{i, j});
+            }
+        }
+    }
+    return list;
+}
+
+public void dfs(int[][] matrix, int x, int y, boolean[][] p, boolean[][] a, boolean[][] visited) {        
+    if(visited[x][y]) return;
+    
+    visited[x][y] = true;
+    
+    if(x == 0 || y == 0) {
+        p[x][y] = true;
+    }
+    if(x == matrix.length-1 || y == matrix[0].length-1) {
+        a[x][y] = true;
+    }
+    
+    if(x &gt; 0 &amp;&amp; matrix[x][y] &gt;= matrix[x-1][y]) {
+        dfs(matrix, x-1, y, p, a, visited);
+        if(p[x-1][y]) {
+            p[x][y] = true;
+        }
+        if(a[x-1][y]) {
+            a[x][y] = true;
+        }
+    }
+    
+    if(y &gt; 0 &amp;&amp; matrix[x][y] &gt;= matrix[x][y-1]) {
+        dfs(matrix, x, y-1, p, a, visited);
+        if(p[x][y-1]) {
+            p[x][y] = true;
+        }
+        if(a[x][y-1]) {
+            a[x][y] = true;
+        }            
+    }
+    
+    if(x &lt; matrix.length-1 &amp;&amp; matrix[x][y] &gt;= matrix[x+1][y]) {
+        dfs(matrix, x+1, y, p, a, visited);
+        if(p[x+1][y]) {
+            p[x][y] = true;
+        }
+        if(a[x+1][y]) {
+            a[x][y] = true;
+        }
+    }
+    
+    if(y &lt; matrix[0].length-1 &amp;&amp; matrix[x][y] &gt;= matrix[x][y+1]) {
+        dfs(matrix, x, y+1, p, a, visited);
+        if(p[x][y+1]) {
+            p[x][y] = true;
+        }
+        if(a[x][y+1]) {
+            a[x][y] = true;
+        }            
+    }
+    
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
