@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 463 Island Perimeter解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 463 Island Perimeter解题笔记</h1>
+			</div>
+
+			<p><em>19 November 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-463-island-perimeter" id="题目-leetcode-463-island-perimeter">题目 Leetcode 463 Island Perimeter</a></h2> 
+<p>一个二维矩阵上，1表示陆地，0表示水， 整个矩阵中有且仅有一个岛屿，并且岛屿里面没有湖， 每个cell的边长都是1，<br> 求整个岛屿的周长。</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>如果是不考虑重复边， 那么就是陆地的个数乘4。 所以问题转换成如何计算重复边？</li> 
+ <li>一开始拿到这个题目可能会想用一些dfs的套路， 比如类似<br> <a href="http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html">http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html</a><br> 但是，其实dfs并不太好套用， 主要是这个并不取决于个数， 而是和陆地连接的方式有关。<br> 然后仔细想一下， 重复边是非常固定的，一条边最多只会和一个固定的邻居重复， 而且每次重复必定是减去2，<br> 所以， 每次陆地只要和邻居判断一下是否有重复， 然后减去1， 那么每个节点这样判断一下正好可以把重复边减去2。<br> 整个过程不会有少计算或者多计算的问题。</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>public int islandPerimeter(int[][] grid) {
+    if(null == grid || 0 == grid.length || 0 == grid[0].length) return 0;
+
+    int count = 0;
+    for(int i = 0; i &lt; grid.length; ++i) {
+        for(int j = 0; j &lt; grid[i].length; ++j) {
+            if(grid[i][j] == 1) {
+                count += 4;
+                if(isshared(grid, i+1, j)) {
+                    count--;
+                }
+                if(isshared(grid, i-1, j)) {
+                    count--;
+                }
+                if(isshared(grid, i, j+1)) {
+                    count--;
+                }
+                if(isshared(grid, i, j-1)) {
+                    count--;
+                }
+            }
+        }
+    }
+    return count;
+}
+boolean isshared(int[][] grid, int nexti, int nextj) {
+    if(nexti &lt; 0 || nextj &lt; 0 || nexti &gt;= grid.length || nextj &gt;= grid[0].length) return false;
+    
+    return grid[nexti][nextj] == 1;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>整个矩阵只遍历一次， 复杂度是O(N*M), 其中N是行数， M是列数</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#待思考" id="待思考">待思考</a></h2> 
+<ol> 
+ <li>题目为什么要指明只有一个岛屿？ 有多个岛屿会不一样嘛？</li> 
+ <li>题目为什么要指明没有湖， 有湖了会不一样嘛？</li> 
+</ol></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
