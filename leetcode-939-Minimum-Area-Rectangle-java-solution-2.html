@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 939. Minimum Area Rectangle解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 939. Minimum Area Rectangle解题笔记2</h1>
+			</div>
+
+			<p><em>17 November 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-939-minimum-area-rectangle" id="题目-leetcode-939-minimum-area-rectangle">题目 leetcode 939. Minimum Area Rectangle</a></h2> 
+<p>题目和原来做的暴力解法在前面的文章里面已经写过，<br> <a href="http://www.noteanddata.com/leetcode-939-Minimum-Area-Rectangle-java-solution-note.html">http://www.noteanddata.com/leetcode-939-Minimum-Area-Rectangle-java-solution-note.html</a></p> 
+<h2><a href="#解题思路2" id="解题思路2">解题思路2</a></h2> 
+<ol> 
+ <li> <p>原来暴力的做法显然不好， 我们是在相同x的点里面任意取两个点，然后根据固定的y， 最后在剩下的点里面看是否存在两个点符合需求。<br> 这里主要的问题是前面两个点不能完全确定所有4个点，需要对第三个点试错以后才可以决定第4个点。</p> </li> 
+ <li> <p>如果我们更换思路，如果取对角线的两个点，那么其实这两个点已经可以决定长方形了，<br> 所以这里只要能够有一个map可以判断是否存在&lt;x,y&gt;的点， 就可以判断剩下两个点是否存在。<br> 当然，每次取对角的两个点的时候，需要跳过x或者y相同的点，因为这样没有办法组成长方形。</p> </li> 
+ <li> <p>这里思路的核心是，如何更好的确定4个点？ 原来的暴力朴素的想法是， 先找x坐标一样的两个点，然后在找第3个点，最后可以固定到第4个.<br> 但是如果我们切换到通过对角的两个点，就可以直接固定这4个点，也方便很多。</p> </li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>public int minAreaRect(int[][] points) {
+    Map&lt;Integer, Map&lt;Integer, int[]&gt;&gt; xymap = new HashMap&lt;&gt;();
+    for(int[] point: points) {            
+        Map&lt;Integer, int[]&gt; map = xymap.get(point[0]);
+        if(null == map) {
+            map = new HashMap&lt;&gt;();
+            xymap.put(point[0], map);
+        }
+        map.put(point[1], point);
+    }
+    
+    int minArea = Integer.MAX_VALUE;
+    for(int i = 0;i &lt; points.length; ++i) {
+        for(int j = i+1; j &lt; points.length; ++j) {
+            if(points[i][0] == points[j][0] || points[i][1] == points[j][1])  { // same x or  same y, not Diagonal points
+                continue;
+            }
+            // exist other two points if diagonal exist
+            if(xymap.get(points[i][0]).containsKey(points[j][1]) &amp;&amp; xymap.get(points[j][0]).containsKey(points[i][1])) {
+                int area = (points[i][0] - points[j][0]) * (points[i][1] - points[j][1]);
+                minArea = Math.min(minArea, Math.abs(area));                    
+            }                
+        }
+    }        
+    
+    if(minArea == Integer.MAX_VALUE) {
+        return 0;
+    }
+    return minArea;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>只有两层循环，所以是O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>建立一个map保存所有的点， 空间复杂度是O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
