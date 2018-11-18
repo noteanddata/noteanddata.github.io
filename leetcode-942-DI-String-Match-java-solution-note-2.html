@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 942. DI String Match解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 942. DI String Match解题笔记2</h1>
+			</div>
+
+			<p><em>18 November 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-942-di-string-match" id="题目-leetcode-942-di-string-match">题目 Leetcode 942. DI String Match</a></h2> 
+<ol> 
+ <li>题目和暴力dfs的思路在之前的文章里面已经分析了<br> <a href="http://www.noteanddata.com/leetcode-942-DI-String-Match-java-solution-note.html">http://www.noteanddata.com/leetcode-942-DI-String-Match-java-solution-note.html</a></li> 
+</ol> 
+<h2><a href="#解题思路分析2" id="解题思路分析2">解题思路分析2</a></h2> 
+<ol> 
+ <li>这里重点记录一下学习到的简洁解法， 以及如何思考，推导出这个思路的过程， 希望以后自己也能够自己分析得出这个结论</li> 
+ <li>在没有思路的时候， 一个方法是从小规模样本入手， 观察是否有什么规律。 于是我们可以得到下面的例子<br> I -&gt; 01<br> D -&gt; 10<br> II -&gt; 012<br> ID -&gt; 021<br> DD -&gt; 210<br> III -&gt; 0123<br> IID -&gt; 0132<br> IDI -&gt; 0312<br> IDD -&gt; 0321<br> DII -&gt; 3012<br> DID -&gt; 3021<br> DDI -&gt; 3201<br> DDD -&gt; 3210</li> 
+</ol> 
+<p>a. 这里大概可以看到一些规律， 如果第一个是I的话，数字第一位就是0， 第一个是D的话，数字第一个就是3。<br> b. 而且看上去，第一个数字被用掉以后， 无论后面是什么，后面似乎总是可以继续选择出一个合法的解。<br> 然后，这里3位字符串的情况也疑似和2位字符串的情况有关系， 但是不是直接的递推关系。<br> 比如III-&gt;0123 和 II-&gt;012 ，<br> 或者是IID-&gt;0132和ID-&gt;021, 感觉上是第一位选择了I以后，后面遇到ID就是把021对应到132， 也就是剩下的数里面按同样的选择方法重新映射了一下而已。<br> 如果有这样的递推关系的话，也就是说，这里不关心具体的数字，只要是数字都是不同的，无论什么ID组合，一定是可以选择出一个合法的结果。<br> c. 那么，我们只要保证每一步构造对当前是合法的，就可以保证整个构造是合法的。<br> 也就是说，如果遇到I, 直接选择剩下的数里面最小的，一定是当前合法的。<br> 如果遇到D，直接选择剩下的数里面最小的，一定是当前合法的。<br> 并且，每个步骤都一定可以选择成功，因为所有的数都是不一样的，每一步都可以选择一个最大的和最小的。<br> d. 所以，可以用两个指针min/max, 然后根据I/D构造每一步</p> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>public int[] diStringMatch(String S) {
+       int min = 0, max = S.length();
+       int[] arr = new int[S.length()+1];
+       for(int i = 0; i &lt; S.length(); ++i) {
+           if(S.charAt(i) == 'I') {
+               arr[i] = min++;
+           }
+           else {
+               arr[i] = max--;
+           }
+       }
+       arr[S.length()] = min;
+       return arr;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组只遍历一次， O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>用了一个N大小的数组， O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
