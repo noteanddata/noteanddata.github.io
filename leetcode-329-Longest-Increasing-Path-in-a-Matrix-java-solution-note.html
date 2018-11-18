@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 329 Longest Increasing Path in a Matrix解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 329 Longest Increasing Path in a Matrix解题笔记</h1>
+			</div>
+
+			<p><em>19 November 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-329-longest-increasing-path-in-a-matrix" id="题目-leetcode-329-longest-increasing-path-in-a-matrix">题目 Leetcode 329 Longest Increasing Path in a Matrix</a></h2> 
+<ol> 
+ <li>输入一个整数矩阵，返回最长的increasing path的长度</li> 
+ <li>每个走的时候只能走上下左右， 不能走其他路线</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li> <p>矩阵的题目之前写了两个<br> <a href="http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html">http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-463-Island-Perimeter-java-solution-note.html">http://www.noteanddata.com/leetcode-463-Island-Perimeter-java-solution-note.html</a><br> 分别是用dfs和直接遍历求解， 这个题目，也可以用dfs遍历，每个节点遍历一次，然后求最长的长度<br> maxlen = max(len(neighbor)) + 1</p> </li> 
+ <li> <p>当然，这个计算过程有重复，每个位置dfs计算好以后，这个位置的值就固定下来了, 所以可以用一个记忆化方法，把dfs的结果记录下来<br> 所以这个题目的套路可以称为是dfs+memorization</p> </li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>class Solution {
+
+    int[] dx = new int[] {-1,0, 1,0};
+    int[] dy = new int[] {0, -1, 0, 1};
+
+    public int longestIncreasingPath(int[][] matrix) {
+        if(matrix == null || 0 == matrix.length) {
+            return 0;
+        }
+
+        int[][] dis = new int[matrix.length][matrix[0].length];
+        int maxDis = 0;
+        for(int i = 0; i &lt; matrix.length; ++i) {
+            for(int j = 0; j &lt; matrix[i].length; ++j) {
+                maxDis = Math.max(maxDis, dfs(matrix, dis, i, j));
+            }
+        }
+        return maxDis;
+    }
+
+    public int dfs(int[][] matrix, int[][] dis, int row, int col) {
+        if(dis[row][col] &gt; 0 ) {
+            return dis[row][col];
+        }
+        int maxDis = 1;
+        for(int i = 0; i &lt; 4; ++i) {
+            int nextRow = row + dx[i];
+            int nextCol = col + dy[i];
+            if(nextRow&gt;= 0 &amp;&amp; nextRow &lt; matrix.length 
+                    &amp;&amp; nextCol &gt;= 0 &amp;&amp; nextCol &lt; matrix[0].length 
+                    &amp;&amp; matrix[nextRow][nextCol] &gt; matrix[row][col]) {
+                maxDis = Math.max(maxDis, 1+dfs(matrix, dis, nextRow, nextCol));
+            }
+        }
+        dis[row][col] = maxDis;
+        return maxDis;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>矩阵只遍历一次， 所以时间复杂度是O(N*M), 其中N是矩阵的行数， M是矩阵的列数</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>建立了一个dis表保存每个位置的distance，空间也是O(N*M)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
