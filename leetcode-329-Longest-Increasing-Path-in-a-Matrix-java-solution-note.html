@@ -69,7 +69,7 @@ var _hmt = _hmt || [];
 <h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
 <ol> 
  <li> <p>矩阵的题目之前写了两个<br> <a href="http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html">http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-463-Island-Perimeter-java-solution-note.html">http://www.noteanddata.com/leetcode-463-Island-Perimeter-java-solution-note.html</a><br> 分别是用dfs和直接遍历求解， 这个题目，也可以用dfs遍历，每个节点遍历一次，然后求最长的长度<br> maxlen = max(len(neighbor)) + 1</p> </li> 
- <li> <p>当然，这个计算过程有重复，每个位置dfs计算好以后，这个位置的值就固定下来了, 所以可以用一个记忆化方法，把dfs的结果记录下来<br> 所以这个题目的套路可以称为是dfs+memorization</p> </li> 
+ <li> <p>当然，这个计算过程有重复，每个位置dfs计算好以后，这个位置的值就固定下来了, 所以可以用一个记忆化方法，把dfs的结果记录下来<br> 所以这个题目的套路可以称为是dfs+memorization, 这其实也是动态规划的一种，也就是top down的动态规划</p> </li> 
 </ol> 
 <h2><a href="#java代码" id="java代码">java代码</a></h2> 
 <pre><code>class Solution {
