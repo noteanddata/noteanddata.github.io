@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 940. Distinct Subsequences II解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 940. Distinct Subsequences II解题笔记2</h1>
+			</div>
+
+			<p><em>17 November 2018</em></p>
+
+			<p><h2><a href="#题目" id="题目">题目</a></h2> 
+<ol> 
+ <li> <p>题目和之前的O(N^2)的dp解法在之前的解题分析里面已经写了，<br> <a href="http://www.noteanddata.com/leetcode-940-Distinct-Subsequences-II-java-solution-note.html">http://www.noteanddata.com/leetcode-940-Distinct-Subsequences-II-java-solution-note.html</a></p> </li> 
+ <li> <p>当时的核心思路是两个<br> a. 假设不考虑重复问题， dp[i]是以第i个字符串结尾的subsequence的个数,<br> 那么dp[i]= dp[0] + dp[1] + … + dp[i-1] + 1</p> </li> 
+</ol> 
+<p>因为dp[i]一定是包括下面这些数的和<br> * dp[0] + s.charAt(i)<br> * dp[1] + s.charAt(i)<br> * ….<br> * dp[i-1] + s.charAt(i)<br> * s.charAt(i)</p> 
+<p>b. 重复问题， 如果i和j相同(其中i&gt;j), 那么，所有的dp[j]， 都会被重复， 相当于上面所有的组合里面，最后一个字符是一样的<br> 所以，在dp的过程中， i和j相同的情况下， 在dp递推的过程中跳过了dp[j]</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>如果不考虑重复问题， 那么， 每次算dp[i]的时候， 只是求当前的dp数组的和， 那么，可以直接用一个sum来表达， 那就不需要两层循环了</li> 
+ <li>然后考虑重复字符的问题， 之前在遇到重复字符的时候，就没有把dp[j]加上， 那么，可以对每个字符建一个table，<br> 记住当前需要跳过的dp[j]，然后每次遇到i的时候，取这个table里面取i对应字符的count就好。</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<p>注： 下面代码最后对负数的处理，是因为每次有取余操作，所以可能会导致sum可能比count[index]小的情况， 所以dp[i]可能是负的</p> 
+<pre><code>public int distinctSubseqII(String s) {
+    long[] dp = new long[s.length()];
+    long sum = 0;        
+    long[] count = new long[26];
+    for(int i = 0; i &lt; s.length(); ++i) {
+        int index = s.charAt(i) - 'a';
+        dp[i] = (sum+1-count[index])%1_000_000_007;
+        sum = (sum+dp[i])%1_000_000_007;
+        
+        count[index] = (count[index]+dp[i])%1_000_000_007;
+    }
+    int ret = (int)sum;
+    if(ret &lt; 0) ret += 1_000_000_007;
+    return ret;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#其他思考" id="其他思考">其他思考</a></h2> 
+<p>下面这份代码是错误的，这是我刚开始把二维转一维的过程中写的， 结果发现不能通过"aaa"这个case，<br> 这同时反应了我第一版的解题报告中<br> <a href="http://www.noteanddata.com/leetcode-940-Distinct-Subsequences-II-java-solution-note.html">http://www.noteanddata.com/leetcode-940-Distinct-Subsequences-II-java-solution-note.html</a><br> 其实分析理解的部分有点错误， 虽然那个版本的代码是正确的。<br> 这个错误的版本和前面正确的版本对比，其实可以比较明显的看到错误的地方在那里。<br> 主要是对于多个重复字符的处理中，究竟是每个重复字符对应的dp[j]都需要跳过， 还是只需要跳过最后一个就可以。<br> 实际上需要跳过每一个。</p> 
+<pre><code>public int distinctSubseqII(String s) {
+    int[] dp = new int[s.length()];
+    int sum = 0;        
+    int[] count = new int[26];
+    for(int i = 0; i &lt; s.length(); ++i) {
+        int index = s.charAt(i) - 'a';
+        dp[i] = (sum+1-count[index])%1_000_000_007;
+        sum = (sum+dp[i])%1_000_000_007;
+        
+        count[index] = dp[i];
+    }
+    return sum;
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div >
+      推荐服务器
+    </div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
