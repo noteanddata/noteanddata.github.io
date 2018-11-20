@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 130 Surrounded Regions解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 130 Surrounded Regions解题笔记</h1>
+			</div>
+
+			<p><em>20 November 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-130-surrounded-regions" id="题目-leetcode-130-surrounded-regions">题目 Leetcode 130 Surrounded Regions</a></h2> 
+<p>一个二维矩阵里面有’X’和’O’, 需要把被’X’包围的’O’变成’X’<br> 如果一个’O’可以通过’O’连到四条边， 那么保持不变， 但是其他的’O’就都变成’X’</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>这个题目做法比较多，<br> 1. 这里用一个常规的dfs， 先从四条边遍历过去， 把所有边上的’O’能够访问到的点标记成一个新的值（比如’2’)<br> 2. 然后再把剩下的’O’全部换成’X’<br> 3. 最后再把’2’换会’O’就好</p> 
+<h2><a href="#java-dfs-代码" id="java-dfs-代码">java dfs 代码</a></h2> 
+<pre><code>public void solve(char[][] board) {
+    if(null == board || 0 == board.length || 0 == board[0].length) return ;
+    
+    boolean[][] visited = new boolean[board.length][board[0].length];
+    for(int i = 0; i &lt; board.length; ++i) {
+        for(int j = 0; j &lt; board[i].length; ++j) {
+            if(i == 0 || i == board.length-1 || j == 0 || j == board[0].length-1) {
+                dfs(board, i, j, visited, 'O', '2');    
+            }                
+        }
+    }
+
+    visited = new boolean[board.length][board[0].length];
+    for(int i = 0; i &lt; board.length; ++i) {
+        for(int j = 0; j &lt; board[i].length; ++j) {                
+            dfs(board, i, j, visited, 'O', 'X');                                    
+        }
+    }
+
+    visited = new boolean[board.length][board[0].length];
+    for(int i = 0; i &lt; board.length; ++i) {
+        for(int j = 0; j &lt; board[i].length; ++j) {                
+            dfs(board, i, j, visited, '2', 'O');                                    
+        }
+    }
+    
+}
+
+void dfs(char[][] board, int i, int j, boolean[][] visited, char checkvalue, char setvalue) {
+    if(i &lt; 0 || j &lt; 0 || i &gt;= board.length || j &gt;= board[0].length) return;
+    if(board[i][j] != checkvalue) return;
+    if(visited[i][j]) return;
+    
+    visited[i][j] = true;
+    if(board[i][j] == checkvalue) {
+        board[i][j] = setvalue;
+        dfs(board, i+1, j, visited, checkvalue, setvalue);
+        dfs(board, i-1, j, visited, checkvalue, setvalue);
+        dfs(board, i, j+1, visited, checkvalue, setvalue);
+        dfs(board, i, j-1, visited, checkvalue, setvalue);
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>整个矩阵遍历了三次， 所以时间复杂度还是O(M*N), 其中M是行数， N是列数</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>使用了一个visited矩阵来避免重复递归， 空间复杂度也是O(M*N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
