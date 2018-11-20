@@ -117,25 +117,47 @@ var _hmt = _hmt || [];
 }  
 </code></pre> 
 <h3><a href="#代码实现" id="代码实现">代码实现</a></h3> 
-<pre><code>class UnionFind1_QuickFind {
-  private int[] ids;
-  public UnionFind1_QuickFind(int n) {
-    ids = new int[n];
-    for(int i = 0; i &lt; n; ++i) {
-      ids[i] = i;
+<pre><code>public class UnionFind1_QuickFind {
+
+    private int[] ids;
+    public UnionFind1_QuickFind(int n) {
+        ids = new int[n];
+        for(int i = 0; i &lt; n; ++i) {
+            ids[i] = i;
+        }
     }
-  }
-  void union(int i, int j) {
-    int oldid = ids[j];
-    for(int k = 0; k &lt; n; ++k) {
-      if(ids[k] == oldid) {
-        ids[k] = ids[i];
-      }
+    void union(int i, int j) {
+        int oldid = ids[j];
+        for(int k = 0; k &lt; ids.length; ++k) {
+            if(ids[k] == oldid) {
+                ids[k] = ids[i];
+            }
+        }
     }
-  }
-  boolean find(int i, int j) {
-    return ids[i] == ids[j];
-  }
+    boolean find(int i, int j) {
+        return ids[i] == ids[j];
+    }
+
+}
+
+</code></pre> 
+<h3><a href="#测试代码" id="测试代码">测试代码</a></h3> 
+<pre><code>@Test
+public void testQuickFind1() throws Exception {
+
+    UnionFind1_QuickFind uf = new UnionFind1_QuickFind(10);
+
+    Assert.assertFalse(uf.find(2,3));
+    uf.union(2,3);
+    Assert.assertTrue(uf.find(2,3));
+    Assert.assertFalse(uf.find(2,8));
+    uf.union(7,8);
+    Assert.assertFalse(uf.find(2,8));
+    uf.union(3,7);
+    Assert.assertTrue(uf.find(2,8));
+    Assert.assertTrue(uf.find(2,7));
+    Assert.assertTrue(uf.find(7,8));
+    Assert.assertTrue(uf.find(3,8));
 }
 
 </code></pre> 
