@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 684 Redundant Connection解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 684 Redundant Connection解题笔记</h1>
+			</div>
+
+			<p><em>20 November 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-684-redundant-connection" id="题目-leetcode-684-redundant-connection">题目 Leetcode 684 Redundant Connection</a></h2> 
+<p>题目来源： <a href="https://leetcode.com/problems/redundant-connection/description/">Leetcode 684 Redundant Connection</a><br> 1. 有一个无向图, 其中有N个节点，分别用从1到N来表示<br> 2. 输入是一个数组， 每个元素是一个边， 用[u,v]表示， 表示从u到v有一条无向边<br> 3. 最原始的数组呢，在这个图上是没有环的， 但是输入的数组是多了一条边，加了这条边以后，这个图就变成有环了<br> 4. 给定输入的数组以后，要求返回最后一条加入这个图的边，导致这个图出现环的那条边</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个问题，如果用dfs的方法来搜索，思路好像不是很直观</li> 
+ <li>但是如果熟悉union find算法的话，会比较清晰。<br> （很可惜，我刚看了union find的资料，刷这个题目的时候还是想不出来怎么应用。看了其他人的答案以后才明白，原来这么简单:)</li> 
+ <li>之前在union find的几篇介绍<a href="http://www.noteanddata.com/classic-algorithm-union-find-1.html">union find 1–quick find</a>,<br> <a href="http://www.noteanddata.com/classic-algorithm-union-find-2.html">union find 2– quick union</a>,<br> <a href="http://www.noteanddata.com/classic-algorithm-union-find-1-additional-note.html">union find算法1-quick find方法的一些错误代码</a><br> 里面说到, union find 的核心问题， 其实是给connected component设置正确的id，好知道两个点是否连通，</li> 
+</ol> 
+<p>所以，对应到这个问题，访问到每条边的时候，如果两个节点已经在同一个connected component里面，那么自然说明这条边就是那条让这个图变得有环的那条边，而且一定是最后一条。 如果还不在同一个connected component里面， 那么把他们union起来就好。</p> 
+<ol> 
+ <li>所以实现非常直接， 写一个UnionFind类， 然后对每条边做上述处理就好。<br> 这里有一个trick导致这个题目可以使用union find，因为题目规定"Every integer represented in the 2D-array will be between 1 and N, where N is the size of the input array.", “The given input is a graph that started as a tree with N nodes (with distinct values 1, 2, …, N)”, 也就是说数组的长度是N， 然后节点的个数也是N，这样就可以直接使用union find,<br> 否则如果不知道节点个数的话，需要先计算出最大节点， 设置为N， 然后再进行union find</li> 
+</ol> 
+<h2><a href="#union-find-java代码1" id="union-find-java代码1">union find java代码1</a></h2> 
+<p>这里，使用了最基础的<a href="http://www.noteanddata.com/classic-algorithm-union-find-1.html">union find 1–quick find</a>, 的版本，复杂度稍微高一点， 实测也是可以AC的</p> 
+<pre><code>class Solution {
+    public int[] findRedundantConnection(int[][] edges) {
+        UnionFind uf = new UnionFind(edges.length);
+        for(int i = 0; i &lt; edges.length; ++i) {
+            int from = edges[i][0]-1;
+            int to = edges[i][1]-1;            
+            if(uf.find(from,to)) {
+                return new int[]{from+1, to+1};
+            }
+            uf.union(from, to);
+        }
+        return null;
+    }
+    
+    
+    static class UnionFind {
+        private int[] ids;
+        public UnionFind(int n) {
+            this.ids = new int[n];
+            for(int i = 0; i &lt; ids.length; ++i) {
+                ids[i] = i;
+            }
+        }
+        public void union(int i, int j) {
+            int idj = ids[j];
+            for(int k = 0; k &lt; ids.length; ++k) {
+                if(ids[k] == idj) {
+                    ids[k] = ids[i];
+                }
+            }
+        }
+        
+        public boolean find(int i, int j) {
+            return ids[i] == ids[j];
+        }
+    }    
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^2), 其中N是节点的个数(也是数组的长度)，<br> 因为这个操作是对每个边，都进行了一个复杂度是O(N)的union操作</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N), 在union find 的过程中使用了一个长度为N的类</p> 
+<h2><a href="#union-find-java-代码2" id="union-find-java-代码2">union find java 代码2</a></h2> 
+<p>当然，如果使用<a href="http://www.noteanddata.com/classic-algorithm-union-find-2.html">union find 2– quick union</a>的版本，效率会更高一些， 在leetcode上跑， 前面的版本用了12ms， 这个版本只需要4ms</p> 
+<pre><code>
+class Solution {
+    public int[] findRedundantConnection(int[][] edges) {
+        UnionFind uf = new UnionFind(edges.length);
+        for(int i = 0; i &lt; edges.length; ++i) {
+            int from = edges[i][0]-1;
+            int to = edges[i][1]-1;            
+            if(uf.root(from) == uf.root(to)) {
+                return new int[]{from+1, to+1};
+            }
+            uf.union(from, to);
+        }
+        return null;
+    }
+    
+    
+    static class UnionFind {
+        private int[] ids;
+        public UnionFind(int n) {
+            this.ids = new int[n];
+            for(int i = 0; i &lt; ids.length; ++i) {
+                ids[i] = i;
+            }
+        }
+        
+        public int root(int i) {
+            while(ids[i] != i) {
+                i = ids[i];
+            }
+            return i;
+        }
+        
+        public void union(int i, int j) {
+            int rooti = root(i);
+            int rootj = root(j);
+            ids[rootj] = rooti;
+        }
+        
+        public boolean find(int i, int j) {
+            return root(i) == root(j);
+        }
+    }
+    
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>最差也是O(N^2), 相当于每次都在同一个路径上反复修改所有的已访问节点， 但是实际情况通常会好很多</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#union-find-java-代码3" id="union-find-java-代码3">union find java 代码3</a></h2> 
+<p>后来又看了一下， 判断是否相连不需要用root函数，其实就是find函数的定义， 所以代码又稍微简化了一点</p> 
+<pre><code>class Solution {
+    public int[] findRedundantConnection(int[][] edges) {
+        UnionFind uf = new UnionFind(edges.length);
+        for(int i = 0; i &lt; edges.length; ++i) {
+            int from = edges[i][0]-1;
+            int to = edges[i][1]-1;            
+            if(uf.find(from,to)) {
+                return new int[]{from+1, to+1};
+            }
+            uf.union(from, to);
+        }
+        return null;
+    }
+    
+    
+    static class UnionFind {
+        private int[] ids;
+        public UnionFind(int n) {
+            this.ids = new int[n];
+            for(int i = 0; i &lt; ids.length; ++i) {
+                ids[i] = i;
+            }
+        }
+        
+        public int root(int i) {
+            while(ids[i] != i) {
+                i = ids[i];
+            }
+            return i;
+        }
+        
+        public void union(int i, int j) {
+            int rooti = root(i);
+            int rootj = root(j);
+            ids[rootj] = rooti;
+        }
+        
+        public boolean find(int i, int j) {
+            return root(i) == root(j);
+        }
+    }
+    
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>最差也是O(N^2), 相当于每次都在同一个路径上反复修改所有的已访问节点， 但是实际情况通常会好很多</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
