@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>经典算法代码实现-union find算法1-quick find方法的一些错误代码</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>经典算法代码实现-union find算法1-quick find方法的一些错误代码</h1>
+			</div>
+
+			<p><em>20 November 2018</em></p>
+
+			<p><h2><a href="#经典算法学习笔记-union-find算法1-quick-find方法的一些错误代码" id="经典算法学习笔记-union-find算法1-quick-find方法的一些错误代码">经典算法学习笔记-union find算法1-quick find方法的一些错误代码</a></h2> 
+<p>之前学习了一下经典算法union find算法里面的quick find方法<br> <a href="http://www.noteanddata.com/classic-algorithm-union-find-1.html">http://www.noteanddata.com/classic-algorithm-union-find-1.html</a><br> 里面记录了union find的基本问题，以及一个朴素的quick union方法，就是每次uion的时候把所有的id都更新一下。</p> 
+<p>然而我想练习把这个做法实现的时候， 发现做题的时候自己写这个代码写了几次都是错的， 果然不过OJ就是没有掌握:)</p> 
+<p>这里记录一下错误的代码， 方便以后查看</p> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>这是一开始写的一个版本， union的时候直接想当然的认为i的id一定是i, 这是不对的</p> 
+<pre><code>class UnionFind {
+      private int[] ids;
+      public UnionFind(int n) {
+          this.ids = new int[n];
+          for(int i = 0; i &lt; n; ++i) {
+              ids[i] = i;
+          }
+      }
+      
+      public void union(int i, int j) {
+          for(int k = 0; k &lt; ids.length; ++k) {
+              if(ids[k] == ids[j]) {
+                  ids[k] = i;
+              }
+          }
+      }
+      
+      public boolean find(int i, int j) {
+          return ids[i] == ids[j];
+      }
+      
+      public int getId(int i) {
+          return ids[i];
+      }
+}
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>后面改成下面这个版本， 每次都更新成ids[i], 但是这里有一个问题， ids[j]可能在循环的过程中已经被改了，<br> 会导致后面有部分节点可能没有被更新。<br> 比如j和另外三个节点是connected component, 如果循环的时候先遍历到j的话，那么，因为ids[j]的值立刻就被更新到<br> 最新的值了， 那么剩下三个节点就不会被更新， union的过程就错了。</p> 
+<pre><code>class UnionFind {
+      private int[] ids;
+      public UnionFind(int n) {
+          this.ids = new int[n];
+          for(int i = 0; i &lt; n; ++i) {
+              ids[i] = i;
+          }
+      }
+      
+      public void union(int i, int j) {
+          for(int k = 0; k &lt; ids.length; ++k) {
+              if(ids[k] == ids[j]) {
+                  ids[k] = ids[i];
+              }
+          }
+      }
+      
+      public boolean find(int i, int j) {
+          return ids[i] == ids[j];
+      }
+      
+      public int getId(int i) {
+          return ids[i];
+      }
+}
+
+</code></pre> 
+<h2><a href="#正确代码" id="正确代码">正确代码</a></h2> 
+<p>下面是正确的代码， 需要在union的时候， 先把ids[j]的值先保存下来， 这样就可以把所有当前和j在一个connected component的节点都更新到正确的id</p> 
+<pre><code>class UnionFind {
+      private int[] ids;
+      public UnionFind(int n) {
+          this.ids = new int[n];
+          for(int i = 0; i &lt; n; ++i) {
+              ids[i] = i;
+          }
+      }
+      
+      public void union(int i, int j) {
+          int oldjid = ids[j];
+          for(int k = 0; k &lt; ids.length; ++k) {
+              if(ids[k] == oldjid) {
+                  ids[k] = ids[i];
+              }
+          }
+      }
+      
+      public boolean find(int i, int j) {
+          return ids[i] == ids[j];
+      }
+      
+      public int getId(int i) {
+          return ids[i];
+      }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>

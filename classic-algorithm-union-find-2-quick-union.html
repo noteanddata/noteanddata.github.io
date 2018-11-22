@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>经典算法代码实现-union find算法2-quick union方法</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>经典算法代码实现-union find算法2-quick union方法</h1>
+			</div>
+
+			<p><em>20 November 2018</em></p>
+
+			<p><h2><a href="#经典算法学习笔记-union-find算法1-quick-union方法" id="经典算法学习笔记-union-find算法1-quick-union方法">经典算法学习笔记-union find算法1-quick union方法</a></h2> 
+<p>之前学习了一下经典算法union find算法里面的quick union方法<br> <a href="http://www.noteanddata.com/classic-algorithm-union-find-1.html">http://www.noteanddata.com/classic-algorithm-union-find-1.html</a><br> 里面记录了union find的基本问题，以及一个朴素的quick union方法，就是每次uion的时候把所有的id都更新一下，<br> 这个做法的主要问题是union操作的时间复杂度太高。<br> 这里学习一下quick union方法， 主要用来解决union复杂度太高的问题</p> 
+<h2><a href="#quick-union-方法" id="quick-union-方法">quick union 方法</a></h2> 
+<p>quick union 方法的主要出发点是， 既然union 的时候要把所有的节点都更新一下时间复杂度太高了， 而且事实上，<br> 只要有两个节点相连了，我们自然也可以推断出其他节点是相连的。<br> 所以， quick union的思路就是减少union操作。 如果简单的只把两个节点相连， 那么find的时候就可能要遍历<br> 所有connected component里面的节点才可能判断是否相连。 相当于只是把union的所有复杂度转移到find，并没有提高效率。</p> 
+<p>这时另外一个思想是建立一个root表，保存最开始union的那个节点， 每次union的时候把root更新一下，<br> 如果两个节点的root相同，那么就可以判断是否相同了。<br> 这样， find的操作就不需要遍历所有相连的节点，只要遍历到各自的根节点就好。</p> 
+<ol> 
+ <li> <p>建立一个ids表<br> int[] ids = new int[N];</p> </li> 
+ <li> <p>定义root操作<br> int root(int i) {<br> while(ids[i] != i) {<br> i = ids[i];<br> }<br> return i;<br> }</p> </li> 
+ <li> <p>union 操作<br> union(i, j) {<br> int rooti = root(i);<br> int rootj = root(j);<br> ids[rootj] = rooti;<br> }</p> </li> 
+ <li> <p>find 操作<br> find(i, j) {<br> return root(i) == root(j);<br> }</p> </li> 
+</ol> 
+<h2><a href="#quick-union例子" id="quick-union例子">quick union例子</a></h2> 
+<p>假设有9个节点，<br> a. 初始状态的ids表: [0,1,2,3,4,5,6,7,8]<br> b. union(2,3): [0,1,2,2,4,5,6,7,8]<br> c. union(7,8): [0,1,2,2,4,5,6,7,7]<br> d. union(3,7): [0,1,2,2,4,5,6,2,7]<br> e. find(2,8) 应该返回true<br> f. find(3,8) 应该返回true</p> 
+<h2><a href="#quick-union的完整java代码" id="quick-union的完整java代码">quick union的完整java代码</a></h2> 
+<pre><code>class UnionFind2_QuickUnion {
+  private int[] ids;
+  public UnionFind2_QuickUnion(int n) {
+    ids = new int[n];
+    for(int i = 0; i &lt; n; ++i) {
+      ids[i] = i;
+    }
+  }
+  
+  public int root(int i) {
+    while(ids[i] != i) {
+      i = ids[i];
+    }
+    return i;
+  }
+  
+  public boolean find(int i, int j) {
+    return root(i) == root(j);
+  }
+  
+  public void union(int i, int j) {
+    int rooti = root(i);
+    int rootj = root(j);
+    ids[rootj] = rooti;
+  }
+  
+}
+</code></pre> 
+<h2><a href="#测试代码" id="测试代码">测试代码</a></h2> 
+<pre><code>@Test
+public void testQuickUnion1() throws Exception {
+    UnionFind2_QuickUnion uf = new UnionFind2_QuickUnion(10);
+
+    Assert.assertFalse(uf.find(2,3));
+    uf.union(2,3);
+    Assert.assertTrue(uf.find(2,3));
+    Assert.assertFalse(uf.find(2,8));
+    uf.union(7,8);
+    Assert.assertFalse(uf.find(2,8));
+    uf.union(3,7);
+    Assert.assertTrue(uf.find(2,8));
+    Assert.assertTrue(uf.find(2,7));
+    Assert.assertTrue(uf.find(7,8));
+    Assert.assertTrue(uf.find(3,8));
+}
+</code></pre> 
+<h2><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h2> 
+<p>a. root节点的概念，相当于定义了一棵树，<br> quick union的三个操作， root, union, find, 每一步的复杂度都和这个树的高度相关， 都是O(H)</p> 
+<p>b. 原来的quick find方法，也可以理解成一棵树，只是树的高度都是1， 相当于树是flat的，<br> 而quick union的树的高度，则取决于union的顺序，如果每次union都在当前树的根节点上union,<br> 树可能会变的很高。 另外， find的操作从O(1)变成了O(H)<br> 所以， quick union并没有比quick find好，但是，这是一个重要的思想， 是后面的更好的算法的思想基础。</p> 
+<h2><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h2> 
+<p>O(N), 其中N是树的高度</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>

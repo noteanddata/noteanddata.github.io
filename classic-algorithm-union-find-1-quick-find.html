@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>经典算法代码实现-union find算法1-quick find方法</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>经典算法代码实现-union find算法1-quick find方法</h1>
+			</div>
+
+			<p><em>20 November 2018</em></p>
+
+			<p><h2><a href="#经典算法学习笔记-union-find算法1-quick-find方法" id="经典算法学习笔记-union-find算法1-quick-find方法">经典算法学习笔记-union find算法1-quick find方法</a></h2> 
+<ol> 
+ <li>这里学习一下经典算法里面的union find算法，</li> 
+ <li>主要参考资料是Princeton大学的Robert Sedgewick的算法课的材料<br> <a href="https://www.cs.princeton.edu/~rs/AlgsDS07/01UnionFind.pdf">https://www.cs.princeton.edu/~rs/AlgsDS07/01UnionFind.pdf</a></li> 
+</ol> 
+<p>Robert的算法公开课的视频资料：<br> <a href="https://www.coursera.org/lecture/algorithms-part1/quick-find-EcF3P">https://www.coursera.org/lecture/algorithms-part1/quick-find-EcF3P</a></p> 
+<p>类似一些资料:<br> <a href="https://algs4.cs.princeton.edu/15uf/">https://algs4.cs.princeton.edu/15uf/</a><br> <a href="https://algs4.cs.princeton.edu/lectures/15UnionFind-2x2.pdf">https://algs4.cs.princeton.edu/lectures/15UnionFind-2x2.pdf</a></p> 
+<ol> 
+ <li>这片文章只写了最基本的quick find方法， 效率不高，其他方法后续再学习</li> 
+</ol> 
+<h3><a href="#基本问题" id="基本问题">基本问题</a></h3> 
+<ol> 
+ <li> <p>union find问题的基本定义是:<br> a. 有一堆节点<br> b. union操作： 把两个节点连在一起<br> c. find操作： 两个节点是否存在一条路径连到一起？</p> </li> 
+ <li> <p>union find的应用场景<br> a. 判断网络上的电脑是否相连？<br> b. 互联网上的网页是否相连？<br> c. 同名变量的识别<br> d. 照片上的点？ (假设颜色完全一样称为相连, 比如photoshop里面就用到类似的技术)</p> </li> 
+</ol> 
+<h3><a href="#基本思路" id="基本思路">基本思路</a></h3> 
+<ol> 
+ <li> <p>基本数据表示： 将二维对象转换成一维数组， 从0到N, 这样可以简化操作<br> （如果是普通的graph的话就是对N个节点编号）<br> 所以union 和find的接口就可以如下表示<br> void union(int i, int j);<br> boolean find(int i, int j);</p> </li> 
+ <li> <p>例子：<br> 假设有9个节点，<br> a. 初始状态: [0,1,2,3,4,5,6,7,8]<br> b. union(2,3): [0,1,{2,3},4,5,6,7,8]<br> c. union (5,6): [0,1,{2,3},4,{5,6},7,8]<br> d. union (3,5): [0,1,{2,3,5,6},4,7,8]<br> 中间可以穿插任意的find操作</p> </li> 
+ <li>我们的目标就是要设计一个高效的数据结构和算法，用来支持快速的union和find两个操作.<br> 同时， 对象的个数可能会很大， 另外，操作的次数可能也会很频繁。</li> 
+ <li>图里面的connected component概念： 一个connected component就是一堆互相连接的点<br> 那么，每次union操作，就会把connected component减少一个。(如果union操作的两个节点原来不在一个connected component上的话)</li> 
+</ol> 
+<h3><a href="#实现方案1quick-find" id="实现方案1quick-find">实现方案1–quick find</a></h3> 
+<p>主要思路是每次union的时候，找到所有j对应的id，都把他改成i对应的id， 这样，每次union完以后，<br> 属于同一个connected component的节点的id都会被更新到同一个值</p> 
+<ol> 
+ <li>建立一个id表</li> 
+</ol> 
+<pre><code>int[] id = new int[N];
+</code></pre> 
+<ol> 
+ <li>初始化每个节点的id是自己</li> 
+</ol> 
+<pre><code>for(int i = 0; i &lt; N; ++i) {
+  ids[i] = i;
+}   
+</code></pre> 
+<ol> 
+ <li>定义union 操作</li> 
+</ol> 
+<pre><code>void union(i, j) {
+  int oldid = ids[j];
+  for(int k = 0; k &lt; n; ++k) {
+    if(ids[k] == oldid) {
+      ids[k] = ids[i];
+    }
+  }
+}
+</code></pre> 
+<ol> 
+ <li>定义find操作</li> 
+</ol> 
+<pre><code>boolean find(i, j) {
+  return ids[i] == ids[j];
+}  
+</code></pre> 
+<h3><a href="#代码实现" id="代码实现">代码实现</a></h3> 
+<pre><code>public class UnionFind1_QuickFind {
+
+    private int[] ids;
+    public UnionFind1_QuickFind(int n) {
+        ids = new int[n];
+        for(int i = 0; i &lt; n; ++i) {
+            ids[i] = i;
+        }
+    }
+    void union(int i, int j) {
+        int oldid = ids[j];
+        for(int k = 0; k &lt; ids.length; ++k) {
+            if(ids[k] == oldid) {
+                ids[k] = ids[i];
+            }
+        }
+    }
+    boolean find(int i, int j) {
+        return ids[i] == ids[j];
+    }
+
+}
+
+</code></pre> 
+<h3><a href="#测试代码" id="测试代码">测试代码</a></h3> 
+<pre><code>@Test
+public void testQuickFind1() throws Exception {
+
+    UnionFind1_QuickFind uf = new UnionFind1_QuickFind(10);
+
+    Assert.assertFalse(uf.find(2,3));
+    uf.union(2,3);
+    Assert.assertTrue(uf.find(2,3));
+    Assert.assertFalse(uf.find(2,8));
+    uf.union(7,8);
+    Assert.assertFalse(uf.find(2,8));
+    uf.union(3,7);
+    Assert.assertTrue(uf.find(2,8));
+    Assert.assertTrue(uf.find(2,7));
+    Assert.assertTrue(uf.find(7,8));
+    Assert.assertTrue(uf.find(3,8));
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<ol> 
+ <li>对于union操作， 复杂度是O(N)</li> 
+ <li>对于find操作， 复杂度是O(1)</li> 
+ <li>如果操作的次数M非常大，那整体的复杂度是O(M*N), 这个对于M和N都比较大的情况，效率会比较低</li> 
+</ol> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>开辟了一个N大小的数组， 所以空间复杂度是O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
