@@ -186,9 +186,11 @@ var _hmt = _hmt || [];
 
 </code></pre> 
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>循环了好几次，时间复杂最大的地方是求因子的地方，O(N*sqrt(N))</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
 <h2><a href="#一些超时的代码" id="一些超时的代码">一些超时的代码</a></h2> 
-<h3><a href="#ac的版本去掉path-compression" id="ac的版本去掉path-compression">ac的版本去掉path compression</a></h3> 
+<h3><a href="#超时版本1ac的版本去掉path-compression" id="超时版本1ac的版本去掉path-compression">超时版本1–ac的版本去掉path compression</a></h3> 
 <pre><code>class Solution {
     
     public int largestComponentSize(int[] a) {
@@ -297,7 +299,7 @@ var _hmt = _hmt || [];
 }
 
 </code></pre> 
-<h3><a href="#ac的版本去掉weighted-quick-union" id="ac的版本去掉weighted-quick-union">ac的版本去掉weighted quick union</a></h3> 
+<h3><a href="#超时版本2ac的版本去掉weighted-quick-union" id="超时版本2ac的版本去掉weighted-quick-union">超时版本2–ac的版本去掉weighted quick union</a></h3> 
 <pre><code>class Solution {
     
     public int largestComponentSize(int[] a) {
@@ -407,7 +409,7 @@ var _hmt = _hmt || [];
 }
 
 </code></pre> 
-<h3><a href="#两层循环判断互质的代码" id="两层循环判断互质的代码">两层循环判断互质的代码</a></h3> 
+<h3><a href="#超时版本3两层循环判断互质的代码" id="超时版本3两层循环判断互质的代码">超时版本3–两层循环判断互质的代码</a></h3> 
 <pre><code>class Solution {
     public int largestComponentSize(int[] a) {
         UnionFind uf = new UnionFind(a.length);
@@ -479,7 +481,7 @@ var _hmt = _hmt || [];
 }
 
 </code></pre> 
-<h3><a href="#两层循环跳过已经在一个connected-component的代码" id="两层循环跳过已经在一个connected-component的代码">两层循环+跳过已经在一个connected component的代码</a></h3> 
+<h3><a href="#超时版本4两层循环跳过已经在一个connected-component的代码" id="超时版本4两层循环跳过已经在一个connected-component的代码">超时版本4–两层循环+跳过已经在一个connected component的代码</a></h3> 
 <pre><code>class Solution {
     public int largestComponentSize(int[] a) {
         UnionFind uf = new UnionFind(a.length);
