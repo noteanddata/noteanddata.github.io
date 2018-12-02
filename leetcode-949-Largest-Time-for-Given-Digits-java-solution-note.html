@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 949 Largest Time for Given Digits解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 949 Largest Time for Given Digits解题笔记</h1>
+			</div>
+
+			<p><em>01 December 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-949-largest-time-for-given-digits" id="题目-leetcode-949-largest-time-for-given-digits">题目 Leetcode 949 Largest Time for Given Digits</a></h2> 
+<p>输入4个数字，返回能够组成的最大时间</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>由于总共只有4个数，所以这个是经典的backtrack题目,把所有的情况排列一下，然后取合法的数字的最大值就好。<br> 基本上用同一套backtrack模版，类似题目可以参考<br> <a href="http://www.noteanddata.com/classic-algorithm-coding-backtrack-permutation.html">http://www.noteanddata.com/classic-algorithm-coding-backtrack-permutation.html</a><br> <a href="http://www.noteanddata.com/leetcode-77-Combinations-java-solution-note.html">http://www.noteanddata.com/leetcode-77-Combinations-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-46-Permutations-java-solution-note.html">http://www.noteanddata.com/leetcode-46-Permutations-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-93-Restore-IP-Addresses-java-solution-note.html">http://www.noteanddata.com/leetcode-93-Restore-IP-Addresses-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-131-Palindrome-Partitioning-java-solution-note.html">http://www.noteanddata.com/leetcode-131-Palindrome-Partitioning-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-306-Additive-Number-java-solution-note.html">http://www.noteanddata.com/leetcode-306-Additive-Number-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-47-Permutations-II-java-solution-note.html">http://www.noteanddata.com/leetcode-47-Permutations-II-java-solution-note.html</a></p> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>class Solution {
+    public String largestTimeFromDigits(int[] a) {
+        String ret = dfs(a, 0, "", "");
+        if(ret.length() &gt; 0) {
+            return ret.substring(0,2) + ":" + ret.substring(2);
+        }
+        return ret;
+    }
+    
+    public String dfs(int[] a, int from, String cur, String cmax) {
+        if(from == a.length) {
+            int hour = Integer.valueOf(cur.substring(0,2));
+            int minute = Integer.valueOf(cur.substring(2));
+            if(hour &gt;= 24 || minute &gt;= 60 || cur.compareTo(cmax) &lt; 0) {
+                return cmax;
+            }
+            return cur;
+        }
+        for(int i = from; i &lt; a.length; ++i) {
+            swap(a, from, i);
+            String oneret = dfs(a, from+1, cur + a[from], cmax);
+            if(oneret.compareTo(cmax) &gt; 0) {
+                cmax = oneret;
+            }
+            swap(a, from, i);
+        }
+        return cmax;
+    }
+    
+    void swap(int[] a, int i, int j) {
+        int t = a[i];
+        a[i] = a[j];
+        a[j] = t;
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>枚举的时间复杂度是O(N!), 这里N=4</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>没有使用额外的变量，空间是O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
