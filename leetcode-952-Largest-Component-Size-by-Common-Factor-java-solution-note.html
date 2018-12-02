@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 952 Largest Component Size by Common Factor解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 952 Largest Component Size by Common Factor解题笔记</h1>
+			</div>
+
+			<p><em>01 December 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-952-largest-component-size-by-common-factor" id="题目-leetcode-952-largest-component-size-by-common-factor">题目 Leetcode 952 Largest Component Size by Common Factor</a></h2> 
+<ol> 
+ <li>输入一个非空整数数组，表示一个图， 其中a[i]表示节点i的值</li> 
+ <li>如果a[i]和a[j]有一个不是1的公约数，那么图上面的i和j里面有一条边相连<br> 求图里面connected Component的最大节点数</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>关于connected Component的问题， 可以用<a href="http://www.noteanddata.com/classic-algorithm-union-find-1-quick-find.html">union find</a>思路解决, 就是把所有相连的节点union起来，然后最后求个数最多的那个.</li> 
+ <li>第一步是判断什么时候需要union了， 我开始是用了一个两层循环，然后对每个a[i]和a[j]判断是否互质<br> （辗转相除法）， 这里是O(N^2)的复杂度，结果用上简单的union find是超时</li> 
+ <li>由于这个题目数据量比较大，所以简单的<a href="http://www.noteanddata.com/classic-algorithm-union-find-1-quick-find.html">quick find</a>, <a href="http://www.noteanddata.com/classic-algorithm-union-find-2-quick-union.html">quick union</a>方法都会超时，<br> 首先尝试对union find做优化，用上了weighted quick union和路径压缩(path compression), 结果还是超时，</li> 
+ <li>由于weighted quick union和path compression已经接近实际的最好解了，那么, union find 这里的优化空间已经不大了。<br> 这里试图对前面找互质的过程做一点优化，尝试在两层循环中加一个判断find(i, j), 如果两个节点已经在一个connected component上，那么就不判断互质和union操作， 结果还是超时</li> 
+ <li>那基本上，重点在于那个O(N^2)的循环复杂度太高了， 这里想有没有复杂度更低的操作，一个思路是先可以把每个数的因子求一遍O(N)，<br> 然后在互相看是否有共同的因子， 这里其实主逻辑还是O(N^2), 只优化了辗转相除的部分，而辗转相除本身速度还是很快的，<br> 所以，这个改进提升不大。</li> 
+ <li>然后想到，既然在O(N)的过程中把因子已经求好了，那么对这些因子可以直接建map到对应的index，这样，就直接可以对因子遍历的过程中<br> 知道两个index是否相连，可以直接union， 终于可以ac不超时了。</li> 
+ <li>这个解法应该还不是最优的，后续有待继续学习</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>class Solution {
+    
+    public int largestComponentSize(int[] a) {
+        UnionFind uf = new UnionFind(a.length);
+        Map&lt;Integer, Set&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;(); // index--&gt; factor set
+        for(int i = 0; i &lt; a.length; ++i) {
+            map.put(i, factorSet(a[i]));
+        }
+        
+        Map&lt;Integer, Set&lt;Integer&gt;&gt; rmap = new HashMap&lt;&gt;(); // factor--&gt; index set
+        for(Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry: map.entrySet()) {
+            int i = entry.getKey();
+            Set&lt;Integer&gt; set = entry.getValue();
+            for(int factor: set) {
+                Set&lt;Integer&gt; indexSet = rmap.get(factor);
+                if(null == indexSet) {
+                    indexSet = new HashSet&lt;&gt;();
+                    rmap.put(factor, indexSet);
+                }
+                indexSet.add(i);
+            }
+        }
+        
+        for(Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry: rmap.entrySet()) {
+            Set&lt;Integer&gt; set = entry.getValue();
+            int v = -1;
+            for(int i: set) {
+                v = i;
+                break;
+            }
+            for(int i: set) {
+                uf.union(i, v);
+            }
+        }        
+        
+        Map&lt;Integer, Integer&gt; idCount = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; a.length; ++i) {
+            int id = uf.root(i);
+            int count = idCount.getOrDefault(id, 0);
+            idCount.put(id, count+1);
+        }
+        
+        int max = 0;
+        for(int v : idCount.values()) {
+            max = Math.max(max, v);
+        }
+       return max;
+    }
+    
+    
+    public Set&lt;Integer&gt; factorSet(int a) {
+        Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+        set.add(a);
+        int upper = (int)Math.sqrt(a);
+        for(int i = 2; i &lt;= upper &amp;&amp; i &lt;= a; ++i) {
+            while(a%i == 0) {
+                set.add(i);
+                a /= i;
+                if(a != 1) {
+                    set.add(a);    
+                }
+                
+            }
+        }
+        return set;
+    }
+    
+    
+    static class UnionFind {
+        private int[] ids;
+        private int[] size;
+        public UnionFind(int n) {
+            this.ids = new int[n];
+            this.size = new int[n];
+            for(int i = 0; i &lt; n; ++i) {
+                this.ids[i] = i;
+                this.size[i] = 1;
+            }
+        }
+        public int root(int i) {
+            int node = i;
+            while(ids[i] != i) { // get root
+                ids[i] = ids[ids[i]];
+                i = ids[i];
+            }
+            
+            return i;
+        }
+        
+        public void union(int i, int j) {
+            int rooti = root(i);
+            int rootj = root(j);            
+            if(size[j] &lt; size[i]) {
+                ids[rootj] = rooti;    
+                size[i] += size[j];
+            }
+            else {
+                ids[rooti] = rootj;
+                size[j] += size[i];
+            }
+        }
+        public boolean find(int i, int j) {
+            return root(i) == root(j);
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<h2><a href="#一些超时的代码" id="一些超时的代码">一些超时的代码</a></h2> 
+<h3><a href="#ac的版本去掉path-compression" id="ac的版本去掉path-compression">ac的版本去掉path compression</a></h3> 
+<pre><code>class Solution {
+    
+    public int largestComponentSize(int[] a) {
+        UnionFind uf = new UnionFind(a.length);
+        Map&lt;Integer, Set&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;(); // index--&gt; factor set
+        for(int i = 0; i &lt; a.length; ++i) {
+            map.put(i, factorSet(a[i]));
+        }
+        
+        Map&lt;Integer, Set&lt;Integer&gt;&gt; rmap = new HashMap&lt;&gt;(); // factor--&gt; index set
+        for(Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry: map.entrySet()) {
+            int i = entry.getKey();
+            Set&lt;Integer&gt; set = entry.getValue();
+            for(int factor: set) {
+                Set&lt;Integer&gt; indexSet = rmap.get(factor);
+                if(null == indexSet) {
+                    indexSet = new HashSet&lt;&gt;();
+                    rmap.put(factor, indexSet);
+                }
+                indexSet.add(i);
+            }
+        }
+        
+        for(Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry: rmap.entrySet()) {
+            Set&lt;Integer&gt; set = entry.getValue();
+            int v = -1;
+            for(int i: set) {
+                v = i;
+                break;
+            }
+            for(int i: set) {
+                uf.union(i, v);
+            }
+        }        
+        
+        Map&lt;Integer, Integer&gt; idCount = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; a.length; ++i) {
+            int id = uf.root(i);
+            int count = idCount.getOrDefault(id, 0);
+            idCount.put(id, count+1);
+        }
+        
+        int max = 0;
+        for(int v : idCount.values()) {
+            max = Math.max(max, v);
+        }
+       return max;
+    }
+    
+    
+    public Set&lt;Integer&gt; factorSet(int a) {
+        Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+        set.add(a);
+        int upper = (int)Math.sqrt(a);
+        for(int i = 2; i &lt;= upper &amp;&amp; i &lt;= a; ++i) {
+            while(a%i == 0) {
+                set.add(i);
+                a /= i;
+                if(a != 1) {
+                    set.add(a);    
+                }
+                
+            }
+        }
+        return set;
+    }
+    
+    
+    static class UnionFind {
+        private int[] ids;
+        private int[] size;
+        public UnionFind(int n) {
+            this.ids = new int[n];
+            this.size = new int[n];
+            for(int i = 0; i &lt; n; ++i) {
+                this.ids[i] = i;
+                this.size[i] = 1;
+            }
+        }
+        public int root(int i) {
+            int node = i;
+            while(ids[i] != i) { // get root
+                //ids[i] = ids[ids[i]];
+                i = ids[i];
+            }
+            
+            return i;
+        }
+        
+        public void union(int i, int j) {
+            int rooti = root(i);
+            int rootj = root(j);            
+            if(size[j] &lt; size[i]) {
+                ids[rootj] = rooti;    
+                size[i] += size[j];
+            }
+            else {
+                ids[rooti] = rootj;
+                size[j] += size[i];
+            }
+        }
+        public boolean find(int i, int j) {
+            return root(i) == root(j);
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#ac的版本去掉weighted-quick-union" id="ac的版本去掉weighted-quick-union">ac的版本去掉weighted quick union</a></h3> 
+<pre><code>class Solution {
+    
+    public int largestComponentSize(int[] a) {
+        UnionFind uf = new UnionFind(a.length);
+        Map&lt;Integer, Set&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;(); // index--&gt; factor set
+        for(int i = 0; i &lt; a.length; ++i) {
+            map.put(i, factorSet(a[i]));
+        }
+        
+        Map&lt;Integer, Set&lt;Integer&gt;&gt; rmap = new HashMap&lt;&gt;(); // factor--&gt; index set
+        for(Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry: map.entrySet()) {
+            int i = entry.getKey();
+            Set&lt;Integer&gt; set = entry.getValue();
+            for(int factor: set) {
+                Set&lt;Integer&gt; indexSet = rmap.get(factor);
+                if(null == indexSet) {
+                    indexSet = new HashSet&lt;&gt;();
+                    rmap.put(factor, indexSet);
+                }
+                indexSet.add(i);
+            }
+        }
+        
+        for(Map.Entry&lt;Integer, Set&lt;Integer&gt;&gt; entry: rmap.entrySet()) {
+            Set&lt;Integer&gt; set = entry.getValue();
+            int v = -1;
+            for(int i: set) {
+                v = i;
+                break;
+            }
+            for(int i: set) {
+                uf.union(i, v);
+            }
+        }        
+        
+        Map&lt;Integer, Integer&gt; idCount = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; a.length; ++i) {
+            int id = uf.root(i);
+            int count = idCount.getOrDefault(id, 0);
+            idCount.put(id, count+1);
+        }
+        
+        int max = 0;
+        for(int v : idCount.values()) {
+            max = Math.max(max, v);
+        }
+       return max;
+    }
+    
+    
+    public Set&lt;Integer&gt; factorSet(int a) {
+        Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+        set.add(a);
+        int upper = (int)Math.sqrt(a);
+        for(int i = 2; i &lt;= upper &amp;&amp; i &lt;= a; ++i) {
+            while(a%i == 0) {
+                set.add(i);
+                a /= i;
+                if(a != 1) {
+                    set.add(a);    
+                }
+                
+            }
+        }
+        return set;
+    }
+    
+    
+    static class UnionFind {
+        private int[] ids;
+        private int[] size;
+        public UnionFind(int n) {
+            this.ids = new int[n];
+            this.size = new int[n];
+            for(int i = 0; i &lt; n; ++i) {
+                this.ids[i] = i;
+                this.size[i] = 1;
+            }
+        }
+        public int root(int i) {
+            int node = i;
+            while(ids[i] != i) { // get root
+                ids[i] = ids[ids[i]];
+                i = ids[i];
+            }
+            
+            return i;
+        }
+        
+        public void union(int i, int j) {
+            int rooti = root(i);
+            int rootj = root(j);
+            ids[rootj] = rooti;    
+            // if(size[j] &lt; size[i]) {
+            //     ids[rootj] = rooti;    
+            //     size[i] += size[j];
+            // }
+            // else {
+            //     ids[rooti] = rootj;
+            //     size[j] += size[i];
+            // }
+        }
+        public boolean find(int i, int j) {
+            return root(i) == root(j);
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#两层循环判断互质的代码" id="两层循环判断互质的代码">两层循环判断互质的代码</a></h3> 
+<pre><code>class Solution {
+    public int largestComponentSize(int[] a) {
+        UnionFind uf = new UnionFind(a.length);
+        for(int i = 0; i &lt; a.length; ++i) {
+            for(int j = i+1; j &lt; a.length; ++j) {
+                if(sharefactor(a[i], a[j])) {
+                    uf.union(i, j);
+                }
+            }
+        }
+        
+        Map&lt;Integer, Integer&gt; idCount = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; a.length; ++i) {
+            int id = uf.root(i);
+            int count = idCount.getOrDefault(id, 0);
+            idCount.put(id, count+1);
+        }
+        
+        int max = 0;
+        for(int v : idCount.values()) {
+            max = Math.max(max, v);
+        }
+        return max;
+    }
+    
+    boolean sharefactor(int a, int b) {
+        if(a == 1 || b == 1) return false;
+        int big = Math.max(a,b);
+        int small = Math.min(a,b);
+        int r = big%small;
+        if(r == 0) {
+            return true;
+        }
+        return sharefactor(small, r);
+    }
+    
+    static class UnionFind {
+        private int[] ids;
+        private int[] size;
+        public UnionFind(int n) {
+            this.ids = new int[n];
+            this.size = new int[n];
+            for(int i = 0; i &lt; n; ++i) {
+                this.ids[i] = i;
+                this.size[i] = 1;
+            }
+        }
+        public int root(int i) {
+            while(ids[i] != i) {
+                i = ids[i];
+                ids[i] = ids[ids[i]];
+            }
+            return i;
+        }
+        
+        public void union(int i, int j) {
+            int rooti = root(i);
+            int rootj = root(j);
+            if(size[j] &lt; size[i]) {
+                ids[rootj] = rooti;    
+                size[i] += size[j];
+            }
+            else {
+                ids[rooti] = rootj;
+                size[j] += size[i];
+            }
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#两层循环跳过已经在一个connected-component的代码" id="两层循环跳过已经在一个connected-component的代码">两层循环+跳过已经在一个connected component的代码</a></h3> 
+<pre><code>class Solution {
+    public int largestComponentSize(int[] a) {
+        UnionFind uf = new UnionFind(a.length);
+        for(int i = 0; i &lt; a.length; ++i) {
+            for(int j = i+1; j &lt; a.length; ++j) {
+                if(!uf.find(i, j) &amp;&amp; sharefactor(a[i], a[j])) {
+                    uf.union(i, j);
+                }
+            }
+        }
+        
+        Map&lt;Integer, Integer&gt; idCount = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; a.length; ++i) {
+            int id = uf.root(i);
+            int count = idCount.getOrDefault(id, 0);
+            idCount.put(id, count+1);
+        }
+        
+        int max = 0;
+        for(int v : idCount.values()) {
+            max = Math.max(max, v);
+        }
+        return max;
+    }
+    
+    boolean sharefactor(int a, int b) {
+        if(a == 1 || b == 1) return false;
+        int big = Math.max(a,b);
+        int small = Math.min(a,b);
+        int r = big%small;
+        if(r == 0) {
+            return true;
+        }
+        return sharefactor(small, r);
+    }
+    
+    static class UnionFind {
+        private int[] ids;
+        private int[] size;
+        public UnionFind(int n) {
+            this.ids = new int[n];
+            this.size = new int[n];
+            for(int i = 0; i &lt; n; ++i) {
+                this.ids[i] = i;
+                this.size[i] = 1;
+            }
+        }
+        public int root(int i) {
+            int node = i;
+            while(ids[i] != i) { // get root
+                i = ids[i];
+            }
+            
+            while(ids[node] != i) {
+                int parent = ids[node];
+                ids[node] = i; // set to root
+                node = parent;
+            }
+            return i;
+        }
+        
+        public void union(int i, int j) {
+            int rooti = root(i);
+            int rootj = root(j);
+            if(size[j] &lt; size[i]) {
+                ids[rootj] = rooti;    
+                size[i] += size[j];
+            }
+            else {
+                ids[rooti] = rootj;
+                size[j] += size[i];
+            }
+        }
+        public boolean find(int i, int j) {
+            return root(i) == root(j);
+        }
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>

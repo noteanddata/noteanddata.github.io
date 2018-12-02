@@ -61,7 +61,7 @@ var _hmt = _hmt || [];
 
 			<p><em>20 November 2018</em></p>
 
-			<p><h2><a href="#经典算法学习笔记-union-find算法1-quick-union方法" id="经典算法学习笔记-union-find算法1-quick-union方法">经典算法学习笔记-union find算法1-quick union方法</a></h2> 
+			<p><h2><a href="#经典算法学习笔记-union-find算法2-quick-union方法" id="经典算法学习笔记-union-find算法2-quick-union方法">经典算法学习笔记-union find算法2-quick union方法</a></h2> 
 <p>之前学习了一下经典算法union find算法里面的quick union方法<br> <a href="http://www.noteanddata.com/classic-algorithm-union-find-1.html">http://www.noteanddata.com/classic-algorithm-union-find-1.html</a><br> 里面记录了union find的基本问题，以及一个朴素的quick union方法，就是每次uion的时候把所有的id都更新一下，<br> 这个做法的主要问题是union操作的时间复杂度太高。<br> 这里学习一下quick union方法， 主要用来解决union复杂度太高的问题</p> 
 <h2><a href="#quick-union-方法" id="quick-union-方法">quick union 方法</a></h2> 
 <p>quick union 方法的主要出发点是， 既然union 的时候要把所有的节点都更新一下时间复杂度太高了， 而且事实上，<br> 只要有两个节点相连了，我们自然也可以推断出其他节点是相连的。<br> 所以， quick union的思路就是减少union操作。 如果简单的只把两个节点相连， 那么find的时候就可能要遍历<br> 所有connected component里面的节点才可能判断是否相连。 相当于只是把union的所有复杂度转移到find，并没有提高效率。</p> 
