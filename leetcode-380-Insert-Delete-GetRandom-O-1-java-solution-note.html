@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 380. Insert Delete GetRandom O(1)解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 380. Insert Delete GetRandom O(1)解题笔记</h1>
+			</div>
+
+			<p><em>07 December 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-380-insert-delete-getrandom-o1" id="题目-leetcode-380-insert-delete-getrandom-o1">题目 leetcode 380. Insert Delete GetRandom O(1)</a></h2> 
+<p>要求实现一个set数据结构， 可以对insert, delete, getrandom都有O(1)的操作</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>这个题目自己没有想出来， 稍微相差一点， 主要是没有想到和数组最后一个交换这一步。<br> 思路过程如下：<br> 1. 这里的insert和delete都要检查是否已经有这个值了，也就是有一个查找的过程<br> 那么对于insert和delete需要O(1)操作的， 必须用hashmap或者hashset， 因为其他数据结构都不能做到O(1),<br> 比如array或者linkedlist， 对于insert和delete， 都需要遍历这个数组， 复杂度是O(N)<br> 任何树结构也都需要最少logN的复杂度来找到这个元素， 所以，先上一个hashmap或者hashset, 可以解决insert和delete的O(1)的复杂度<br> 2. 但是这个题目的主要考点就是在实现一个O(1)复杂度的getrandom上， 传统上要实现一个getrandom操作，必须要支持index操作<br> 常规操作就是把值放到数组里面，然后每次随机一个index。 然后这时候想能不能在hashmap或者hashset上做随机，看了下java的api里面都没有这样的操作，<br> hashset只有实现了set的基本操作， hashmap虽然内部数据结构里面有数组，但是没有暴露出来， 只有一个values()的api返回了一个<br> Collection, 而Collection是不支持按index访问的。 所以这也没戏。<br> 3. 所以到这里就想用两个数据结构，一个hashmap或者hashset， 另外一个array， 这样可以同时支持O(1)的insert/delete/getrandom,<br> 但是这里需要保持数据结构同步，也就是加了数组以后， 要让数组也支持O(1)的insert/delete,<br> 那就想到用hashmap来保持从value-&gt;index, 这样，每次insert和delete的时候，也可以把array里面对应的元素做操作，<br> insert的时候先在map里面看下value是否已经存在， 已经存在的话就不需要操作， 没有存在的话可以加到最后。<br> delete的时候可以找到对应的index，然后删除。<br> 4. 但是这里有一个问题， delete以后， 数组变成不连续的， 那就没办法做getrandom操作，<br> 我的思路就卡在这里， 其实这里再思考一下， 既然原因是因为delete操作导致的数组不连续， 那么， 有没有办法让数组仍然连续呢？<br> 其实，只要delete完了以后把数组的最后一个元素移到这个delete掉的index上就好。</p> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>class RandomizedSet {
+    
+    private Integer[] arr;
+    private int size;
+    private Map&lt;Integer, Integer&gt; map; // value to index
+    private Random r;
+
+    /** Initialize your data structure here. */
+    public RandomizedSet() {
+        arr = new Integer[16];
+        size = 0;
+        map = new HashMap&lt;&gt;();
+        r = new Random();
+    }
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public boolean insert(int val) {
+        Integer index = map.get(val);
+        if(null != index) {
+            return false;
+        }
+        
+        if(size == arr.length) {
+            Integer[] narr = new Integer[arr.length*2];
+            System.arraycopy(arr, 0, narr, 0, arr.length);
+            arr = narr;       
+        }
+        arr[size] = val;
+        map.put(val, size);
+        size++;
+        return true;
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public boolean remove(int val) {
+        Integer index = map.get(val);
+        if(null == index) {
+            return false;
+        }
+        map.remove(val);
+        arr[index] = null;
+        if(index != size-1) {
+            arr[index] = arr[size-1];
+            map.put(arr[index], index);
+        }
+        size--;
+        //System.out.println("val=" + val + ", size=" + size);
+        return true;
+    }
+    
+    /** Get a random element from the set. */
+    public int getRandom() {
+        int index = r.nextInt(size);
+        return arr[index];
+    }
+}
+
+/**
+ * Your RandomizedSet object will be instantiated and called as such:
+ * RandomizedSet obj = new RandomizedSet();
+ * boolean param_1 = obj.insert(val);
+ * boolean param_2 = obj.remove(val);
+ * int param_3 = obj.getRandom();
+ */
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(1)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N), 新开了一个size为N的数组和一个size为N的map</p> 
+<h2><a href="#一份错误的代码" id="一份错误的代码">一份错误的代码</a></h2> 
+<p>下面是一份看了别人思路以后自己写的一份错误的代码， 主要错误是在remove的时候，没有把对应的val从map里面删除掉，导致下次remove的时候，会在数组里面删除一个不存在的数</p> 
+<pre><code>class RandomizedSet {
+    
+    private Integer[] arr;
+    private int size;
+    private Map&lt;Integer, Integer&gt; map; // value to index
+    private Random r;
+
+    /** Initialize your data structure here. */
+    public RandomizedSet() {
+        arr = new Integer[16];
+        size = 0;
+        map = new HashMap&lt;&gt;();
+        r = new Random();
+    }
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public boolean insert(int val) {
+        Integer index = map.get(val);
+        if(null != index) {
+            return false;
+        }
+        
+        if(size == arr.length) {
+            Integer[] narr = new Integer[arr.length*2];
+            System.arraycopy(arr, 0, narr, 0, arr.length);
+            arr = narr;       
+        }
+        arr[size] = val;
+        map.put(val, size);
+        size++;
+        return true;
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public boolean remove(int val) {
+        Integer index = map.get(val);
+        if(null == index) {
+            return false;
+        }
+        arr[index] = null;
+        if(index != size-1) {
+            arr[index] = arr[size-1];
+            map.put(arr[index], index);
+        }
+        size--;
+        return true;
+    }
+    
+    /** Get a random element from the set. */
+    public int getRandom() {
+        int index = r.nextInt(size);
+        return arr[index];
+    }
+}
+
+/**
+ * Your RandomizedSet object will be instantiated and called as such:
+ * RandomizedSet obj = new RandomizedSet();
+ * boolean param_1 = obj.insert(val);
+ * boolean param_2 = obj.remove(val);
+ * int param_3 = obj.getRandom();
+ */
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
