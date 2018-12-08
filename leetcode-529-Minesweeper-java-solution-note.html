@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 529 Minesweeper解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 529 Minesweeper解题笔记</h1>
+			</div>
+
+			<p><em>07 December 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-529-minesweeper" id="题目-leetcode-529-minesweeper">题目 Leetcode 529 Minesweeper</a></h2> 
+<ol> 
+ <li>扫雷游戏, 数据结构是一个矩阵，上面有几种情况， M表示一个没有被挖的地雷， E表示没有被挖的空地， B表示已经被挖的空地<br> X表示被挖的地雷， 一个数字表示和他相邻的8个位置（上下左右，然后四个对角线）有几个地雷</li> 
+ <li>输入的是一个全部没有被挖的矩阵， 也就是要么是M， 要么是E， 然后是一个坐标，表示在这个坐标上挖了一下</li> 
+ <li>挖地雷的过程如下：<br> a. 如果挖到地雷M， 那么把这个位置改成X， 游戏结束<br> b. 如果挖到空地E， 那么分两种情况， 如果8个邻居都没有地雷， 把E变成B，然后对8个邻居再挖一次， 继续递归<br> 如果8个邻居有地雷， 那么对这个位置标记一个数字，标记这个位置有几个邻居是地雷， 然后不用递归了。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目并不是太难， 很可惜， 我一直卡在超时上，忘记bfs的visited数组来避免重复访问的事情了，<br> 无论bfs还是dfs，都有避免重复访问这个逻辑，</li> 
+ <li>逻辑非常直接，可以bfs，就是从当前位置开始，先计算有几个邻居是地雷， 如果是数字的话直接标记就可以了，<br> 如果是空地的话标记B， 然后把邻居加到queue里面，</li> 
+ <li>之前一直卡在超时上，因为没有用visited矩阵， 当时也没想起来是没有去重， 以为是判断8个邻居的时候做了重复计算，<br> 试图优化那个地方，结果一直卡住。 看了讨论才发现是放到queue里面重复了， 这里简单的优化就是每个位置放到queue里面去的时候，<br> 先改成’B’, 因为这个位置从queue里面取出来的时候，一定会被设成正确的值，所以，先设置成’B’, 可以避免同一个位置被重复放到queue里面</li> 
+</ol> 
+<h2><a href="#java解题代码" id="java解题代码">java解题代码</a></h2> 
+<pre><code>class Solution {
+    
+    public char[][] updateBoard(char[][] board, int[] click) {
+        if(board[click[0]][click[1]] == 'M') {
+            board[click[0]][click[1]] = 'X';
+            return board;
+        }
+        Queue&lt;int[]&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(click);
+        while(queue.size() &gt; 0) {
+            int[] pos = queue.poll();
+            int x = pos[0], y = pos[1];
+            
+            int countpos = count(board, x, y);
+            if(countpos == 0) {
+                board[x][y] = 'B';
+                for(int i = -1; i &lt;= 1; ++i) {
+                    for(int j = -1; j &lt;= 1; ++j) {
+                        if(i == 0 &amp;&amp; j == 0) {
+                            continue;
+                        }
+                        if(!valid(board, x+i, y+j)) {
+                            continue;
+                        }
+                        if(board[x+i][y+j] == 'E') { // avoid duplicate
+                            queue.add(new int[]{x+i, y+j});
+                            board[x+i][y+j] = 'B';
+                        }
+                    }
+                }
+            }
+            else {
+                board[x][y] = (char)('0' + countpos);
+            }
+        }
+        return board;
+    }
+    
+    public int count(char[][] board, int x, int y) {
+        int count = 0;
+        for(int i = -1; i &lt;= 1; ++i) {
+            for(int j = -1; j &lt;= 1; ++j) {
+                if(i == 0 &amp;&amp; j == 0) {
+                    continue;
+                }
+                if(!valid(board, x+i, y+j)) {
+                    continue;
+                }
+                if(board[x+i][y+j] == 'M') {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    
+    boolean valid(char[][] board, int x, int y) {
+        if(x &lt; 0 || x &gt;= board.length || y &lt; 0 || y &gt;= board[0].length) {
+            return false;
+        }
+        return true;
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(M<em>N), 最多可能会把整个矩阵都遍历一遍，并且会遍历8次， 但是复杂度上还是O(M</em>N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M*N), 用了一个queue，最多可能会和board一样大</p> 
+<h2><a href="#超时的代码" id="超时的代码">超时的代码</a></h2> 
+<pre><code>class Solution {
+    
+    public char[][] updateBoard(char[][] board, int[] click) {
+        if(board[click[0]][click[1]] == 'M') {
+            board[click[0]][click[1]] = 'X';
+            return board;
+        }
+        Queue&lt;int[]&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(click);
+        while(queue.size() &gt; 0) {
+            int[] pos = queue.poll();
+            int x = pos[0], y = pos[1];
+            
+            int countpos = count(board, x, y);
+            if(countpos == 0) {
+                board[x][y] = 'B';
+                for(int i = -1; i &lt;= 1; ++i) {
+                    for(int j = -1; j &lt;= 1; ++j) {
+                        if(i == 0 &amp;&amp; j == 0) {
+                            continue;
+                        }
+                        if(!valid(board, x+i, y+j)) {
+                            continue;
+                        }
+                        if(board[x+i][y+j] == 'E') { // avoid duplicate
+                            queue.add(new int[]{x+i, y+j});
+                        }
+                    }
+                }
+            }
+            else {
+                board[x][y] = (char)('0' + countpos);
+            }
+        }
+        return board;
+    }
+    
+    public int count(char[][] board, int x, int y) {
+        int count = 0;
+        for(int i = -1; i &lt;= 1; ++i) {
+            for(int j = -1; j &lt;= 1; ++j) {
+                if(i == 0 &amp;&amp; j == 0) {
+                    continue;
+                }
+                if(!valid(board, x+i, y+j)) {
+                    continue;
+                }
+                if(board[x+i][y+j] == 'M') {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+    
+    boolean valid(char[][] board, int x, int y) {
+        if(x &lt; 0 || x &gt;= board.length || y &lt; 0 || y &gt;= board[0].length) {
+            return false;
+        }
+        return true;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
