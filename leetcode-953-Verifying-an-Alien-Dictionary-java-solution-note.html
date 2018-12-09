@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 953 Verifying an Alien Dictionary解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 953 Verifying an Alien Dictionary解题笔记</h1>
+			</div>
+
+			<p><em>08 December 2018</em></p>
+
+			<p><h2><a href="#题目leetcode-953-verifying-an-alien-dictionary" id="题目leetcode-953-verifying-an-alien-dictionary">题目leetcode 953 Verifying an Alien Dictionary</a></h2> 
+<ol> 
+ <li>外星人语言和我们一样用小写字母，但是顺序和我们不一样</li> 
+ <li>给定一个字母顺序order， 和一个words数组， 判断这些words数组是否是按照外星人的order排序的</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>首先针对order建立一个map， 从char-&gt;index, 表示他们的大小</li> 
+ <li>然后对words数组里面的每相邻的两个字符串比较</li> 
+ <li>注意的是， 不仅小于要直接返回， 大于也要直接返回， 也就是只要不相等，都应该返回比较结果</li> 
+ <li>另外，前面都一样，但是长度不一样的情况也需要处理</li> 
+ <li> <p>很可惜， 幸好sample数据里面test case比较多，否则就写错了好几次， 其中3和4都没有自己注意到</p> </li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>class Solution {
+    public boolean isAlienSorted(String[] words, String order) {
+        Map&lt;Character, Integer&gt; map = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; order.length(); ++i) {
+            char ch = order.charAt(i);
+            map.put(ch, i);
+        }
+        
+        for(int i = 0; i &lt; words.length-1; ++i) {
+            if(!inorder(words[i], words[i+1], map)) {
+                return false;
+            }
+        }
+        return true;    
+    }
+    public boolean inorder(String w1, String w2, Map&lt;Character, Integer&gt; map) {
+        for(int i = 0; i &lt; w1.length() &amp;&amp; i &lt; w2.length(); ++i) {
+            char ch1 = w1.charAt(i);
+            char ch2 = w2.charAt(i);
+            int idx1 = map.get(ch1);
+            int idx2 = map.get(ch2);
+            if(idx1 &lt; idx2) {
+                return true;
+            }
+            else if(idx1 &gt; idx2) {
+                return false;
+            }
+        }
+        return w1.length() &lt;= w2.length();
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*M), 其中N是words数组的长度， M是每个字符串的长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1), 对长度为26的order建立了一个order index, 复杂度可以理解成是常数</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
