@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 955 Delete Columns to Make Sorted II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 955 Delete Columns to Make Sorted II解题笔记</h1>
+			</div>
+
+			<p><em>08 December 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-955-delete-columns-to-make-sorted-ii" id="题目-leetcode-955-delete-columns-to-make-sorted-ii">题目 Leetcode 955 Delete Columns to Make Sorted II</a></h2> 
+<p><a href="https://leetcode.com/problems/delete-columns-to-make-sorted-ii/description/">https://leetcode.com/problems/delete-columns-to-make-sorted-ii/description/</a><br> 1. 输入一个字符串数组，其中每个字符串长度一样<br> 2. 如果选择删除某一个index，那么这个数组里面所有字符串的这个位置都要删除<br> 3. 问， 最少删除几个index可以使得整个数组最后是已经排序的</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>一开始我想的太naive了，直接按index逐个比较，遇到顺序不对的就len++, 遇到顺序对的就可以了，<br> 结果马上WA， 因为可能会存在某一个index上两个字符串是相同字符的问题， 具体参考错误代码1</li> 
+ <li>然后我想，那就把相同的字符串再处理一下， 结果又naive了， 我的处理过程是把凡是某两个字符串有顺序的地方，<br> 都放到顺序已经固定的一个map里面，可惜， 这个处理过程没有考虑到这个index可能是被删除的情况，因为后面可能会<br> 出现逆序的，所以要删除。</li> 
+ <li>最后, 只处理有部分相同字符情况下， 有一些顺序不一样的情况，把这些的顺序固定下来</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>class Solution {
+    public int minDeletionSize(String[] A) {
+        int len = 0;
+        Set&lt;Integer&gt; orderSet = new HashSet&lt;&gt;();
+        for(int i = 0; i &lt; A[0].length(); ++i) {
+            int ret = sorted(A, i, orderSet);
+            if(ret == 1) {
+                return len;
+            }
+            else if(ret == 0) {
+                // continue, no delete is needed at this index
+            }
+            else {
+                len++;
+            }
+        }
+        return len;
+    }
+    public int sorted(String[] A, int index, Set&lt;Integer&gt; orderSet) {
+        boolean hasequal = false;
+        Set&lt;Integer&gt; sortedRow = new HashSet&lt;&gt;();
+        for(int i = 0; i &lt; A.length-1; ++i) {
+            if(orderSet.contains(i)) {
+                continue;
+            }
+            if(A[i].charAt(index) &gt; A[i+1].charAt(index)) {
+                return -1;
+            }
+            else if(A[i].charAt(index) == A[i+1].charAt(index)) {
+                hasequal = true;
+            }
+            else {
+                sortedRow.add(i);
+            }
+        }
+        
+        if(hasequal) {
+            orderSet.addAll(sortedRow);
+        }
+        return hasequal? 0 : 1;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*M), N是字符串的个数， M是每个字符串的长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N), 建立了一个最大大小是N的map，保存有部分字符相同情况下， 其他顺序已经决定的字符串的map，也就是不相同的字符串。</p> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>下面是错误代码1， 针对这个数据会fail[“xga”,“xfb”,“yfa”]</p> 
+<pre><code>class Solution {
+    public int minDeletionSize(String[] A) {
+        int len = 0;
+        for(int i = 0; i &lt; A[0].length(); ++i) {
+            if(sorted(A, i)) {
+                return len;
+            }
+            else {
+                len++;
+            }
+        }
+        return len;
+    }
+    public boolean sorted(String[] A, int index) {
+        for(int i = 0; i &lt; A.length-1; ++i) {
+            if(A[i].charAt(index) &gt; A[i+1].charAt(index)) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>下面是错误代码2， 针对这个数据会fail</p> 
+<pre><code>class Solution {
+    public int minDeletionSize(String[] A) {
+        int len = 0;
+        Map&lt;Integer, Integer&gt; orderMap = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; A[0].length(); ++i) {
+            int ret = sorted(A, i, orderMap);
+            if(ret == 1) {
+                return len;
+            }
+            else if(ret == 0) {
+                // continue, no delete is needed at this index
+            }
+            else {
+//                System.out.println("i=" + i);
+                len++;
+            }
+        }
+        return len;
+    }
+    public int sorted(String[] A, int index, Map&lt;Integer, Integer&gt; orderMap) {
+        boolean hasequal = false;
+        for(int i = 0; i &lt; A.length-1; ++i) {
+            if(null != orderMap.get(i)) {
+                continue;
+            }
+            // if(index &gt; 0 &amp;&amp; A[i].charAt(index-1) &lt; A[i+1].charAt(index-1)) {
+            //     for(int j = 0; j &lt; index; ++j) {
+            //         if(A[i].charAt(j) &lt; A[i+1].char)
+            //     }
+            //     continue;
+            // }
+            if(A[i].charAt(index) &gt; A[i+1].charAt(index)) {
+                return -1;
+            }
+            else if(A[i].charAt(index) == A[i+1].charAt(index)) {
+                hasequal = true;
+            }
+            else {
+                orderMap.put(i, i+1);
+            }
+        }
+//        System.out.println("index=" + index + ", hasequal=" + hasequal);
+        return hasequal? 0 : 1;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
