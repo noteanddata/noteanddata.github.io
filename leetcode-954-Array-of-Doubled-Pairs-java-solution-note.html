@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 954 Array of Doubled Pairs解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 954 Array of Doubled Pairs解题笔记</h1>
+			</div>
+
+			<p><em>08 December 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-954-array-of-doubled-pairs" id="题目-leetcode-954-array-of-doubled-pairs">题目 leetcode 954 Array of Doubled Pairs</a></h2> 
+<ol> 
+ <li>输入一个偶数长度的整数数组， 问能否对整个数组重新打乱成每个奇数位都是前面偶数位的两倍，<br> A[2 * i + 1] = 2 * A[2 * i]</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>最后的顺序已经无关了，主要问的就是这个数组里面的数是否符合对于每个value, 都对应一个value*2</li> 
+ <li>可以把数组排序， 那么从最小的开始，就可以取一个value， 然后看2<em>value是否存在， 如果不存在，那就return false，<br> 如果存在，就把这两个都删除。 判断2</em>value是否存在需要建一个map， 从value-&gt;count的map。</li> 
+ <li>当然我开始是这样做的， 但是上面的逻辑有一个问题，就是针对负数就不对了， 因为比如-4,-2,<br> 从最小的开始然后找value*2就找不到了， 这个也是符合题目要求的（也幸好sample 数据里面有这个case， 否则我又要写错了），</li> 
+ <li>所以，需要先把数组分成正负两部分， 然后排序的时候做两个不同的排序，分别处理</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>class Solution {
+    public boolean canReorderDoubled(int[] A) {
+        List&lt;List&lt;Integer&gt;&gt; allList = split(A);
+        for(List&lt;Integer&gt; list: allList) {
+            if(!process(list)) {
+                //System.out.println("false: " + list.get(0) + ", " + list.get(1) + ", " + list.size());
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public boolean process(List&lt;Integer&gt; list) {
+        if(list.size() == 0) {
+            return true;
+        }
+        if(list.size()%2 != 0) {
+            return false;
+        }
+        Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();
+        for(int v: list) {
+            int count = map.getOrDefault(v, 0);
+            map.put(v, count+1);
+        }
+        if(list.get(0) &gt;= 0) {
+            Collections.sort(list);    
+        }
+        else {
+            Collections.sort(list, Collections.reverseOrder());
+        }        
+        
+        for(int v: list) {
+            int count = map.getOrDefault(v, 0);
+            if(count == 0) { //  removed
+                continue;
+            }
+            int dv = v * 2;
+            int dcount = map.getOrDefault(dv, 0);
+            if(dcount == 0) {
+                return false;
+            }
+            dec(map, v, count);
+            dec(map, dv, dcount);
+        }
+        return map.size() == 0;
+    }
+    public List&lt;List&lt;Integer&gt;&gt;  split(int[] a) {
+        List&lt;List&lt;Integer&gt;&gt; all = new ArrayList&lt;&gt;();
+        List&lt;Integer&gt; pos = new ArrayList&lt;&gt;();
+        List&lt;Integer&gt; neg = new ArrayList&lt;&gt;();
+        for(int v: a) {
+            if(v &gt;= 0) {
+                //System.out.println("posv=" + v);
+                pos.add(v);
+            }
+            else {
+                neg.add(v);
+            }
+        }
+        all.add(pos);
+        all.add(neg);
+        return all;
+    }
+    
+    public void dec(Map&lt;Integer, Integer&gt; map, int v, int count) {
+        if(count == 1) {
+            map.remove(v);
+        }
+        else {
+            map.put(v, count-1);
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N<em>logN), 排序的复杂度最高， 其他的都是O(N)的操作，所以整体是O(N</em>logN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N), 开了两个list对数组按正负split了一下</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
