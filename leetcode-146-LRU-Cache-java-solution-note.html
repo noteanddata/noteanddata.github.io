@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 146 LRU Cache解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 146 LRU Cache解题笔记</h1>
+			</div>
+
+			<p><em>12 December 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-146-lru-cache" id="题目-leetcode-146-lru-cache">题目 Leetcode 146 LRU Cache</a></h2> 
+<ol> 
+ <li>要是设计实现一个LRU cache, 支持get和put操作，有固定大小的capacity, 然后如果容量不够了， 就把least recently used的那个元素剔除</li> 
+ <li>要求get和put操作都是O(1)的时间复杂度</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>首先， 要求get和put都是O(1)的时间复杂度， 那么必须要用一个hashmap</li> 
+ <li>但是，光用hashmap无法支持least recently used， 不知道那个元素是最没有被使用过的，<br> 传统上来说，我们想要知道某个元素使用的时间顺序，那需要有一个list， 然后每次使用(get/put)的时候把这个元素放到list的最前面，<br> 这样，如果容量到了需要剔除的时候，直接把list的最后一个元素删除就好了</li> 
+ <li>问题来了， 如何保证把list里面的某个元素换到最前面的时候也是O(1)操作呢？ 用arraylist肯定不可以， 因为把某一个元素放到最前面以后，还需要把后面的元素全部移动一遍，复杂度最差可能是O(N), 如果用linkedlist是否可以？ linkedlist删除中间的元素时候，有没有办法直接把前后的元素连起来就可以了？ 这里想到如果每个node有prev,next, 那就可以这样操作了， 所以，其实这里只要实现一个doubly linked list, 然后在加上前面的那个map， 每次来一个key的时候，可以直接定位到这个node， 然后每个node有prev和next，那就可以用O(1)的时间移动位置，然后就可以完成get和put操作，</li> 
+</ol> 
+<h2><a href="#java解法" id="java解法">java解法</a></h2> 
+<pre><code>class LRUCache {
+    
+    private int capacity;
+    private Map&lt;Integer, Node&gt; nodeMap;
+    private Node dummyhead, dummytail;
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        this.nodeMap = new HashMap&lt;&gt;();
+        this.dummyhead = new Node(-1, -1);
+        this.dummytail = new Node(-1, -1);
+        this.dummyhead.next = this.dummytail;
+        this.dummytail.prev = this.dummyhead;
+    }
+    
+    public int get(int key) {
+        if(capacity == 0) return -1;
+        
+        Node node = nodeMap.get(key);
+        if(null == node) {
+            return -1;
+        }
+        
+        unlink(node);
+        
+        // move the node to the front
+        insertToHead(node);
+        
+        return node.value;
+    }
+    
+    private void unlink(Node node) {
+        Node prev = node.prev;
+        Node next = node.next;
+        
+        // remove node from existing place
+        prev.next = next;
+        next.prev = prev;        
+    }
+    
+    private void insertToHead(Node node) {
+        node.next = dummyhead.next;
+        node.prev = dummyhead;
+        dummyhead.next.prev = node;
+        dummyhead.next = node;        
+    }
+    
+    public void put(int key, int value) {
+        if(capacity == 0) return;
+        
+        Node node = nodeMap.get(key);
+        if(null == node) { // add a new one
+            if(nodeMap.size() == capacity) { // if it's full already, remove last one from list/map
+                Node last = dummytail.prev;
+                nodeMap.remove(last.key);
+                
+                unlink(last);
+            }    
+            
+            // create node and add to map/list
+            node = new Node(key, value);
+            nodeMap.put(key, node);
+            
+            // add to the 1st in the list
+            insertToHead(node);
+        }
+        else {
+            node.value = value;
+            // update the list
+            unlink(node);
+
+            // move the node to the front
+            insertToHead(node);
+
+        }
+    }
+    
+    static class Node{
+        private int key;
+        private int value;
+        private Node prev;
+        private Node next;
+        public Node(int key, int value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(1), 其中get/put操作， 做了一次hashmap的get/put， 然后又从doubly linked list里面删除最后的元素或者是移到了最前面，都是常数操作，所以是O(1)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N), 其中用了一个map和一个linked list 保存值， 虽然用了两倍的空间， 但是为了O(1)的时间复杂度也是没办法。</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
