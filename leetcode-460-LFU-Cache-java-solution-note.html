@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 460 LFU Cache解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 460 LFU Cache解题笔记</h1>
+			</div>
+
+			<p><em>13 December 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-460-lfu-cache" id="题目-leetcode-460-lfu-cache">题目 Leetcode 460 LFU Cache</a></h2> 
+<ol> 
+ <li>要求设计实现一个LFU Cache, 有固定大小的capacity, 然后每次更新或者访问元素，要记录这个key的frequency,<br> 然后如果容量到上限了， 把frequency最低的那个剔除。 如果有frequency 最低的元素有多个， 那么把最近没有使用的那个剔除。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目和<a href="http://www.noteanddata.com/leetcode-146-LRU-Cache-java-solution-note.html">Leetcode 146 LRU</a><br> 有所区别， LRU是要求剔除最近没有使用的那个， LFU是首先剔除frequency最低的那个， 只有frequency最低的有多个的时候，才剔除<br> 最近没有使用的那个。</li> 
+ <li>但是，解题思路可以类似， 对于get和put首先需要用一个map来存储key和node，<br> 然后要根据frequency排序， 这里我还是用了一个排序好的doubly linked list, 每次访问的时候更新frequency， 然后重新排序，<br> 这里已经不是O(1)了， 最差情况有可能是O(N), 如果frequency一样的话就看谁是最后一个访问的， 相当于每次更新的时候放到frequency<br> 一样的节点的最前面</li> 
+ <li>更好一点的代码应该是根据frequency排序， 可能直接用一个heap就可以，<br> 或者是用一个frequency作为key的map, 然后每个value上放一个doubly linked list</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>
+     class LFUCache {
+        private Map&lt;Integer, Node&gt; map;
+        private int capacity;
+        private Node dummyhead, dummytail; // maintain a doubly linked list order by frequency
+
+        public LFUCache(int capacity) {
+            this.capacity = capacity;
+            this.map = new HashMap&lt;&gt;();
+            this.dummyhead = new Node(-1, -1);
+            this.dummytail = new Node(-2, -2);
+            dummyhead.next = dummytail;
+            dummytail.prev = dummyhead;
+        }
+
+        public int get(int key) {
+            if(0 == capacity) return -1;
+            Node node = map.get(key);
+            if(null == node) {
+                return -1;
+            }
+
+            node.freq++;
+            move(node);
+
+
+            return node.value;
+        }
+
+        void move(Node node) {
+            Node prev = node.prev;
+            if(prev == dummyhead || prev.freq &gt; node.freq) {
+                return;
+            }
+            
+            
+            unlink(node);
+
+            while(prev != dummyhead &amp;&amp; prev.freq &lt;= node.freq) {
+                prev = prev.prev;
+            }
+            Node next = prev.next;
+
+            // insert
+            node.next = next;
+            next.prev = node;
+
+            prev.next = node;
+            node.prev = prev;
+        }
+
+        void unlink(Node node) {
+            Node prev = node.prev;
+            Node next = node.next;
+            prev.next = next;
+            next.prev = prev;
+        }
+
+        public void put(int key, int value) {
+            if(0 == capacity) return;
+            Node node = map.get(key);
+            if(null == node) {
+                if(map.size() == capacity) {
+                    // remove last one
+                    Node last = dummytail.prev;
+                    map.remove(last.key);
+                    unlink(last);
+                }
+
+                // find last in the tail whose freq != 1
+                Node last = dummytail.prev;
+                while(last.freq == 1 &amp;&amp; last != dummyhead) {
+                    last = last.prev;
+                }
+
+                // insert to the tail before the freq=1
+
+                node = new Node(key, value);
+                map.put(key, node);
+                Node next = last.next;
+
+                last.next = node;
+                node.prev = last;
+                node.next = next;
+                next.prev = node;
+            }
+            else {
+                node.value = value;
+                node.freq++;
+
+                move(node);
+            }
+        }
+
+        static class Node {
+            private int key;
+            private int value;
+            private int freq;
+            private Node prev;
+            private Node next;
+            public Node(int key, int value) {
+                this.key = key;
+                this.value = value;
+                this.freq = 1;
+            }
+        }
+     }
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+				我的博客即将同步至腾讯云+社区，邀请大家一同入驻：
+				<a href="https://cloud.tencent.com/developer/support-plan?invite_code=2ocnhm5gkbms4">https://cloud.tencent.com/developer/support-plan?invite_code=2ocnhm5gkbms4</a>
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
