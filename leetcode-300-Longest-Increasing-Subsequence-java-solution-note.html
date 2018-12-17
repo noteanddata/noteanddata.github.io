@@ -70,6 +70,9 @@ var _hmt = _hmt || [];
 </ol> 
 <p>所以对于所有的j &lt;= i,<br> if nums[i+1] &gt; nums[j],<br> dp[i+1] = Math.max(dp[i], dp[j]+1)</p> 
 <h2><a href="#java解题代码" id="java解题代码">java解题代码</a></h2> 
+<ol> 
+ <li>比较合理的dp代码</li> 
+</ol> 
 <pre><code>public int lengthOfLIS(int[] nums) {
     if(0 == nums.length) {
         return 0;
@@ -86,6 +89,36 @@ var _hmt = _hmt || [];
         max = Math.max(max, dp[i]);
     }
     return max;
+}
+
+</code></pre> 
+<ol> 
+ <li>一个不太好的写法<br> 之前自己写的时候，写过下面一个版本， 也可以通过， 但是这个写法不太符合dp的直观理解，<br> 因为常规的dp思路是关心从一个问题到这个问题的子问题的递推关系， 所以通常是dp[i+1]到dp[i]或者之前的问题的答案，<br> 直接上来就循环到最外面的做法不太直观</li> 
+</ol> 
+<pre><code>class Solution {
+     public int lengthOfLIS(int[] nums) {
+        if(0 == nums.length) return 0;
+
+        int[] dp = new int[nums.length];
+        for(int i = 0; i &lt; nums.length; ++i) {
+            dp[i] = 1;
+        }
+
+
+        for(int i = 0; i &lt; nums.length; ++i) {
+            for(int j = i+1; j &lt; nums.length; ++j) {
+                if(nums[j] &gt; nums[i]) {
+                    dp[j] = Math.max(dp[i]+1, dp[j]);
+                }
+            }
+        }
+
+        int maxlen = 1;
+        for(int i = 0; i &lt; dp.length; ++i) {
+            maxlen = Math.max(maxlen, dp[i]);
+        }
+        return maxlen;
+    }
 }
 
 </code></pre> 
