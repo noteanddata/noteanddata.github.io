@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 505 The Maze II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 505 The Maze II解题笔记</h1>
+			</div>
+
+			<p><em>17 December 2018</em></p>
+
+			<p><h2><a href="#题目leetcode-505-the-maze-ii" id="题目leetcode-505-the-maze-ii">题目Leetcode 505 The Maze II</a></h2> 
+<ol> 
+ <li>一个矩阵， 里面0表示空的地方，1表示是石头， 然后有一个开始的位置和结束的位置</li> 
+ <li>从任何一个位置，都有上下左右4个方向， 然后每次都要走到1或者边界才停止</li> 
+ <li>问最少需要多少个格子才会到终点？ 如果不能就返回-1</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目是非常好的一个题目，我在这个题目上做错了很多次。上来以为自己可以轻松的bfs解决，实际上调试了很多次，有一些case还是没有调试出来，看了大家的答案才明白自己错在那里。 说明我对bfs的理解和对题目的分析不够深入。 我的代码习惯是有一点点思路直接开始写，然后慢慢完善思路。 实际上是不是应该先用英文把代码思路简洁的描述清楚，然后明确每一步都是正确的，然后才开始写代码，否则如果开始的思路其实是错的话，容易直接陷入坑里面</li> 
+ <li>这类题目我习惯用bfs做， 从当前位置开始，每次尝试4个可能的方向，然后遇到1就停止， 把前面的位置加入到queue里面。<br> 这里有一个细节， 传统的bfs，通常会保存一个visited的状态， 然后如果已经访问过的话，会把visited设置成true，然后不加入queue里面，<br> 这对于每次遍历步长一样的操作是可以的， 因为先bfs到的地方，一定是step最小的地方，<br> 但是这个题目不能这样操作，因为每次是直接走到最底下，导致步长不一样， 然后在queue里面先操作到的地方，不一定是step最小的。<br> 所以这个直接填visited是不对的。<br> 我的一个类似的错误代码是直接改maze来标注是否已经被访问（然后在每次访问node的时候，把step传到下一个位置）， 每次bfs加入到queue的时候，直接把maze的值改成2，同样也是不对的。</li> 
+ <li> <p>所以， 必须要建一个mindis的矩阵来保存最小步骤， 然后避免重复访问的逻辑是看新的step是否小于mindis的值</p> </li> 
+ <li> <p>这里遍历也是有坑的地方， 因为遇到边界也需要停下来， 如果直接看下一个是1或者是当前是边界就直接停下来， 就会遇到另外一个方向没有选择的情况。 如果在循环里面加入if(i == 0) break这样的逻辑， 那么如果4个方向单独遍历是没有问题的， 如果合并上下的话，那么可能导致到了编辑以后就不继续遍历了。 改成遍历合法位置（0的位置）， 然后循环退出以后， 往回退一格的话，就会比较清晰简洁， 然后也可以合并4个方向的操作到一个循环里面。</p> </li> 
+</ol> 
+<h2><a href="#java解题代码" id="java解题代码">java解题代码</a></h2> 
+<pre><code>class Solution {
+    public int shortestDistance(int[][] maze, int[] start, int[] dest) {
+        Queue&lt;int[]&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(start);
+        
+        int[][] dirs = {{-1,0}, {1,0},{0,-1}, {0,1}};
+        
+        int[][] mindis = new int[maze.length][maze[0].length];
+        for(int i = 0; i &lt; mindis.length; ++i) {
+            Arrays.fill(mindis[i], Integer.MAX_VALUE);
+        }
+        mindis[start[0]][start[1]] = 0;
+        while(queue.size() &gt; 0) {
+            int[] node = queue.poll();
+            
+            for(int k = 0; k &lt; dirs.length; ++k) {
+                int nx = node[0] + dirs[k][0];
+                int ny = node[1] + dirs[k][1];
+                int step = mindis[node[0]][node[1]];
+                
+                // loop for all valid moves
+                while(nx &gt;= 0 &amp;&amp; nx &lt; maze.length &amp;&amp; ny &gt;= 0 &amp;&amp; ny &lt; maze[0].length &amp;&amp; maze[nx][ny] == 0) {                    
+                    nx += dirs[k][0];
+                    ny += dirs[k][1];
+                    step++;
+                }
+                
+                // came across the block, step back
+                nx -= dirs[k][0];  
+                ny -= dirs[k][1];
+                if(step &lt; mindis[nx][ny]) {
+                    mindis[nx][ny] = step;
+                    queue.add(new int[]{nx,ny});
+                }                
+            }                       
+        }
+        if(mindis[dest[0]][dest[1]] == Integer.MAX_VALUE) {
+            return -1;
+        }
+        return mindis[dest[0]][dest[1]];
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(M<em>N</em>max(m,n)) 可能会遍历整个矩阵，同时在每个位置有可能会要遍历最长的长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M*N) queue最大会是整个矩阵的大小</p> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>在循环里面做break会导致少遍历很多场景， 在边界的时候对4个方向都直接跳出了，没有尝试其他方向</p> 
+<pre><code>class Solution {
+    public int shortestDistance(int[][] maze, int[] start, int[] dest) {
+        Queue&lt;int[]&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(start);
+        
+        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+        
+        int[][] mindis = new int[maze.length][maze[0].length];
+        for(int i = 0; i &lt; mindis.length; ++i) {
+            Arrays.fill(mindis[i], Integer.MAX_VALUE);
+        }
+        mindis[start[0]][start[1]] = 0;
+        
+        int minstep = Integer.MAX_VALUE;
+        
+        while(queue.size() &gt; 0) {
+            int[] node = queue.poll();
+            int x = node[0], y = node[1];
+            int step = mindis[x][y];
+            
+            for(int k = 0; k &lt; dirs.length; ++k) {
+                int nx = x+dirs[k][0];
+                int ny = y + dirs[k][1];
+                int nstep = step+1;
+                while(nx &gt;= 0 &amp;&amp; nx &lt; maze.length &amp;&amp; ny &gt;= 0 &amp;&amp; ny &lt; maze[0].length &amp;&amp; maze[nx][ny] == 0) {
+                    boolean shouldstop = nx == 0 || nx == maze.length-1 || ny == 0 || ny == maze[0].length-1;
+                    shouldstop = shouldstop || maze[nx+dirs[k][0]][ny+dirs[k][1]] == 1;
+                    if(shouldstop) {
+                        if(nstep &lt; mindis[nx][ny]) {
+                            mindis[nx][ny] = nstep;
+                            queue.add(new int[]{nx,ny});
+                        }
+                        break;
+                    }
+                    
+                    nx = nx+dirs[k][0];
+                    ny = ny + dirs[k][1];
+                    nstep++;
+                }
+            }
+            
+        }
+        if(mindis[dest[0]][dest[1]] == Integer.MAX_VALUE) {
+            return -1;
+        }
+        return mindis[dest[0]][dest[1]];
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>用类似visited的思路来做是不对的，因为bfs先访问到的节点不一定是step最小的节点， 必须要建一个mindis的矩阵来保存最小步骤。<br> 然后避免重复访问的逻辑是看新的step是否小于mindis的值</p> 
+<pre><code>class Solution {
+    public int shortestDistance(int[][] maze, int[] start, int[] dest) {
+        Queue&lt;Node&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(new Node(start, 0));
+        maze[start[0]][start[1]] = 2; // mark it as visited
+        
+        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+        
+        while(queue.size() &gt; 0) {
+            Node node = queue.poll();
+            int x = node.pos[0], y = node.pos[1];
+            
+            // for(int k = 0; k &lt; dirs.length; ++k) {
+            //     for(int r = x+dirs[k][0]; r &gt;= 0 &amp;&amp; r &lt;= maze.length; r += dirs[k][0]) {
+            //         for(int c = x + dirs[k][0]; c &gt;= 0 &amp;&amp; c)
+            //     }
+            // }
+            
+            // up
+            for(int r = x-1; r &gt;= 0; r--) {
+                if(r == 0 || maze[r][y] == 1) {
+                    int ther = (r == 0) ? 0 : r+1;
+                    int nstep = node.step + x-ther; 
+                    if(ther == dest[0] &amp;&amp; y == dest[1]) {
+                        return nstep;
+                    }
+                    if(maze[ther][y] != 2) {
+                        queue.add(new Node(new int[]{ther, y}, nstep));
+                        maze[ther][y] = 2;
+                    }
+                    break;
+                }
+            }
+            
+            // down 
+            for(int r = x+1; r &lt; maze.length; ++r) {
+                if(r == maze.length-1 || maze[r][y] == 1) {
+                    int ther = (r == maze.length-1) ? r : r-1;
+                    int nstep = node.step + ther-x;
+                    if(ther == dest[0] &amp;&amp; y == dest[1]) {
+                        return nstep;
+                    }
+                    if(maze[ther][y] != 2) {
+                        queue.add(new Node(new int[]{ther, y}, nstep));
+                        maze[ther][y] = 2;
+                    }
+                    break;
+                }
+            }
+            
+            int[] cdir = {-1, 1};
+            for(int k = 0; k &lt; cdir.length; ++k) {
+                for(int c = y+cdir[k]; c &gt;= 0 &amp;&amp; c &lt; maze[x].length; c = c + cdir[k]) {
+                    if(c == 0 || c == maze[x].length-1 || maze[x][c+cdir[k]] == 1) {
+                        int nstep = node.step + Math.abs(c-y);
+                        if(x == dest[0] &amp;&amp; c == dest[1]) {
+                            return nstep;
+                        }
+                        if(maze[x][c] != 2) {
+                            queue.add(new Node(new int[]{x, c}, nstep));
+                            maze[x][c] = 2;
+                        }
+                        break;
+                    }
+                }
+            }
+            
+        }
+        return -1;
+    }
+    static class Node {
+        private int[] pos;
+        private int step;
+        public Node(int[] pos, int step) {
+            this.pos = pos;
+            this.step = step;
+        }
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
