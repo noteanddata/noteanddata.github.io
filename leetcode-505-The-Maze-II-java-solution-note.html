@@ -176,7 +176,10 @@ var _hmt = _hmt || [];
 
 </code></pre> 
 <h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
-<p>用类似visited的思路来做是不对的，因为bfs先访问到的节点不一定是step最小的节点， 必须要建一个mindis的矩阵来保存最小步骤。<br> 然后避免重复访问的逻辑是看新的step是否小于mindis的值</p> 
+<ol> 
+ <li>用类似visited的思路来做是不对的，因为bfs先访问到的节点不一定是step最小的节点， 必须要建一个mindis的矩阵来保存最小步骤。<br> 然后避免重复访问的逻辑是看新的step是否小于mindis的值</li> 
+ <li>除了先访问到的节点不一定是最短路径的节点以外，修改maze的值也会有逻辑上的错误，因为修改maze的值以后， 在一个方向上行走的循环逻辑也会被破坏</li> 
+</ol> 
 <pre><code>class Solution {
     public int shortestDistance(int[][] maze, int[] start, int[] dest) {
         Queue&lt;Node&gt; queue = new LinkedList&lt;&gt;();

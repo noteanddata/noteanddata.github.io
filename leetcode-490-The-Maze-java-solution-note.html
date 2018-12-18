@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 490 The Maze解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 490 The Maze解题笔记</h1>
+			</div>
+
+			<p><em>17 December 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-490-the-maze" id="题目-leetcode-490-the-maze">题目 Leetcode 490 The Maze</a></h2> 
+<ol> 
+ <li>一个矩阵， 里面0表示空的地方，1表示是石头， 然后有一个开始的位置和结束的位置</li> 
+ <li>从任何一个位置，都有上下左右4个方向， 然后每次都要走到1或者边界才停止</li> 
+ <li>问能否从一个起点访问到一个终点</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目是<a href="http://www.noteanddata.com/leetcode-505-The-Maze-II-java-solution-note.html">Leetcode 505 Maze II</a>的简化版, 这里只需要返回能否访问到就可以。</li> 
+ <li>这里用bfs，从一个节点开始，把4个方向上能够行走到的节点（边界或者1的前面一个）都放到queue里面， 为了避免重复访问，用了一个visited矩阵来保存状态， 因为这里只需要判断能否访问到，所以visited就够了</li> 
+ <li>如果我们是每次循环行走合法的状态的话，然后到循环退出的时候往回退一格的话，可以用比较简洁的代码把4个方向合并到一个循环里面。<br> 我之前写过在循环里面判断break的话，容易出错（上下两个方向要分别判断边界）。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    // 1. bfs, create a queue, add start
+    // 2. try all 4 directions, stop until hit out of border or 1
+    // 3. put last valid pos to the queue
+    // 4. mark the pos as visited (can NOT change the maze)
+    // 5. loop until queue is empty
+    // 6. during any queue.poll(), if it's destination, return true
+    // 7. if loop is finished, return false
+    public boolean hasPath(int[][] maze, int[] start, int[] dest) {
+        boolean[][] visited = new boolean[maze.length][maze[0].length];
+        Queue&lt;int[]&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(start);
+        visited[start[0]][start[1]] = true;
+        int[][] dirs = {{-1,0}, {1,0}, {0,1}, {0,-1}};
+        
+        
+        while(queue.size() &gt; 0) {
+            int[] pos = queue.poll();
+            if(pos[0] == dest[0] &amp;&amp; pos[1] == dest[1]) {
+                return true;
+            }
+            for(int k = 0; k &lt; dirs.length; ++k) {
+                int x = pos[0] + dirs[k][0];
+                int y = pos[1] + dirs[k][1];
+                while(x &gt;= 0 &amp;&amp; x &lt; maze.length &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; maze[0].length &amp;&amp; maze[x][y] == 0) {
+                    x += dirs[k][0];
+                    y += dirs[k][1];
+                }
+                x -= dirs[k][0];
+                y -= dirs[k][1];
+                if(!visited[x][y]) {
+                    queue.add(new int[]{x,y});
+                    visited[x][y] = true;
+                }
+            }    
+        }
+        return false;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(M<em>N</em>max(m,n)), 可能要遍历整个矩阵， 其中对于每个点可能要遍历最大长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M*N), 用了一个visited矩阵和queue, 都会和maze一样大</p> 
+<h2><a href="#错误的代码" id="错误的代码">错误的代码</a></h2> 
+<p>这里的错误是改变了矩阵的值来表示visited, 但是这里会有一个坑， 本来我们用maze[x][y] == 0来判断是否是合法的，<br> 也就是会一直行走直到1然后停下， 那么前面一个位置就是最后一个合法的0，<br> 但是我们改变来矩阵的值以后， 这个逻辑就会被破坏了， 一个位置被改成2以后， 下次回来的时候这个2前面的0也被当成合法了。</p> 
+<p>失败的case参考这个：</p> 
+<pre><code>[[0,0,1,0,0],[0,0,0,0,0],[0,0,0,1,0],[1,1,0,1,1],[0,0,0,0,0]]
+[0,4]
+[3,2]s
+</code></pre> 
+<pre><code>class Solution {
+    // 1. bfs, create a queue, add start
+    // 2. try all 4 directions, stop until hit border or 1
+    // 3. put last valid pos to the queue
+    // 4. mark the pos as visited (can change the maze)
+    // 5. loop until queue is empty
+    // 6. during any queue.poll(), if it's destination, return true
+    // 7. if loop is finished, return false
+    public boolean hasPath(int[][] maze, int[] start, int[] dest) {
+        Queue&lt;int[]&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(start);
+        maze[start[0]][start[1]] = 2;
+        int[][] dirs = {{-1,0}, {1,0}, {0,1}, {0,-1}};
+        
+        while(queue.size() &gt; 0) {
+            int[] pos = queue.poll();
+            if(pos[0] == dest[0] &amp;&amp; pos[1] == dest[1]) {
+                return true;
+            }
+            for(int k = 0; k &lt; dirs.length; ++k) {
+                int x = pos[0] + dirs[k][0];
+                int y = pos[1] + dirs[k][1];
+                while(x &gt;= 0 &amp;&amp; x &lt; maze.length &amp;&amp; y &gt;= 0 &amp;&amp; y &lt; maze[0].length &amp;&amp; maze[x][y] == 0) {
+                    x += dirs[k][0];
+                    y += dirs[k][1];
+                }
+                x -= dirs[k][0];
+                y -= dirs[k][1];
+                if(maze[x][y] == 0) {
+                    queue.add(new int[]{x,y});
+                    maze[x][y] = 2;
+                }
+            }    
+        }
+        return false;
+    }
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
