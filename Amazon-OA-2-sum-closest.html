@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Amazon OA 2 sum closest解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Amazon OA 2 sum closest解题笔记</h1>
+			</div>
+
+			<p><em>16 December 2018</em></p>
+
+			<p><h2><a href="#题目-amazon-oa-2-sum-closest" id="题目-amazon-oa-2-sum-closest">题目 Amazon OA 2 sum closest</a></h2> 
+<ol> 
+ <li>输入一个整数数组和一个整数target， 求整数里面任意取两个数的sum，每个数只能取一次， 使得sum和target最接近</li> 
+ <li>要求返回这个sum到target的距离</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>最朴素的思想是brute force所有两个数的组合， 复杂度是O(N^2)</li> 
+ <li>更好一点的做法是先排序， 然后用双指针法，从头和尾分别向中间取sum， 然后和target比较</li> 
+ <li>本地测试了下，生成了100个组小数据（其中arr.size=20)和20组大数据(其中arr.size=10000), 暴力法大约需要1500-2000ms, 排序后双指针大约只需要20ms</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<p>这里对overflow做了一点处理， 转换成了long</p> 
+<pre><code>public int twoSumClosestDiff(int[] arr, int target) {
+    Arrays.sort(arr);
+    long minDiff = Long.MAX_VALUE;
+    int begin = 0, end = arr.length-1;
+    long ltarget = (long)target;
+    while(begin &lt; end) {
+        long sum = (long)arr[begin] + (long)arr[end];
+        minDiff = Math.min(minDiff, Math.abs(sum-ltarget));
+        if(sum &lt; target) {
+            begin++;
+        }
+        else if(sum == target) {
+            return 0;
+        }
+        else {
+            end--;
+        }
+    }
+    return (int)minDiff;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*lgN), 主要复杂度来自于排序， 后面的双指针遍历只需要O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#会overflow的代码" id="会overflow的代码">会overflow的代码</a></h2> 
+<p>下面的代码再算sum的时候可能会overflow，导致结果错误。<br> 比如对这个case就不能通过<br> arr=[2147483646,2,2147483647], target=2147483647</p> 
+<pre><code>public int twoSumClosestDiff(int[] arr, int target) {
+  Arrays.sort(arr);
+  int minDiff = Integer.MAX_VALUE;
+  int begin = 0, end = arr.length-1;
+  while(begin &lt; end) {
+      int sum = arr[begin] + arr[end];
+      minDiff = Math.min(minDiff, Math.abs(sum-target));
+      if(sum &lt; target) {
+          begin++;
+      }
+      else if(sum == target) {
+          return 0;
+      }
+      else {
+          end--;
+      }
+  }
+  return minDiff;
+}
+</code></pre> 
+<h2><a href="#bruteforce的代码" id="bruteforce的代码">bruteforce的代码</a></h2> 
+<pre><code>public int twoSumClosestDiff(int[] arr, int target) {
+    long minDiff = Long.MAX_VALUE;
+    long ltarget = (long)target;
+    for(int i = 0; i &lt; arr.length; ++i) {
+        for(int j = i+1; j &lt; arr.length; ++j) {
+            long sum = (long)arr[i] + (long)arr[j];
+            long diff = Math.abs(ltarget - sum);
+            minDiff = Math.min(diff, minDiff);
+        }
+    }
+    return (int)minDiff;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+				我的博客即将同步至腾讯云+社区，邀请大家一同入驻：
+				<a href="https://cloud.tencent.com/developer/support-plan?invite_code=2ocnhm5gkbms4">https://cloud.tencent.com/developer/support-plan?invite_code=2ocnhm5gkbms4</a>
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
