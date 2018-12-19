@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>lintcode 612 k-closest-points解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>lintcode 612 k-closest-points解题笔记</h1>
+			</div>
+
+			<p><em>17 December 2018</em></p>
+
+			<p><h2><a href="#题目-lintcode-612-k-closest-points" id="题目-lintcode-612-k-closest-points">题目 lintcode 612 k-closest-points</a></h2> 
+<ol> 
+ <li>输入一个坐标数组和一个origin的坐标，求坐标数组里面k个到origin最近的坐标</li> 
+ <li>返回值要求按照距离排序， 如果距离一样按照x排序， 如果x也一样要求按照y排序</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本思路是建立一个k大小的max heap, 这样每次都把最大的放在peek上， 如果空间满了，遇到一个新节点的时候，和peek的比较一下，<br> 如果新的更小就把原来的弹出去，放新的</li> 
+ <li>但是这个题目有个trick是说， 返回值的排序顺序， 其实也决定了peek比较的时候的情况， 如果距离一样， 那要把x大的那个弹出去，<br> 如果x一样的话，要把y大的那个弹出去， 所以这里如果不注意的话很容易有一些case不能通过， 具体可以参考最后的一些错误代码</li> 
+</ol> 
+<h2><a href="#java题解代码1" id="java题解代码1">java题解代码1</a></h2> 
+<ol> 
+ <li>取出来的时候可以一个一个poll， 这样就是按逆序的。</li> 
+</ol> 
+<pre><code>
+public class Solution {
+    /**
+     * @param points: a list of points
+     * @param origin: a point
+     * @param k: An integer
+     * @return: the k closest points
+     */
+    public Point[] kClosest(Point[] points, Point origin, int k) {
+        // write your code here
+        PriorityQueue&lt;Point&gt; pq = new PriorityQueue(k+1, new Comparator&lt;Point&gt;() {
+            public int compare(Point a, Point b) {
+                return comparePoint(b, a, origin);
+            }
+        });
+        for(Point p: points) {
+            pq.add(p);
+            if(pq.size() &gt; k) {
+                pq.poll();
+            }
+        }
+        Point[] arr = new Point[k];
+        int i = arr.length-1;
+        while(pq.size() &gt; 0) {
+            arr[i--] = pq.poll();
+        }
+
+        return arr;
+    }
+    
+    int comparePoint(Point a, Point b, Point origin) {
+        int diff = dis(a, origin) - dis(b, origin);
+        if(diff != 0) {
+            return diff;
+        }
+        if(a.x != b.x) {
+            return a.x - b.x;
+        }
+        return a.y - b.y;
+    }
+    
+    int dis(Point a, Point origin) {
+        return (int)Math.pow(a.x-origin.x, 2) + (int)Math.pow(a.y-origin.y, 2);
+    }
+}
+
+</code></pre> 
+<h2><a href="#java题解代码2" id="java题解代码2">java题解代码2</a></h2> 
+<ol> 
+ <li>这里最后取的时候直接用了一个iterator, 结果priorityqueue的iterator不是有序的，<br> 所以这个然后放到数组里面以后再做了一次排序，才可以符合要求</li> 
+</ol> 
+<pre><code>/**
+ * Definition for a point.
+ * class Point {
+ *     int x;
+ *     int y;
+ *     Point() { x = 0; y = 0; }
+ *     Point(int a, int b) { x = a; y = b; }
+ * }
+ */
+ import java.util.*;
+
+public class Solution {
+    /**
+     * @param points: a list of points
+     * @param origin: a point
+     * @param k: An integer
+     * @return: the k closest points
+     */
+    public Point[] kClosest(Point[] points, Point origin, int k) {
+        // write your code here
+        PriorityQueue&lt;Point&gt; pq = new PriorityQueue(k, new Comparator&lt;Point&gt;() {
+            public int compare(Point a, Point b) {
+                return comparePoint(b, a, origin);
+            }
+        });
+        for(Point p: points) {
+            if(pq.size() == k) {
+                Point peek = pq.peek();
+                if(comparePoint(p, peek, origin) &lt; 0) {
+                    pq.poll();
+                    pq.add(p);
+                }
+            }
+            else {
+                pq.add(p);
+            }
+        }
+        Point[] arr = new Point[k];
+        int i = arr.length-1;
+        for(Point p: pq) {
+            arr[i--] = p;
+        }
+        
+        Arrays.sort(arr, new Comparator&lt;Point&gt;(){
+            public int compare(Point a, Point b) {
+                return comparePoint(a, b, origin);
+            }    
+        });
+        
+        return arr;
+    }
+    
+    int comparePoint(Point a, Point b, Point origin) {
+        int diff = dis(a, origin) - dis(b, origin);
+        if(diff != 0) {
+            return diff;
+        }
+        if(a.x != b.x) {
+            return a.x - b.x;
+        }
+        return a.y - b.y;
+    }
+    
+    int dis(Point a, Point origin) {
+        return (int)Math.pow(a.x-origin.x, 2) + (int)Math.pow(a.y-origin.y, 2);
+    }
+}
+
+</code></pre> 
+<h2><a href="#java题解代码2" id="java题解代码2">java题解代码2</a></h2> 
+<ol> 
+ <li>可以设置一个k+1大小到heap， 然后每次容量比k大的时候， 直接pop一个出来， 这样就不需要对最上面那个做判断了</li> 
+</ol> 
+<pre><code>public Point[] kClosest(Point[] points, Point origin, int k) {
+       // write your code here
+       PriorityQueue&lt;Point&gt; pq = new PriorityQueue(k+1, new Comparator&lt;Point&gt;() {
+           public int compare(Point a, Point b) {
+               return comparePoint(b, a, origin);
+           }
+       });
+       for(Point p: points) {
+           pq.add(p);
+           if(pq.size() &gt; k) {
+               pq.poll();
+           }
+       }
+       Point[] arr = new Point[k];
+       int i = arr.length-1;
+       for(Point p: pq) {
+           arr[i--] = p;
+       }
+       
+       Arrays.sort(arr, new Comparator&lt;Point&gt;(){
+           public int compare(Point a, Point b) {
+               return comparePoint(a, b, origin);
+           }    
+       });
+       
+       return arr;
+   }
+   
+   int comparePoint(Point a, Point b, Point origin) {
+       int diff = dis(a, origin) - dis(b, origin);
+       if(diff != 0) {
+           return diff;
+       }
+       if(a.x != b.x) {
+           return a.x - b.x;
+       }
+       return a.y - b.y;
+   }
+   
+   int dis(Point a, Point origin) {
+       return (int)Math.pow(a.x-origin.x, 2) + (int)Math.pow(a.y-origin.y, 2);
+   }
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*logK), N是坐标的个数， 主要复杂度在于对N个坐标进行循环， 每次操作都是logK</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(K)</p> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>这个错误是在于没有和origin比较， 直接和0比较了</p> 
+<pre><code>public class Solution {
+    /**
+     * @param points: a list of points
+     * @param origin: a point
+     * @param k: An integer
+     * @return: the k closest points
+     */
+    public Point[] kClosest(Point[] points, Point origin, int k) {
+        // write your code here
+        PriorityQueue&lt;Point&gt; pq = new PriorityQueue(k, new Comparator&lt;Point&gt;() {
+            public int compare(Point a, Point b) {
+                return comparePoint(b, a);
+            }
+        });
+        for(Point p: points) {
+            if(pq.size() == k) {
+                Point peek = pq.peek();
+                if(comparePoint(p, peek) &lt; 0) {
+                    pq.poll();
+                    pq.add(p);
+                }
+            }
+            else {
+                pq.add(p);
+            }
+        }
+        Point[] arr = new Point[k];
+        int i = arr.length-1;
+        for(Point p: pq) {
+            arr[i--] = p;
+        }
+        return arr;
+    }
+    
+    int comparePoint(Point a, Point b) {
+        int diff = (a.x*a.x+a.y*a.y)-(b.x*b.x+b.y*b.y);
+        if(diff != 0) {
+            return diff;
+        }
+        if(a.x != b.x) {
+            return a.x-b.x;
+        }
+        return a.y - b.y;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>这里的错误主要是PriorityQueue的iterator是没有顺序的</p> 
+<pre><code>public class Solution {
+    /**
+     * @param points: a list of points
+     * @param origin: a point
+     * @param k: An integer
+     * @return: the k closest points
+     */
+    public Point[] kClosest(Point[] points, Point origin, int k) {
+        // write your code here
+        PriorityQueue&lt;Point&gt; pq = new PriorityQueue(k, new Comparator&lt;Point&gt;() {
+            public int compare(Point a, Point b) {
+                return comparePoint(b, a, origin);
+            }
+        });
+        for(Point p: points) {
+            if(pq.size() == k) {
+                Point peek = pq.peek();
+                if(comparePoint(p, peek, origin) &lt; 0) {
+                    pq.poll();
+                    pq.add(p);
+                }
+            }
+            else {
+                pq.add(p);
+            }
+        }
+        Point[] arr = new Point[k];
+        int i = arr.length-1;
+        for(Point p: pq) {
+            arr[i--] = p;
+        }
+        return arr;
+    }
+    
+    int comparePoint(Point a, Point b, Point origin) {
+        int diff = dis(a, origin) - dis(b, origin);
+        if(diff != 0) {
+            return diff;
+        }
+        if(a.x != b.x) {
+            return a.x-b.x;
+        }
+        return a.y - b.y;
+    }
+    
+    int dis(Point a, Point origin) {
+        return (int)Math.pow(a.x-origin.x, 2) + (int)Math.pow(a.y-origin.y, 2);
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
