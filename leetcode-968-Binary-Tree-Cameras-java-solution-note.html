@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode Leetcode 968 Binary Tree Cameras解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode Leetcode 968 Binary Tree Cameras解题笔记</h1>
+			</div>
+
+			<p><em>30 December 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-968-binary-tree-cameras" id="题目-leetcode-968-binary-tree-cameras">题目 Leetcode 968 Binary Tree Cameras</a></h2> 
+<ol> 
+ <li>输入一个二叉树，然后可以在任意节点放置一个摄像机， 放了摄像机以后，可以监控自己， 父节点和子节点</li> 
+ <li>问对于任意一个二叉树，最少需要多少个摄像机可以让所有的节点都被监控到？</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>比赛的时候还是没有做出来， 状态关系没有理的比较清晰就开始写，然后搞的比较复杂， 最后没有写出可以ac的版本</li> 
+ <li>后来看了下答案， 感觉状态如果整理清楚的话，其实还是可以理解的</li> 
+ <li>首先对于任意一个节点，只有四种可能是会让这个节点被cover的， 一种是父节点有camera， 一种是自己有camera，一种是左节点有camera，一种是右节点有camera</li> 
+ <li>那么如果我们用dfs写， 首先需要传入的状态有父节点是否有camera， 因为这个会影响到当前节点是否一定要放置camera的问题</li> 
+ <li>然后， 对于每个节点，我们可以选择当前是否放置camera， 这里遇到一个比较tricky的问题是， 如果父节点没有camera, 当前节点也选择不放置camera的话，<br> 那么，在左节点或者右节点必须要放置一个camera, 才可以保证当前节点被cover， 所以， 这里会需要传入另外一个状态force, 用来表示某个节点是否一定要放置camera（就是上一次访问的节点的子节点），</li> 
+ <li>到这里，我们可以定义递归函数如下<br> int dfsmin(TreeNode node, boolean parentVisited, boolean force)</li> 
+ <li>函数的实现，就是对几种情况分别做处理， 然后取合法的最小值就好</li> 
+ <li>当然， 这样做会超时， 原因是递归的过程中， 对很多节点做了大量的重复计算， 所以我们可能会考虑用一个Map&lt;TreeNode, Integer&gt;来做记忆化搜索， 可是实际上这样提交以后会几乎全错， 原因是这里会对每个node做多次计算， 但是每次状态都是不一样的， 比如parentvisited的值会不一样， 所以这里需要定义一个state， 来对这个递归过程做记忆</li> 
+</ol> 
+<h3><a href="#java题解代码" id="java题解代码">java题解代码</a></h3> 
+<pre><code>public int minCameraCover(TreeNode root) {
+    return dfsmin(root, false, false, new HashMap&lt;&gt;());
+}
+
+// each dfsmin will care about how to cover the current node
+int dfsmin(TreeNode node, boolean parentVisited, boolean force, Map&lt;State, Integer&gt; map) {
+    if(null == node) return 0;
+    
+    State state = new State(node, parentVisited, force);
+    // note we have to use the state as the key, use the node as the key will give wa
+    // because each node is called multiple times with different state
+    if(map.containsKey(state)) {  
+        return map.get(state);
+    }
+    
+    if(parentVisited) {
+        // case 1: visit current node
+        int min1 = 1 + dfsmin(node.left, true, false, map) + dfsmin(node.right, true, false, map);
+        // case 2 : not visit current node (because current node is covered by parent)
+        int min2 = dfsmin(node.left, false, false, map) + dfsmin(node.right, false, false, map);
+        int min = Math.min(min1, min2);
+        map.put(state, min);
+
+        return min;
+    }
+    else {
+        // case 1: visit current node
+        int min = 1 + dfsmin(node.left, true, false, map) + dfsmin(node.right, true, false, map);
+        
+        if(!force) {
+            // case 2: not visit cur, visit left (if left exist) so that left can cover cur
+            if(node.left != null) {
+                int min2 = dfsmin(node.left, false, true, map) + dfsmin(node.right, false, false, map);    
+                min = Math.min(min, min2);
+            }
+            if(node.right != null) {
+                int min3 = dfsmin(node.left, false, false, map) + dfsmin(node.right, false, true, map);
+                min = Math.min(min, min3);
+            }
+        }
+        
+        map.put(state, min);
+        
+        return min;
+    }
+}
+
+static class State {
+    private TreeNode node;
+    private boolean parentVisited;
+    private boolean force;
+    public State(TreeNode node, boolean parentVisited, boolean force) {
+        this.node = node;
+        this.parentVisited = parentVisited;
+        this.force = force;
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        State state = (State) o;
+        return parentVisited == state.parentVisited &amp;&amp;
+                force == state.force &amp;&amp;
+                Objects.equals(node, state.node);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(node, parentVisited, force);
+    }
+}    
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*4), 对于每个node，有4种不同的状态，分别做了搜索</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N*4), 对于每个状态都做了搜索</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
