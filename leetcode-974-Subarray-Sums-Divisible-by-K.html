@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 974 Subarray Sums Divisible by K解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 974 Subarray Sums Divisible by K解题笔记</h1>
+			</div>
+
+			<p><em>11 January 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-974-subarray-sums-divisible-by-k" id="题目-leetcode-974-subarray-sums-divisible-by-k">题目 Leetcode 974 Subarray Sums Divisible by K</a></h2> 
+<p>输入一个整数数组和一个整数K， 要求返回有多少个连续子数组的和可以被K整除</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>朴素的思想是把每个子数组的和加起来， 然后算一下是否可以被K整除, 也就是对[i,j], 计算一次求和操作， 这样复杂度会是O(N^3)</li> 
+ <li>进一步优化， 我们可以用pre-sum的思想， 把到每个index的sum算出来， 这样， 对sum(i,j), 就可以直接计算了， 这样复杂度可以优化到O(N^2)</li> 
+ <li>然后， 我们要看对sum(i,j)是否可以被K整除， 其实只要看sum(0,i)%K == sum(0,j)%K 就可以了， 那么我们只要遍历一次，计算每个index的余数就好， 这样，可以优化到O(N)</li> 
+ <li>进一步， 只要知道有几个index的余数是一样的， 那么在这个余数上可以有多少个子数组符合要求，也可以直接计算所有的可能了</li> 
+ <li>当然，上面的逻辑有一个问题，就是余数如果是负数，这里就会有问题了， 幸好， 输入的整数是有范围的，我们可以把数组处理一下，让余数变成非负的</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int subarraysDivByK(int[] A, int K) {
+    int sum = 0;
+    int plus = K;
+    while(plus &lt; 10000) {
+        plus += K;
+    }
+    
+    Map&lt;Integer, Integer&gt; rmap = new HashMap&lt;&gt;();
+    for(int i = 0; i &lt; A.length; ++i) {
+        sum += A[i] + plus;
+        int r = sum%K;    
+        int count = rmap.getOrDefault(r, 0);
+        rmap.put(r, count+1);
+    }
+    int total = 0;
+    for(Map.Entry&lt;Integer, Integer&gt; entry: rmap.entrySet()) {
+        int count = entry.getValue();
+        if(entry.getKey() == 0) {
+            total += (count+1)*count/2;
+        }
+        else {
+            total += count * (count-1)/2;
+        }
+    }
+    return total;
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组只遍历了一次， 复杂度是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>建立了一个map， 用来存放余数的个数， 最大是K, 所以空间复杂度是O(K)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
