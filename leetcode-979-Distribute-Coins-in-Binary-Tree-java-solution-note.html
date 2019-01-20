@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 979 Distribute Coins in Binary Tree解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 979 Distribute Coins in Binary Tree解题笔记</h1>
+			</div>
+
+			<p><em>19 January 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-979-distribute-coins-in-binary-tree" id="题目-leetcode-979-distribute-coins-in-binary-tree">题目 leetcode 979 Distribute Coins in Binary Tree</a></h2> 
+<p>一个二叉树， 总共有N个节点， 每个节点上有一个val值， 表示这个节点上有多少个硬币， 所有节点的硬币总数也是N，<br> 现在要把硬币沿着树移动，每次只能移动一个硬币，移动的方向可以随意，既可以从父节点移动到子节点，也可以从子节点移动到父节点，问最少需要移动多少个step，可以使得每个节点都正好只有一个硬币？</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>非常好的题目，其实类似的题目之前也有几个。可惜比赛的时候想了很久一直卡壳，只好先去做第四题，然后再回来做这个，后来终于想到思路，实现的也比较冗余，最后卡着时间提交，结果因为一个level order遍历的bug导致没有过，比赛完了才调试通过，真是悲催。<br> 下面是思路过程，和想的一些错误的方向<br> 1. 一开始想是不是可以贪心， 对于每个节点，都把硬币放到离他最近的节点， 然而想了几个test case以后发现肯定是不对的，<br> 比如对下面的树, 因为我们贪心的时候不可能规定顺序，所以假如遇到3这个节点的时候，然后把多余的节点就放到最近的节点的话，那么就是放到3的两个子节点，结果就不是最优的。</p> 
+<pre><code>    3
+   / \
+  0   0
+ /     \ 
+2       0
+</code></pre> 
+<p>这里贪心的时候又想， 能不能从空白节点开始贪心，这样同样是不可行的，比如如果从root.left开始，如果直接从root取，同样不是最优解。</p> 
+<ol> 
+ <li>然后想能不能把这个树转化成图，然后在图上做， 但是在图上也没有合适的思路，因为不能定义让和最短的路径</li> 
+ <li>然后想能不能递归做， 当然，这个题目是可以递归的， 而且事后看最简洁的做法都是递归的，但是递归的前提是找到正确的思路， 而递归只是在这个思路下的一个简洁的实现方式。 不过我在比赛中并没有想到如何递归实现的思路， 这个可以考虑到左边分好，右边也分好，但是如何计算左边移动到右边的步骤， 然后移动以后需要多少次，也卡壳了。</li> 
+ <li>在递归的过程中，也想过统计左边有多少个节点和硬币，右边有多少个节点和硬币， 然后看看能不能把这个记录下来然后比较，又无极而终</li> 
+ <li>做完第四题回来, 看了半天，终于看到希望。 前面想贪心的时候，如果从多出硬币的节点和空白节点出发，好像不能得出最优解，然后如果从根节点出发，也是不对的。 但是如果我们从叶子节点出发， 结果似乎就是最优的。 分析如下：<br> a. 如果叶子节点是1， 那么什么都不需要做<br> b. 如果叶子节点是0， 那么，要让这个叶子节点变成1， 一定需要先将一个硬币移动到他的父节点，然后再移动到这个叶子节点， 因为叶子节点只和他的父节点相邻，所以没有其他途径可以达到这个状态。<br> c. 如果叶子节点是N(N&gt;1), 那么同理，因为叶子节点只和他的父节点相邻，这些多出来的硬币，第一步也一定是都移动到他的父节点, 然后再移动到其他节点。<br> d. 然后在这个过程可以是递归的，也就是说把所有的叶结点都处理完以后这些叶节点已经是了最优的效果了,所以呢他们已经不需要再处理了。<br> 把他们的那个多出来的硬币加到他们的父节点上,把这少的硬币也减到他们的父节点上。<br> 这个时候那个叶节点全都可以砍掉。他们父节点就变成叶节点。然后这个递归的过程一定是不断向上处理的过程。</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<p>用上面的思路， 先做了level order 遍历， 然后从下往上处理，分别计算每次需要移动多少步，<br> 然后更新父节点的状态， 然后继续不断向上处理。</p> 
+<pre><code>class Solution {
+    static class MyNode {
+        TreeNode cur,parent;
+        public MyNode(TreeNode cur, TreeNode parent) {
+            this.cur = cur;
+            this.parent = parent;
+        }
+    }
+    public int distributeCoins(TreeNode root) {
+        if(null == root) return 0;
+        
+        List&lt;List&lt;MyNode&gt;&gt; allLevels = new ArrayList&lt;&gt;();
+        Queue&lt;MyNode&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(new MyNode(root, null));
+        while(queue.size() &gt; 0) {
+            int size = queue.size();
+            List&lt;MyNode&gt; level = new ArrayList&lt;&gt;();
+            for(int i = 0; i &lt; size; ++i) {
+                MyNode node = queue.poll();
+                level.add(node);
+                if(node.cur.left != null) {
+                    queue.add(new MyNode(node.cur.left, node.cur));
+                }
+                if(node.cur.right != null) {
+                    queue.add(new MyNode(node.cur.right, node.cur));
+                }
+            }
+            allLevels.add(level);
+        }
+        int count = 0;
+        for(int i = allLevels.size()-1; i &gt;= 0; --i) {
+            List&lt;MyNode&gt; level = allLevels.get(i);
+            
+            for(MyNode mynode: level) {
+                TreeNode cur = mynode.cur;
+                System.out.println("cur.val=" + cur.val);
+                if(cur.val == 1) {
+                    // good, do nothing
+                }
+                else {
+                    if(cur.val &gt; 1) {
+                        int step = cur.val-1;
+                        if(null != mynode.parent) {
+                            mynode.parent.val += step;    
+                        }                        
+                        count += step;
+                    }
+                    else {
+                        int step = 1-cur.val;
+                        if(null != mynode.parent) {
+                            mynode.parent.val -= step;
+                        }
+                        count += step;
+                    }
+                    
+                }
+            }
+        }
+        return count;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N) 每个节点分别遍历了两次， 复杂度上还上O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>把整个树重新拷贝了一遍， 复杂度也是O(N)</p> 
+<h2><a href="#错误的代码" id="错误的代码">错误的代码</a></h2> 
+<p>这是当时提交的错误的代码，以前我做level order遍历的时候， 都是用两个queue的，后来看到这个size的做法觉得比较简洁，于是我就改成这种写法，现在看来这样写还是容易出bug，以后准备换回两个queue的方式</p> 
+<pre><code>class Solution {
+    
+    static class MyNode {
+        TreeNode cur,parent;
+        public MyNode(TreeNode cur, TreeNode parent) {
+            this.cur = cur;
+            this.parent = parent;
+        }
+    }
+    public int distributeCoins(TreeNode root) {
+        if(null == root) return 0;
+        
+        List&lt;List&lt;MyNode&gt;&gt; allLevels = new ArrayList&lt;&gt;();
+        Queue&lt;MyNode&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(new MyNode(root, null));
+        while(queue.size() &gt; 0) {
+            int size = queue.size();
+            List&lt;MyNode&gt; level = new ArrayList&lt;&gt;();
+            for(int i = 0; i &lt; queue.size(); ++i) {
+                MyNode node = queue.poll();
+                level.add(node);
+                if(node.cur.left != null) {
+                    queue.add(new MyNode(node.cur.left, node.cur));
+                }
+                if(node.cur.right != null) {
+                    queue.add(new MyNode(node.cur.right, node.cur));
+                }
+            }
+            allLevels.add(level);
+        }
+        int count = 0;
+        for(int i = allLevels.size()-1; i &gt;= 0; --i) {
+            List&lt;MyNode&gt; level = allLevels.get(i);
+            for(MyNode mynode: level) {
+                TreeNode cur = mynode.cur;
+                if(cur.val == 1) {
+                    // good, do nothing
+                }
+                else {
+                    if(cur.val &gt; 1) {
+                        int step = cur.val-1;
+                        if(null != mynode.parent) {
+                            mynode.parent.val += step;    
+                        }
+                        
+                        count += step;
+                    }
+                    else {
+                        int step = 1-cur.val;
+                        if(null != mynode.parent) {
+                        mynode.parent.val -= step;
+                        }
+                        count += step;
+                    }
+                    
+                }
+            }
+        }
+        return count;
+    }
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
