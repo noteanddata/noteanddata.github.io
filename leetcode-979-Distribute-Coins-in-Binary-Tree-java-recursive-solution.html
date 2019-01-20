@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 979 Distribute Coins in Binary Tree递归解法解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 979 Distribute Coins in Binary Tree递归解法解题笔记</h1>
+			</div>
+
+			<p><em>19 January 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-979-distribute-coins-in-binary-tree" id="题目-leetcode-979-distribute-coins-in-binary-tree">题目 leetcode 979 Distribute Coins in Binary Tree</a></h2> 
+<p>题目分析和原有的解题思路分析在这里<br> <a href="http://www.noteanddata.com/leetcode-979-Distribute-Coins-in-Binary-Tree-java-solution-note.html">http://www.noteanddata.com/leetcode-979-Distribute-Coins-in-Binary-Tree-java-solution-note.html</a></p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>这里写一下递归的思路,<br> 1. 按照前面的分析， 这个题目的核心就是在于必须从叶节点开始处理，因为叶节点只有一个节点是邻居，就是他的父节点， 所以要让叶节点变成只有一个coin， 那就必须先把多余或者缺少的coin移到父节点，然后再处理，这样可以保证结果是最优的。<br> 2. 在之前的迭代的版本中，先做level order遍历， 然后从叶节点开始处理，然后把每个节点的父节点的值更新以后，然后继续原来的处理过程。<br> 那么这个过程也可以用递归来处理， 可以写一个dfs函数返回要从叶节点给父节点多少个coin（如果叶节点的coin&gt;1)， 或者是要从父节点给多少个coin到叶节点(如果叶节点的coin&lt;1), 然后int v = left+right+node.val就是当前节点的coin个数, 那么v-1就是当前节点需要给父节点的个数（v-1可以是正数，也可以是负数，也可以是0）， 那么当前已经移动的步骤数就是Math.abs(left) + Math.abs(right)<br> 3. 这样一路递归到根节点，把每个节点需要移动的步数加起来就好</p> 
+<h2><a href="#java递归代码1" id="java递归代码1">java递归代码1</a></h2> 
+<pre><code>class Solution {   
+    private int ret = 0;
+    public int distributeCoins(TreeNode root) {
+        ret = 0;
+        dfs(root);
+        return ret;
+    }
+    
+    public int dfs(TreeNode node) {
+        if(null == node) {
+            return 0;
+        }
+        int left = dfs(node.left);
+        int right = dfs(node.right);
+        int v = left + right + node.val;
+        ret += Math.abs(left) + Math.abs(right);
+        return v-1;
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N) 因为每个节点只遍历了一次</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1) 没有使用额外空间</p> 
+<h2><a href="#java-递归代码2" id="java-递归代码2">java 递归代码2</a></h2> 
+<p>前面的代码使用了全部变量， 当然一般我们递归最好是可以不用全局变量， 所以， 把dfs的返回值修改成一个数组，把返回的值和整体的步数保存起来，就可以避免全部变量了</p> 
+<pre><code>public int distributeCoins(TreeNode root) {
+    return dfs(root)[1];
+}
+public int[] dfs(TreeNode node) {
+    if(null == node) {
+        return new int[]{0,0};
+    }
+    int[] left = dfs(node.left);
+    int[] right = dfs(node.right);
+    int v = left[0] + right[0] + node.val;
+    return new int[]{v-1, left[1] + right[1] + Math.abs(left[0]) + Math.abs(right[0])};
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
