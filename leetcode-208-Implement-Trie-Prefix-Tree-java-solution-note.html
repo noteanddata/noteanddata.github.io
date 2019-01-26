@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 208 Implement Trie (Prefix Tree)解题笔记--不断简化的多个版本</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 208 Implement Trie (Prefix Tree)解题笔记--不断简化的多个版本</h1>
+			</div>
+
+			<p><em>25 January 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-208-implement-trie-prefix-tree" id="题目-leetcode-208-implement-trie-prefix-tree">题目 leetcode 208 Implement Trie (Prefix Tree)</a></h2> 
+<p>题目要求实现一个基本的trie数据结构，也称为前缀树，<br> 要求实现insert, search, startWith三个接口，<br> 其中所有的输入字符串的字符都是a-z</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>trie的基本结构是一个多叉树， 每个节点表示一个字符， 然后从根节点到叶节点的完整路径表示一个字符串。<br> 比如这里有一个比较详细的介绍。<br> <a href="https://www.cnblogs.com/huangxincheng/archive/2012/11/25/2788268.html">https://www.cnblogs.com/huangxincheng/archive/2012/11/25/2788268.html</a></li> 
+ <li>trie的主要用处： 字符串匹配， 前缀匹配, 还可以在上面加上额外信息，比如加上频率，然后可以做词频统计等</li> 
+ <li>trie的主要实现， 每个节点会有多个children， 然后每次添加一个新的字符串的时候， 逐个字符访问node走下来， 如果到某一个节点的时候字符如果不存在，那么就添加一个新的节点, 然后一路下去。</li> 
+</ol> 
+<h2><a href="#java解法版本1" id="java解法版本1">java解法版本1</a></h2> 
+<p>所以， 根据之前的基本思路，我就写了一个版本。 代码如下。<br> 基本细节是：<br> 1. 定义一个Node类， 里面有三个变量<br> * 一个char， 表示当前的char，<br> * 一个boolean变量，表示是否是一个单词的结束<br> * 一个children 数组， 表示这个节点的children</p> 
+<ol> 
+ <li>定义Trie类，</li> 
+</ol> 
+<ul> 
+ <li>在Trie里面定义了一个大小为26的数组作为root， 这样每次就从root这里开始添加第一个字符</li> 
+ <li>insert/search/startWtih的时候，都是从root开始遍历， 然后检查字符串对应的index有没有节点，<br> 如果是第一个字符， 都要做一个特殊判断， 因为root是一个数组。</li> 
+</ul> 
+<pre><code>class Trie {
+    private Node[] root;
+
+    /** Initialize your data structure here. */
+    public Trie() {
+        root = new Node[26];
+    }
+    
+    /** Inserts a word into the trie. */
+    public void insert(String word) {
+        Node node = null;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(i == 0) {
+                if(null == root[index]) {
+                    root[index] = new Node(ch, false);
+                }
+                node = root[index];                
+            }
+            else {
+                if(null == node.children[index]) {
+                    node.children[index] = new Node(ch, false);
+                }
+                node = node.children[index];
+            }
+            if(i == word.length()-1) {
+                node.isend = true;
+            }
+        }
+    }
+    
+    /** Returns if the word is in the trie. */
+    public boolean search(String word) {
+        Node node = null;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(i == 0) {
+                if(null == root[index]) {
+                    return false;
+                }
+                node = root[index];
+            }
+            else {
+                if(null == node.children[index]) {
+                    return false;
+                }
+                node = node.children[index];
+            }            
+        }
+        return node.isend;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) {
+        Node node = null;
+        for(int i = 0; i &lt; prefix.length(); ++i) {
+            char ch = prefix.charAt(i);
+            int index = ch - 'a';
+            if(i == 0) {
+                if(null == root[index]) {
+                    return false;
+                }
+                node = root[index];
+            }
+            else {
+                if(null == node.children[index]) {
+                    return false;
+                }
+                node = node.children[index];
+            }            
+        }
+        return true;
+    }
+    
+    static class Node {
+        private char ch;
+        private boolean isend;
+        private Node[] children;
+        public Node(char ch, boolean isend) {
+            this.ch = ch;
+            this.isend = isend;
+            this.children = new Node[26];
+        }
+    }
+}
+
+
+</code></pre> 
+<h2><a href="#java解法版本2" id="java解法版本2">java解法版本2</a></h2> 
+<p>写完以后学习了一下， 发现我的代码比别人的代码要繁琐很多， 其中一个地方就是每次对第一个字符都要做特殊判断，<br> 实际上， 如果root直接定义成一个Node， 那就可以每次都从children判断，不需要对第一个字符做特殊判断。<br> 所以代码略微简洁一点如下</p> 
+<pre><code>class Trie {
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public Trie() {
+        root = new Node(' ', false);
+    }
+    
+    /** Inserts a word into the trie. */
+    public void insert(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                node.children[index] = new Node(ch, false);
+            }
+            node = node.children[index];
+
+            if(i == word.length()-1) {
+                node.isend = true;
+            }
+        }
+    }
+    
+    /** Returns if the word is in the trie. */
+    public boolean search(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                return false;
+            }
+            node = node.children[index];
+        }
+        return node.isend;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) {
+        Node node = root;
+        for(int i = 0; i &lt; prefix.length(); ++i) {
+            char ch = prefix.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                return false;
+            }
+            node = node.children[index];
+        }
+        return true;
+    }
+    
+    static class Node {
+        private char ch;
+        private boolean isend;
+        private Node[] children;
+        public Node(char ch, boolean isend) {
+            this.ch = ch;
+            this.isend = isend;
+            this.children = new Node[26];
+        }
+    }
+}
+
+
+</code></pre> 
+<h2><a href="#java错误版本1" id="java错误版本1">java错误版本1</a></h2> 
+<p>然后看到insert的时候设置isend这个if两行有点冗余， 所以想改成一行， 结果就错了，<br> 因为前面如果设置成true了以后， 后面又会被设置成false</p> 
+<pre><code>class Trie {
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public Trie() {
+        root = new Node(' ', false);
+    }
+    
+    /** Inserts a word into the trie. */
+    public void insert(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                node.children[index] = new Node(ch, false);
+            }
+            node = node.children[index];
+            node.isend = i == word.length()-1;
+        }
+    }
+    
+    /** Returns if the word is in the trie. */
+    public boolean search(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                return false;
+            }
+            node = node.children[index];
+        }
+        return node.isend;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) {
+        Node node = root;
+        for(int i = 0; i &lt; prefix.length(); ++i) {
+            char ch = prefix.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                return false;
+            }
+            node = node.children[index];
+        }
+        return true;
+    }
+    
+    static class Node {
+        private char ch;
+        private boolean isend;
+        private Node[] children;
+        public Node(char ch, boolean isend) {
+            this.ch = ch;
+            this.isend = isend;
+            this.children = new Node[26];
+        }
+    }
+}
+
+</code></pre> 
+<h2><a href="#java错误版本2" id="java错误版本2">java错误版本2</a></h2> 
+<p>试图fix上面的bug， 可惜还是错了</p> 
+<pre><code>class Trie {
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public Trie() {
+        root = new Node(' ', false);
+    }
+    
+    /** Inserts a word into the trie. */
+    public void insert(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                node.children[index] = new Node(ch, false);
+            }
+            node = node.children[index];
+            node.isend &amp;= (i == word.length()-1);
+        }
+    }
+    
+    /** Returns if the word is in the trie. */
+    public boolean search(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                return false;
+            }
+            node = node.children[index];
+        }
+        return node.isend;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) {
+        Node node = root;
+        for(int i = 0; i &lt; prefix.length(); ++i) {
+            char ch = prefix.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                return false;
+            }
+            node = node.children[index];
+        }
+        return true;
+    }
+    
+    static class Node {
+        private char ch;
+        private boolean isend;
+        private Node[] children;
+        public Node(char ch, boolean isend) {
+            this.ch = ch;
+            this.isend = isend;
+            this.children = new Node[26];
+        }
+    }
+}
+
+</code></pre> 
+<h2><a href="#java解法版本3" id="java解法版本3">java解法版本3</a></h2> 
+<p>把’与’操作"&amp;=“改成’或’操作”|=", 终于fix了这个bug</p> 
+<pre><code>class Trie {
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public Trie() {
+        root = new Node(' ', false);
+    }
+    
+    /** Inserts a word into the trie. */
+    public void insert(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                node.children[index] = new Node(ch, false);
+            }
+            node = node.children[index];
+            node.isend |= (i == word.length()-1);
+        }
+    }
+    
+    /** Returns if the word is in the trie. */
+    public boolean search(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                return false;
+            }
+            node = node.children[index];
+        }
+        return node.isend;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) {
+        Node node = root;
+        for(int i = 0; i &lt; prefix.length(); ++i) {
+            char ch = prefix.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                return false;
+            }
+            node = node.children[index];
+        }
+        return true;
+    }
+    
+    static class Node {
+        private char ch;
+        private boolean isend;
+        private Node[] children;
+        public Node(char ch, boolean isend) {
+            this.ch = ch;
+            this.isend = isend;
+            this.children = new Node[26];
+        }
+    }
+}
+</code></pre> 
+<h2><a href="#java解法版本4" id="java解法版本4">java解法版本4</a></h2> 
+<p>其实，遍历的时候，已经根据当前的字符计算在children中的index了， 所以到每个节点的时候，其实已经知道当前节点的字符了，<br> 所以， 存储当前字符已经没有必要， 修改代码如下</p> 
+<pre><code>class Trie {
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public Trie() {
+        root = new Node(false);
+    }
+    
+    /** Inserts a word into the trie. */
+    public void insert(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                node.children[index] = new Node(false);
+            }
+            node = node.children[index];
+            node.endOfWord |= (i == word.length()-1);
+        }
+    }
+    
+    /** Returns if the word is in the trie. */
+    public boolean search(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                return false;
+            }
+            node = node.children[index];
+        }
+        return node.endOfWord;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) {
+        Node node = root;
+        for(int i = 0; i &lt; prefix.length(); ++i) {
+            char ch = prefix.charAt(i);
+            int index = ch - 'a';
+            if(null == node.children[index]) {
+                return false;
+            }
+            node = node.children[index];
+        }
+        return true;
+    }
+    
+    static class Node {
+        private boolean endOfWord;
+        private Node[] children;
+        public Node(boolean endOfWord) {
+            this.endOfWord = endOfWord;
+            this.children = new Node[26];
+        }
+    }
+}
+
+</code></pre> 
+<h2><a href="#java解法版本5" id="java解法版本5">java解法版本5</a></h2> 
+<p>还有一个细节是题目中的字符只是小写的a-z， 所以直接开了一个26大小的数组，<br> 但是, 如果字符串范围比较大（比如unicode）， 然后又比较稀疏， 用数组会比较浪费空间， 一般可以用map来代替数组</p> 
+<pre><code>class Trie {
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public Trie() {
+        root = new Node(false);
+    }
+    
+    /** Inserts a word into the trie. */
+    public void insert(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);            
+            if(!node.children.containsKey(ch)) {
+                node.children.put(ch, new Node(false));
+            }
+            node = node.children.get(ch);
+            node.endOfWord |= (i == word.length()-1);
+        }
+    }
+    
+    /** Returns if the word is in the trie. */
+    public boolean search(String word) {
+        Node node = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            node = node.children.get(ch);
+            if(null == node) return false;
+        }
+        return node.endOfWord;
+    }
+    
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) {
+        Node node = root;
+        for(int i = 0; i &lt; prefix.length(); ++i) {
+            char ch = prefix.charAt(i);
+            node = node.children.get(ch);
+            if(null == node) return false;
+        }
+        return true;
+    }
+    
+    static class Node {
+        private Map&lt;Character, Node&gt; children;
+        private boolean endOfWord;
+        public Node(boolean endOfWord) {
+            this.endOfWord = endOfWord;
+            this.children = new HashMap&lt;&gt;();
+        }
+    }
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
