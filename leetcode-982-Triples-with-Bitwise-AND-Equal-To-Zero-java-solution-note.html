@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 982 Triples with Bitwise AND Equal To Zero解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 982 Triples with Bitwise AND Equal To Zero解题笔记</h1>
+			</div>
+
+			<p><em>25 January 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-982-triples-with-bitwise-and-equal-to-zero" id="题目-leetcode-982-triples-with-bitwise-and-equal-to-zero">题目 Leetcode 982 Triples with Bitwise AND Equal To Zero</a></h2> 
+<p>题目会输入一个整数数组， 可以任意选择三个索引i,j,k, 其中i,j,k可以任意选择， 可以重复， 也没有顺序要求。<br> 问， 总共有多少种i,j,k的排列， 可以让a[i] &amp; a[j] &amp; a[k] = 0?</p> 
+<p>题目对数据的大小做了说明：<br> 其中， 1 &lt;= A.length &lt;= 1000<br> 另外， 0 &lt;= A[i] &lt; 2^16</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>非常悲催，我比赛的时候又没有做出来， 当时觉得既然O(N^3)肯定会超时（大约10亿次循环)， 那么对0做一下优化，也许可以过， 结果在去重上细节非常多，几次都wa<br> 对a[i]=0 和a[i]&amp;a[j]=0的两种情况的处理都感觉比较繁琐。</li> 
+ <li>比赛完了以后学习大家的做法总结， 感觉还是对于两个技巧不够熟练， 一是记忆化保存结果， 可以用一个map来对O(N^2)的结果做保存，<br> 然后继续处理， 类似的技巧在2-sum, 3-sum等题目中都是常用的， 甚至presum的题目中也非常常用， 基本就是通过一个map来保存结果， 然后将复杂度降低一个维度。 可惜比赛的时候都在纠结于前面错误而又繁琐的思路， 实际情况是， 题目正常的解一定不是10亿次循环， 不应该在错误的方向上浪费过多的时间。 另外一个技巧就是dp， 没有通过小规模样本， 或者是变化参数来确定子问题， 建立递推关系</li> 
+</ol> 
+<h2><a href="#java代码1" id="java代码1">java代码1</a></h2> 
+<p>这题记忆化的方式， 就是先通过一个O(N^2)把A[i] &amp; A[j]的个数算好保存好， 然后把这个A[i]&amp;A[j] 和A[k]做计算， 然后看总共有多少个就好，<br> A[i] &amp; A[j]的结果， 需要记录次数， 因为每一次都会对最终结果有影响。</p> 
+<pre><code>class Solution {
+    public int countTriplets(int[] A) {
+        int total = 0;
+        Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; A.length; ++i) {
+            for(int j = 0; j &lt; A.length; ++j) {
+                int t = (A[i] &amp; A[j]);
+                int count = map.getOrDefault(t, 0);
+                map.put(t, count+1);
+            }
+        }
+        
+        for(int i = 0; i &lt; A.length; ++i) {
+            for(Map.Entry&lt;Integer, Integer&gt; entry: map.entrySet()) {
+                if((A[i] &amp; entry.getKey()) == 0) {
+                    total += entry.getValue();
+                }
+            }
+        }
+        return total;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M), 其中M最大是2^16</p> 
+<h2><a href="#java题解代码2dp" id="java题解代码2dp">java题解代码2–dp</a></h2> 
+<p>dp的思路就是， 因为数字大小有上限， 假设我们有变化两次的结果， 那么如何求变化三次的结果？ 或者如果有三次的结果， 如何求变化四次的结果？<br> 设置dp[i][j]是指变化i次（或者说i+1次， 因为从0开始索引)， 然后值是j的结果,<br> 那么， 递推关系如下， 也就是说， 对于前面一个值j, 和数组里面的v做操作以后的值的结果， 需要加上前一次到j的个数<br> for(int v: A) {<br> dp[i][v&amp;j] += dp[i-1][j]<br> }</p> 
+<p>那么， 最后结果就是dp[2][0]</p> 
+<p>另外， 初始状态的建立， 就是对A里面的每个值v， 设置dp[i][v]++<br> 这里有一个问题， 数组里面的数字可能有重复， 不能直接设置dp[i][v] = 1</p> 
+<pre><code>class Solution {
+    public int countTriplets(int[] A) {
+        int size =  1 &lt;&lt; 16;
+        int[][] dp = new int[3][size];
+        for(int i = 0; i &lt; 3; ++i) {
+            if(i == 0) {                
+                for(int v: A) {
+                    dp[i][v]++;
+                }
+            }
+            else {
+                for(int j = 0;j &lt; size; ++j) {
+                    for(int v: A) {
+                        int next = v &amp; j;
+                        dp[i][next] += dp[i-1][j];
+                    }
+                }
+            }
+        }
+        return dp[2][0];
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(3<em>65536</em>N) 其中N是数组的长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(65536*3)</p> 
+<h2><a href="#一个错误的java-dp代码" id="一个错误的java-dp代码">一个错误的java dp代码</a></h2> 
+<pre><code>class Solution {
+    public int countTriplets(int[] A) {
+        int size =  1 &lt;&lt; 16;
+        int[][] dp = new int[3][size];
+        for(int i = 0; i &lt; 3; ++i) {
+            if(i == 0) {                
+                for(int v: A) {
+                    dp[i][v] = 1;
+                }
+            }
+            else {
+                for(int j = 0;j &lt; size; ++j) {
+                    for(int v: A) {
+                        int next = v &amp; dp[i-1][j];
+                        dp[i][next] += dp[i-1][j];
+                    }
+                }
+            }
+        }
+        return dp[2][0];
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
