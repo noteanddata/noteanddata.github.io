@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 991 Broken Calculator解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 991 Broken Calculator解题笔记</h1>
+			</div>
+
+			<p><em>10 February 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-991-broken-calculator" id="题目-leetcode-991-broken-calculator">题目 leetcode 991 Broken Calculator</a></h2> 
+<p>输入两个整数x和y， 对于x， 可以选择的操作有乘以2或者减去1， 问， 最少需要多少步可以把x变成y<br> 其中x和y的范围都是[1,10^9]</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>首先数字太大， 搜索的方式肯定无论如何优化都不可行， 肯定需要构造。</p> 
+<ol> 
+ <li>先分情况讨论， 如果x&gt;=y, 显然乘以2只会增加步骤， 最快的办法一定是直接每次选择减1</li> 
+ <li>然后是x&lt;y的情况， 因为题目里面有一个乘以2的操作, 所以我们考虑y和y/2的关系， 因为有y/2, 所以还要考虑y是否是偶数，<br> 为了简单一点， 我们先从y是偶数开始。<br> a. x &gt;= y/2<br> 那么, x = (y/2) + d, 也就是d=x-y/2, 并且d&gt;=0,<br> 从x到y的最短路径只有两种可能， 一种是先减1到y/2, 然后乘以2到y； 还有一种是先乘以2， 然后减一到y；<br> 那么， 第一种的步骤是step=d+1, 第二种的步骤是step=1+2d, 因为d&gt; 0, 所以第一种步骤最少。</li> 
+</ol> 
+<p>b. x &lt; y/2<br> 对于这种情况， 一定是先要到[y/2,y]之间， 然后才可能到y， 而我们已经知道， 从[y/2,y)的最短步骤必须要先到y/2,<br> 那么， 问题就可以转化成从x到y/2的最小步骤, 然后最后再加一步乘以2到y就好。<br> 而从x到y/2就是一个递归子问题。<br> 所以， 对于偶数的所有情况都有解了。<br> 3. 对于奇数， 用同样的方法可以分析， 只是最后一步一定是先到y+1, 然后再选择减1操作到y</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int brokenCalc(int X, int Y) {
+        if(X &gt;= Y) {
+            return X-Y;    
+        }
+        else {
+            if(Y%2 == 0) {
+                if(X &gt;= Y/2) {
+                    return (X-Y/2) + 1;        
+                }
+                else {
+                    return brokenCalc(X, Y/2) + 1;
+                }
+            }
+            else { // odd
+                if(X &gt;= (Y+1)/2) {
+                    return (X-(Y+1)/2) + 2;
+                }   
+                else {
+                    return brokenCalc(X, (Y+1)/2) + 2;
+                }
+            }
+        }
+    }
+}
+</code></pre> 
+<p>分析上面的过程可以发现， 从X到Y/2(或者(Y+1)/2)的步骤， 其实和递归的操作是一样的， 那么代码可以简化一下如下</p> 
+<pre><code>public int brokenCalc(int X, int Y) {
+    if(X &gt;= Y) {
+        return X-Y;    
+    }
+    else {
+        return Y%2 == 0 ? (brokenCalc(X, Y/2) + 1) : (brokenCalc(X,(Y+1)/2) + 2);
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#后记" id="后记">后记</a></h2> 
+<p>这类构造题目， 以前总是没思路， 这次总算在比赛里面自己推导出来了!</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
