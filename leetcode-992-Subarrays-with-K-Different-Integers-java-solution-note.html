@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 992 Subarrays with K Different Integers解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 992 Subarrays with K Different Integers解题笔记</h1>
+			</div>
+
+			<p><em>10 February 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-992-subarrays-with-k-different-integers" id="题目-leetcode-992-subarrays-with-k-different-integers">题目 Leetcode 992 Subarrays with K Different Integers</a></h2> 
+<p>输入一个整数数组和一个整数K， 要求返回总共有多少个连续子数组是正好有K个不同整数</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li> <p>首先找了一个有代表性的输入数组[1,2,1,2,3,1,2,4], K=3<br> 这个答案总共有下面这些， 总共13个。<br> 1,2,1,2,3<br> 2,1,2,3<br> 1,2,3<br> 1,2,1,2,3,1<br> 2,1,2,3,1<br> 1,2,3,1<br> 2,3,1<br> 1,2,1,2,3,1,2<br> 2,1,2,3,1,2<br> 1,2,3,1,2<br> 2,3,1,2<br> 3,1,2<br> 1,2,4</p> </li> 
+ <li> <p>要判断正好有K个不同的整数， 首先肯定是需要一个set来去重。<br> 观察上面这些输入， 可以发现, 第一步， 肯定是从index=0开始一直往右走, 直到找到第一个index=i使得set.size()==K的时候， 才是找到了第一个复合要求的结果， 就是从[0,i]<br> 比如， 在上面的例子中， 就是从index是[0,4]的5个数字是符合要求的第一个子数组。</p> </li> 
+ <li>这时候问题来了， 我们找到了第一个子数组以后， 对于以index=4结尾的子数组来说（动态规划dp思想)， 可能会有有多个子数组符合要求。<br> 因为是连续子数组，那么, 我们可能想要用两个index， 也就是双指针，来求解其他子数组， 那么第二个指针可以从0开始往后移动，只要set里面还是K个数字就继续移动， 直到要变成小于Kge的时候才不移动。 当然，这时候set已经不能完成要求了， 我们需要一个Map
+  <value->
+   count&gt;来记录这个过程。 那么这时候我们在数组索引i=4结尾的子数组里面，已经找到了3个子数组符合要求
+  </value-></li> 
+ <li>然后我们把右边的指针i向后移动一位到index=5，对应的数字是1， 这时候，有4个连续子数组在index=5的地方有K个不同的整数，<br> 观察这些结果，可以看到，有三个是和前面的三个是重复的， 因为1就是前面已经出现的。<br> 同理， 这个过程再向后移动一位的时候也是这样。</li> 
+ <li>所以， 可以总结一个规律是，在i位结束的连续子数组有x个是有K个整数的话， 如果A[i+1]已经在前面的x个子数组中的K个整数一样的话，<br> 那么， 因为没有出现新的数字， 那么前面的x个都是符合要求的</li> 
+ <li>但是， 如果出现了一个新的数字， 那么，前面的x个都不符合要求， 必须要重新计算。</li> 
+ <li>为了计算这个过程， 需要维护两个指针， 一个指针在前进的过程中，另外一个指针在后面每次移动到正好要K个然后就要结束的时候，<br> 这样就可以计算当前有多少个。</li> 
+</ol> 
+<h2><a href="#java代码" id="java代码">java代码</a></h2> 
+<pre><code>class Solution {
+    public int subarraysWithKDistinct(int[] A, int K) {
+        int ret = 0;
+        int j = 0;
+        Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();
+        
+        int curcount = 0;
+        int prevcount = 0;
+        for(int i = 0; i &lt; A.length; ++i) {
+            curcount = (map.size() == K &amp;&amp; map.containsKey(A[i])) ? prevcount-1 : 0;
+
+            map.compute(A[i], (k,v)-&gt; null == v ? 1 : v+1);
+            
+            while(map.size() &gt; K) {
+                map.compute(A[j], (k,v)-&gt; 1==v?null:v-1);
+                j++;
+            }                        
+            
+            while(map.size() == K) {
+                curcount++;
+                int jcount = map.get(A[j]);                    
+                if(jcount == 1) {
+                    //cur.remove(A[j]);
+                    break;
+                }
+                else {
+                    map.put(A[j], jcount-1);
+                }
+                j++;
+            }
+            
+            ret += curcount;
+            prevcount = curcount;
+        }
+        return ret;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>有两个指针， 这两个指针都只遍历了数组一次， 所以复杂度还是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>用了一个map保存每个数出现的频率，最大可能是N大小， 所以空间复杂度是O(N)</p> 
+<h2><a href="#后记" id="后记">后记</a></h2> 
+<p>比赛的时候已经在做大致这样的思路， 但是思路很多细节和代码写的有bug，没有过。<br> sliding windows 还是需要多学习总结。</p> 
+<p>当然， 略有点郁闷的是， 这个题目用暴力解O(N^2)居然也可以过OJ， 而当时我其实先写了一个用hashset的O(N^2)的方法测试下是否真的TLE，<br> 果然TLE以后， 当时已经看到1 &lt;= A[i] &lt;= A.length这个特殊条件， 想了一秒要不要换数组来代替map试试， 但是马上放弃了， 直接写sliding windows的做法， 结果状态分析和代码实现有几个bug， 最后没有通过。</p> 
+<pre><code>class Solution {
+    public int subarraysWithKDistinct(int[] A, int K) {
+        int count = 0;
+        int[] table = new int[A.length+1];
+        for(int i = 0; i &lt; A.length; ++i) {
+            Arrays.fill(table, 0);
+            int size = 0;
+            for(int j = i; j &lt; A.length; ++j) {
+                table[A[j]]++;
+                if(table[A[j]] == 1) {
+                    size++;
+                }
+                if(size == K) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
