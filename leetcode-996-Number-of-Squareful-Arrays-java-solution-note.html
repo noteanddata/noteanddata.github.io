@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>题目 leetcode 996 Number of Squareful Arrays解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>题目 leetcode 996 Number of Squareful Arrays解题笔记</h1>
+			</div>
+
+			<p><em>16 February 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-996-number-of-squareful-arrays" id="题目-leetcode-996-number-of-squareful-arrays">题目 leetcode 996 Number of Squareful Arrays</a></h2> 
+<ol> 
+ <li>输入一个整数数组，</li> 
+ <li>然后定义一个数组是否是Squareful Array： 如果a[i]+a[i+1]是一个 perfect square, 那么数组就是Squareful Array,<br> 也就是说， 如果数组任意两个数的和是一个平方数， 那么这个数组就是符合要求的</li> 
+ <li>要求返回输入的数组总共有多少个不同的排列， 使得排列后的数组是Squareful Arrays</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本过程就是全排列, 也就是做回溯(backtrack)</li> 
+ <li>排列的过程中， 如果不符合要求，可以直接提前return</li> 
+ <li>这里要求返回不同的排列的个数， 那么需要做一个去重的排列，去重的逻辑是， 对于某一个位置， 如果已经选了一个数， 那就不需要在选这个数了。<br> 具体的方法就是对每个dfs的from， 设置一个hashset, 然后如果a[i]已经被选过了， 那就跳过这次递归.</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int numSquarefulPerms(int[] A) {
+        return dfs(A, 0);
+    }
+    
+    public int dfs(int[] a, int from) {
+        if(from &gt;= 2) {
+            if(!validNumber(a[from-1] + a[from-2])) {
+                return 0;
+            }
+        }
+        if(from == a.length) {
+            return 1;
+        }
+        
+        int count = 0;
+        Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+        for(int i = from; i &lt; a.length; ++i) {
+            if(set.contains(a[i])) {
+                continue;
+            }
+            set.add(a[i]);
+               
+            swap(a, from, i);
+            count += dfs(a,from+1);
+            swap(a, from, i);                            
+        }
+        return count;
+    }
+    
+    boolean validNumber(int sum) {
+        int x = (int)Math.sqrt(sum);
+        return x * x == sum;
+    }
+    
+    private void swap(int[] a, int i, int j) {
+        int t = a[i];
+        a[i] = a[j];
+        a[j] = t;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>虽然做了提前退出， 但是复杂度还是O(N!)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>没有使用额外单独的空间， 所以空间复杂度是O(1)</p> 
+<h2><a href="#一个错误的代码" id="一个错误的代码">一个错误的代码</a></h2> 
+<p>开始写了一个去重的错误代码是这样的， 判断a[i] == a[from],<br> 比如这个case就不能通过[0,1,1]<br> 原因是重复的数可能不在第一个， 对于某个from， 如果后面有两个数一样， 都会被换到from这个位置， 然后重复计算。<br> 所以需要有一个set， 记录在from位置上放过的数， 然后做去重。</p> 
+<pre><code>class Solution {
+    public int numSquarefulPerms(int[] A) {
+        Arrays.sort(A);
+        return dfs(A, 0);
+    }
+    
+    public int dfs(int[] a, int from) {
+        if(from &gt;= 2) {
+            if(!validNumber(a[from-1] + a[from-2])) {
+                return 0;
+            }
+        }
+        if(from == a.length) {
+            return 1;
+        }
+        
+        int count = 0;
+        for(int i = from; i &lt; a.length; ++i) {
+            if(from != i &amp;&amp; a[i] == a[from]) {
+                continue;
+            }
+               
+            swap(a, from, i);
+            count += dfs(a,from+1);
+            swap(a, from, i);                            
+        }
+        return count;
+    }
+    
+    boolean validNumber(int sum) {
+        int x = (int)Math.sqrt(sum);
+        return x * x == sum;
+    }
+    
+    private void swap(int[] a, int i, int j) {
+        int t = a[i];
+        a[i] = a[j];
+        a[j] = t;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
