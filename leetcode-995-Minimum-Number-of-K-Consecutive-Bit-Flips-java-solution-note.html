@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>题目 leetcode 995 Minimum Number of K Consecutive Bit Flips解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>题目 leetcode 995 Minimum Number of K Consecutive Bit Flips解题笔记</h1>
+			</div>
+
+			<p><em>16 February 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-995-minimum-number-of-k-consecutive-bit-flips" id="题目-leetcode-995-minimum-number-of-k-consecutive-bit-flips">题目 leetcode 995 Minimum Number of K Consecutive Bit Flips</a></h2> 
+<ol> 
+ <li>输入一个数组， 里面每个数是0或者1</li> 
+ <li>定义一个flip(K)操作， 就是把数组中连续的K个数字反转一下， 把1变到0， 把0变成1</li> 
+ <li>问， 最少需要多少次flip(K)操作，可以让数组全部变成1， 如果不能达到就返回-1</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>最naive的想法是暴力bfs，扫描所有的操作， 然后看是否走到最终状态或者重复状态， 结果当然是超时</li> 
+ <li>然后试图用动态规划做， 试图对中间操作， 然后把数组分成两边， 然后对两边分别做， 最后求出最小值， 这个也只写了bug<br> 中间也试图想能否先得到最右边都是1或者最右边都是0的状态，</li> 
+ <li>结果最后看别人的答案， 居然是直接一次遍历做贪心！！！ 又受到一万点暴击！</li> 
+ <li>贪心代码非常简洁，就是从左向右遍历， 遇到0就做flip，然后一直到数组结尾就好了！！！</li> 
+ <li>这里，重点是为什么贪心是对的？<br> 我们有如下思路：<br> a. 对于任何一个位置，要么不flip, 要么flip一次， 因为flip两次是没有意义的<br> b. 从左向右遍历，如果左边第一个是1， 那么，因为我们要么不flip，要么flip一次， 所以，对于最左边的1， 一定是不需要flip的<br> c. 如果左边第一个是0， 那么，我们一定是需要在这个位置flip一次， 因为没有其他选择可以让这个数变成1<br> d. 现在我们已经对第一个元素做了最佳处理，然后我们考虑第二个元素，同样的推理过程也是适用的，如果是1就不处理，如果是0就flip，<br> e. 这里，正确性的关键在于， 每个步骤，一定是属于最佳答案的一部分， 并且，前面的处理完了以后，后面无论怎么样处理，<br> 都不会影响到前面的处理结果和状态， 所以，这个过程一定是正确的。</li> 
+ <li>还有一个问题是， 如何分析到贪心？ （比如我就没有分析出来）<br> 这个题目除了暴力的思路， 尝试了尾部dp的思路（试图寻找dp[i]和dp[j]的关系)，尝试了中间的dp（中间处理，然后对两边单独做处理),<br> 尝试了试图把尾部全部变成1或者0（这里其实有点接近了， 因为从左往右做的过程效果就是把0都放到最右边）， 也尝试了小规模数据，<br> 都没有分析到贪心的思路。</li> 
+</ol> 
+<p>分析思路再加一条： 从左向右分析或者从右向左分析！！！！</p> 
+<p>当然， 最后看讨论，有大神说的是： 想了5分钟，没有找到好办法做，于是直接上了线段树-_-差距就是明显！！</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int minKBitFlips(int[] A, int K) {
+        int count = 0;
+        for(int i = 0; i+K &lt;= A.length; ++i) {
+            if(A[i] == 0) {
+                count++;
+                flip(A, i, K);
+            }
+        }
+        boolean valid = true;
+        for(int i = 0; i &lt; A.length; ++i) {
+            if(A[i] == 0) {
+                return -1;
+            }
+        }
+        return count;
+    }
+    
+    void flip(int[] a, int from, int k) {
+        for(int i = from; i &lt; from+k; ++i) {
+            a[i] = 1-a[i];
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组只遍历了两次， 复杂度是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>没有使用额外的空间 O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
