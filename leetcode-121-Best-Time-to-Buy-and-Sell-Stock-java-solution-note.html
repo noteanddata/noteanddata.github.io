@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 121 Best Time to Buy and Sell Stock解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 121 Best Time to Buy and Sell Stock解题笔记</h1>
+			</div>
+
+			<p><em>17 February 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-121-best-time-to-buy-and-sell-stock" id="题目-leetcode-121-best-time-to-buy-and-sell-stock">题目 leetcode 121 Best Time to Buy and Sell Stock</a></h2> 
+<p>这是一个系列题目的第一个， 输入一个整数数组，里面每个元素表示某一天的股票价格，<br> 然后要求在最多做一次交易的情况下， 返回最大的利润。</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>这个题目可以有很简单的做法， 但是由于这个题目后面有很多变种， 而且后面的几个问题有些很难。<br> 所以这里先对这个简单问题做一个比较详尽的分析， 后面的变种问题会部分利用这个问题的思路。</p> 
+<ol> 
+ <li>brute force的解法就是对每个i,j计算买入和卖出产生的利润， 然后求利润的最大值</li> 
+ <li>当然这个题目肯定不是需要一个brute force解, 因为这个题目是求最大利润， 所以通常思路有贪心和动态规划。<br> 对于贪心，我们通常是每一步都选择当前的最优解。 而动态规划， 则是把问题转化成和一个重叠子问题的递推关系。<br> 我们先看下贪心的思路是否可以应用到这里， 如果是贪心，基本上就是每一步都选择一个局部最佳解，<br> 所以相当于每次遇到可以买卖的时候，都选择买卖， 显然，这不可能是这个问题的最佳解。</li> 
+</ol> 
+<p>如果是动态规划的思路， 基本上我们要定义状态dp[i]， 然后看dp[i]和dp[i-1]或者dp[i-k]之间的关系。<br> 假设我们定义dp[i]是在i天的最大利润， 那么和前面的重叠子问题的关系是什么呢？<br> 一种情况当然是前面子问题里面的最大利润已经是整体的最大利润， 那么dp[i]=dp[i-1]<br> 还有一种情况是， 前面虽然取得了利润， 但是第i天卖出（对应到前面某一天买入)会产生更大的利润<br> 这时候，dp[i] = prices[i] - prices[j]<br> 也就是说, 整个递推公式是: dp[i] = Math.max(dp[i-1], prices[i]-prices[j]), 其中, j&lt;i<br> 这样， 对于每个dp[i], 都只和之前的状态和数据有关， 和后面的选择已经无关了。<br> 然后这时候要考虑， prices[j]是哪个值会产生最大利润？ 当然是目前为止的最小值。<br> 也就是说， dp[j] = min prices so far， 而且这个值的好处是， 在一次遍历的过程中，可以直接随着遍历更新这个值。<br> 那么， 可以保存一个min值， 这样整体一次遍历就可以了。</p> 
+<ol> 
+ <li>有一个错误的思路， 就是一次遍历求出最小价格和最大价格， 然后得出利润。<br> 这个解法的错误的地方在于， 最大价格可能是最小价格的前面， 不能直接使用。<br> 反例比如[3,1,2]</li> 
+ <li>前面的错误在于把顺序不符合要求的情况包括进去了，<br> 当然， 这个过程可以更简化。 甚至可以不需要用这么复杂的动态规划的思路, 直接对问题进行分析。<br> 对于最大利润的买入和卖出位置， 虽然买入和卖出可能出现在任意位置， 但是我们考虑如果固定其中一个价格会怎么样？<br> 实际上， 如果买入的位置已经选中， 那么卖出的位置也确定了。 反过来也成立， 如果卖出的位置已经选择， 那么买入的位置也确定了。</li> 
+</ol> 
+<p>这里假设卖出的位置是i, 那么， 买入的位置就是在i前面的价格里面的最小价格。<br> 那么，如果我们从左向右遍历， 每次保存目前已经遇到过的最小价格， 那么，prices[i]-min就是在i这个位置卖出的最大利润，<br> 这样就可以在一次遍历的过程中求解整体的最大利润。</p> 
+<p>这里，实际上如果考虑买入的位置固定，也可以求解到最大利润。 但是具体细节略有不同，不能直接用常规的方法从左到右遍历。<br> 这个后序在变种问题中会再说明。</p> 
+<h2><a href="#java题解代码1brute-force" id="java题解代码1brute-force">java题解代码1–brute force</a></h2> 
+<pre><code>public int maxProfit(int[] prices) {
+    int max = 0;
+    for(int i = 0; i &lt; prices.length; ++i) {
+        for(int j = i+1; j &lt; prices.length; ++j) {
+            if(prices[j] &gt; prices[i]) {
+                int profit = prices[j] - prices[i];
+                max = Math.max(max, profit);
+            }
+        }
+    }
+    return max;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#java题解代码2动态规划" id="java题解代码2动态规划">java题解代码2—动态规划</a></h2> 
+<pre><code>public int maxProfit(int[] prices) {
+    if(0 == prices.length) {
+        return 0;
+    }
+    int[] dp = new int[prices.length];
+    int min = prices[0];
+    for(int i = 1; i &lt; prices.length; ++i) {
+        dp[i] = Math.max(dp[i-1], prices[i]-min);
+        min = Math.min(min, prices[i]);
+    }
+    return dp[prices.length-1];
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#java题解代码3o1空间的解法" id="java题解代码3o1空间的解法">java题解代码3–O(1)空间的解法</a></h2> 
+<pre><code>public int maxProfit(int[] prices) {
+        int max = 0;
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i &lt; prices.length; ++i) {
+            max = Math.max(max, prices[i] - min);
+            min = Math.min(min, prices[i]);            
+        }
+        return max;        
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
