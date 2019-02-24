@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 5-- Longest Palindromic Substring解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 5-- Longest Palindromic Substring解题笔记</h1>
+			</div>
+
+			<p><em>22 February 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-5-longest-palindromic-substring" id="题目-leetcode-5-longest-palindromic-substring">题目 leetcode 5– Longest Palindromic Substring</a></h2> 
+<p>输入一个字符串， 求substring里面， 符合回文的最长的子字符串</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>直观的做法就是对每个子字符串s.substring(i,j)做判断，看看是否是回文</li> 
+ <li>但是这样做重复计算会比较多， 分析如下<br> t.charAt(0) != t.charAt(t.length()-1)—&gt; false<br> t.charAt(0) == t.charAt(t.length()-1) —-&gt; isPalindrome(t.substring(1, t.length()-1))<br> 也就是说， 假设对于一个子字符串t，如果第一个字符和最后一个字符不相等， 那自然不是回文；<br> 如果第一个字符和最后一个字符相等， 那么问题就等价于去掉这两个字符串以后的字符串是不是回文， 也就是说，这里形成了重叠子问题，<br> 那么，我们就可以顺势想到用动态规划。</li> 
+ <li>设置dp[i][j]表示从i到j的字符串作为回文的长度，<br> 那么， 作为常规情况的递推公式应该如下：<br> if(s.charAt(i) == s.charAt(j)) {<br> dp[i][j] = dp[i+1][j-1] + 2;<br> }<br> 当然， 这里如果i+1&gt;j-1的话， 那么应该特殊处理，不用上面的公式处理。</li> 
+</ol> 
+<p>然后， 动态规划的递推公式的前提是， 子问题已经计算好， 那么，这里不适合直接做i,j的两层循环， 可以设置一个len表示i,j的距离， 然后从len开始循环。</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public String longestPalindrome(String s) {
+        if(s.length() == 0) {
+            return "";
+        }
+        
+        int[][] dp = new int[s.length()][s.length()];
+        for(int i = 0; i &lt; s.length(); ++i) {
+            dp[i][i] = 1;
+        }
+                
+        int len = 1;
+        int max = 1;
+        int maxstart = 0;
+        int maxend = 0;
+        while(len &lt; s.length()) {
+            for(int i = 0; i+len &lt; s.length(); ++i) {
+                int j = i+len;
+                if(s.charAt(i) == s.charAt(j)) {
+                    if(len == 1) {
+                        dp[i][j] = 2;
+                    }
+                    else {
+                        if(dp[i+1][j-1] &gt; 0) {
+                            dp[i][j] = dp[i+1][j-1] + 2;    
+                        }
+                    }
+                    
+                    if(dp[i][j] &gt; max) {
+                        max = dp[i][j];
+                        maxstart = i;
+                        maxend = j;
+                    }
+                }
+                
+            }
+            len++;
+        }
+        return s.substring(maxstart, maxend+1);
+    }
+    
+}
+
+</code></pre> 
+<p>当然， 上面的代码针对一些特殊情况做了特殊处理， 可以对这些特殊条件简化一下，做到一致的处理， 具体如下</p> 
+<pre><code>public String longestPalindrome(String s) {
+    int[][] dp = new int[s.length()][s.length()];        
+    int len = 0;
+    int max = 0;
+    int maxstart = 0;
+    int maxend = 0;
+    while(len &lt; s.length()) {
+        for(int i = 0; i+len &lt; s.length(); ++i) {
+            int j = i+len;
+            if(s.charAt(i) == s.charAt(j)) {
+                if(len &lt;= 1) {
+                    dp[i][j] = len+1;
+                }
+                else {
+                    if(dp[i+1][j-1] &gt; 0) {
+                        dp[i][j] = dp[i+1][j-1] + 2;    
+                    }
+                }
+                
+                if(dp[i][j] &gt; max) {
+                    max = dp[i][j];
+                    maxstart = i;
+                    maxend = j+1;
+                }
+            }
+            
+        }
+        len++;
+    }
+    return s.substring(maxstart, maxend);
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>两层循环， 时间复杂度是O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>二维数组， 空间复杂度也是O(N^2)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
