@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 5- Longest Palindromic Substring解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 5- Longest Palindromic Substring解题笔记2</h1>
+			</div>
+
+			<p><em>22 February 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-5-longest-palindromic-substring" id="题目-leetcode-5-longest-palindromic-substring">题目 leetcode 5– Longest Palindromic Substring</a></h2> 
+<p>输入一个字符串， 求substring里面， 符合回文的最长的子字符串</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>在前面一篇解题报告<a href="http://www.noteanddata.com/leetcode-5-Longest-Palindromic-Substring-java-solution-note.html">leetcode 5– Longest Palindromic Substring解题笔记</a>里面，对动态规划的解法做了说明， 后来学习了一下别人的代码， 感觉原来的代码还是略有繁琐。<br> 可以在下面这些方面简洁一下：<br> 1. dp的数组不需要记录回文的长度， 因为每次遇到新的回文，就可以直接记录index。<br> 所以只要记录dp[i][j]是否是回文就好， 所以dp数组只需要boolean[][] dp<br> 2. 判断dp[i][j]的代码也可以把多个条件合并到一行里面，这样比较简洁<br> 条件可以用下面两个的任意一行表示：<br> dp[i][j] = s.charAt(i) == s.charAt(j) &amp;&amp; (j-i &lt;= 1 || dp[i+1][j-1]);<br> dp[i][j] = s.charAt(i) == s.charAt(j) &amp;&amp; (j-i &lt;= 2 || dp[i+1][j-1]);</p> 
+<h2><a href="#java题解代码1" id="java题解代码1">java题解代码1</a></h2> 
+<pre><code>public String longestPalindrome(String s) {
+    boolean[][] dp = new boolean[s.length()][s.length()];        
+    int len = 0;
+    int maxlen = 0;
+    int maxstart = 0;
+    while(len &lt; s.length()) {
+        for(int i = 0; i+len &lt; s.length(); ++i) {
+            int j = i+len;
+            dp[i][j] = s.charAt(i) == s.charAt(j) &amp;&amp; (j-i &lt;= 1 || dp[i+1][j-1]);
+            if(dp[i][j] &amp;&amp; j-i+1 &gt; maxlen) {
+                maxlen = j-i+1;
+                maxstart = i;                
+            }
+        }
+        len++;
+    }        
+    return s.substring(maxstart, maxstart+maxlen);
+}
+</code></pre> 
+<h2><a href="#java-题解代码2" id="java-题解代码2">java 题解代码2</a></h2> 
+<p>在之前的dp循环过程中， 因为dp的计算过程是基于子问题已经计算好的情况， 之前对子问题的定义是从子字符串的长度的角度来看的，所以设置了一个len， 然后从len开始循环。<br> 后来学习了一下别人的代码， 也可以换一个角度来循环。<br> 因为我们有递推公式如下，<br> dp[i][j] = s.charAt(i) == s.charAt(j) &amp;&amp; (j-i &lt;= 1 || dp[i+1][j-1]);<br> 所以， 计算dp[i][j]的时候， 要求dp[i+1][j-1]必须已经计算好， 那么，对于i，我们可以从大到小循环，<br> 对于j，我们仍然从小到大循环， 这样，仍然可以用经典的两层循环把dp的过程计算好。<br> 具体的例子， 可以用一个长度为5的数组验证一下。</p> 
+<pre><code>public String longestPalindrome(String s) {
+    boolean[][] dp = new boolean[s.length()][s.length()];        
+    int maxstart = 0;
+    int maxlen = 0;
+    for(int i = s.length()-1; i &gt;= 0; --i) {
+        for(int j = i; j &lt; s.length(); ++j) {
+            dp[i][j] = s.charAt(i) == s.charAt(j) &amp;&amp; (j-i &lt;= 1 || dp[i+1][j-1]);
+            if(dp[i][j] &amp;&amp; j-i+1 &gt; maxlen) {
+                maxlen = j-i+1;
+                maxstart = i;
+            }
+        }
+    }
+    return s.substring(maxstart, maxstart+maxlen);
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>两层循环， 时间复杂度是O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>二维数组， 空间复杂度也是O(N^2)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
