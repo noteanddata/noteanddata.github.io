@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1001 Grid Illumination解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1001 Grid Illumination解题笔记</h1>
+			</div>
+
+			<p><em>23 February 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1001-grid-illumination" id="题目-leetcode-1001-grid-illumination">题目 leetcode 1001 Grid Illumination</a></h2> 
+<ol> 
+ <li>在一个N*N的棋盘上放了一些灯， 每个灯可以照亮当前行， 当前列， 以及所有的对角线， 就像国际象棋里面的queue一样</li> 
+ <li>然后再输入一个queries数组， 每个元素是棋盘的一个坐标， 对于每个元素要求返回当前坐标是否被照亮。<br> 同时， 每次查询以后， 都会把这个位置，以及和这个坐标相连的8个位置的灯(如果存在的话)都关掉</li> 
+ <li>针对查询的queries数组， 返回一个同样大小的数组，1表示被照亮， 0表示关掉了</li> 
+</ol> 
+<pre><code>1 &lt;= N &lt;= 10^9
+0 &lt;= lamps.length &lt;= 20000
+0 &lt;= queries.length &lt;= 20000
+lamps[i].length == queries[i].length == 2
+
+</code></pre> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>看输入范围， N非常大，所以不能直接建矩阵做</li> 
+ <li>lamps和queries的数组长度也不小，所以直接针对每个queries查询所以的lamps是否被照亮也可能会超时</li> 
+ <li>于是对row和col分别建map， 记录下来哪些是否被照亮， 然后每次queries的时候修改相应的map</li> 
+ <li>这样的思路是可以ac的， 可惜我比赛的时候因为另外一个错，导致在其他小数据上调试了很久验证正确性，最后罚时很多。。。郁闷。<br> 错误在于， 判断对角线的时候我抽风的用了这个语句, 结果整除的时候取整了。。。<br> if(Math.abs((queries[i][0] - pos.x)/(queries[i][1]-pos.y)) == 1) {</li> 
+</ol> 
+<p>实际上直接这样判断就好if(Math.abs(queries[i][0] - pos.x) == Math.abs(queries[i][1]-pos.y)) {</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>import java.util.Objects;
+class Solution {
+    static class Position {
+        int x;
+        int y;
+        public Position(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+        @Override
+        public int hashCode() {
+            return Objects.hash(x,y);
+        }
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Position position = (Position) o;
+            return x == position.x &amp;&amp;
+                    y == position.y;
+        }       
+        public String toString() {
+            return "[" + x + "," + y + "]";
+        }
+    }
+    public int[] gridIllumination(int N, int[][] lamps, int[][] queries) {
+        Set&lt;Position&gt; lampset = new HashSet&lt;&gt;();
+        Map&lt;Integer, Set&lt;Position&gt;&gt; rowMap = new HashMap&lt;&gt;();
+        Map&lt;Integer, Set&lt;Position&gt;&gt; colMap = new HashMap&lt;&gt;();
+        for(int[] lamp: lamps) {
+            Position pos = new Position(lamp[0], lamp[1]);
+            lampset.add(pos);
+            rowMap.compute(lamp[0], (k,v)-&gt; {
+                if(v == null) {
+                    Set&lt;Position&gt; set = new HashSet&lt;&gt;();
+                    set.add(pos);
+                    return set;
+                }    
+                else {
+                    v.add(pos);
+                    return v;
+                }
+            });
+            colMap.compute(lamp[1], (k,v)-&gt;{
+                if(v == null) {
+                    Set&lt;Position&gt; set = new HashSet&lt;&gt;();
+                    set.add(pos);
+                    return set;
+                }    
+                else {
+                    v.add(pos);
+                    return v;
+                }                
+            });
+        }
+        int[] ret = new int[queries.length];
+        
+        for(int i = 0; i &lt; queries.length; ++i) {
+            if(rowMap.containsKey(queries[i][0])) {
+                ret[i] = 1;
+            }
+            else if(colMap.containsKey(queries[i][1])) {
+                ret[i] = 1;
+            }
+            else {
+                for(Position pos: lampset) {
+                    if(Math.abs(queries[i][0] - pos.x) == Math.abs(queries[i][1]-pos.y)) {
+                        ret[i] = 1;
+                        break;
+                    }
+                }
+            }
+            for(int p = -1; p &lt;= 1; ++p) {
+                for(int q = -1; q &lt;= 1; ++q) {
+                    int x = queries[i][0] + p;
+                    int y = queries[i][1] + q;
+                    
+                    Position pos = new Position(x, y);
+                    if(lampset.contains(pos)) {
+                        lampset.remove(pos);
+                        
+                        Set&lt;Position&gt; setOnRow = rowMap.get(x);
+                        setOnRow.remove(pos);
+                        if(setOnRow.size() == 0) {
+                            rowMap.remove(x);
+                        }
+                        
+                        Set&lt;Position&gt; setOnCol = colMap.get(y);
+                        setOnCol.remove(pos);
+                        if(setOnCol.size() == 0) {
+                            colMap.remove(y);
+                        }
+                    }
+                }
+            }            
+        }
+        return ret;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>最大时间复杂度还是O(M*N), M和N分别是lamps和queries的长度， 但是通过map的操作可以简化很多case，所以可以ac</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M+N)？</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
