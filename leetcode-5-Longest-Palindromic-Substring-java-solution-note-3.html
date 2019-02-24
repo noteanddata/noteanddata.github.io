@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 5- Longest Palindromic Substring解题笔记3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 5- Longest Palindromic Substring解题笔记3</h1>
+			</div>
+
+			<p><em>24 February 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-5-longest-palindromic-substring" id="题目-leetcode-5-longest-palindromic-substring">题目 leetcode 5– Longest Palindromic Substring</a></h2> 
+<p>输入一个字符串， 求substring里面， 符合回文的最长的子字符串</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>在前面一篇解题报告<a href="http://www.noteanddata.com/leetcode-5-Longest-Palindromic-Substring-java-solution-note.html">leetcode 5– Longest Palindromic Substring解题笔记</a>里面, 对动态规划的方法做了介绍。<br> 后面又学习了一下别人的思路，对动态规划的代码做了简化,<br> <a href="http://www.noteanddata.com/leetcode-5-Longest-Palindromic-Substring-java-solution-note-2.html">leetcode 5- Longest Palindromic Substring解题笔记2</a></p> 
+<p>然后， 这个题目还有一些其他思路， 这里也总结一下。</p> 
+<h2><a href="#brute-force暴力解" id="brute-force暴力解">brute force暴力解</a></h2> 
+<p>对所有的子字符串进行判断， 三层循环会超时， 如果改成从最大的开始判断，可以通过</p> 
+<pre><code>public String longestPalindrome(String s) {
+    int checkSize = s.length();
+
+    while(checkSize &gt; 0 ) {
+        for(int i = 0; i + checkSize &lt;= s.length(); ++i ) {
+            int begin = i;
+            int end = i + checkSize;
+            if (isValid(s, begin, end)) {
+                return s.substring(begin, end);
+            }
+        }
+        checkSize--;
+    }
+
+    return "";
+}
+
+private boolean isValid(String s, int begin, int end) {
+    for(int i = begin; i &lt;= begin + (end - begin)/2; ++i) {
+        if(s.charAt(i) != s.charAt(end - (i - begin) - 1)) {
+            return false;
+        }
+    }
+    return true;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^3)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#从中间向两边逐个判断" id="从中间向两边逐个判断">从中间向两边逐个判断</a></h2> 
+<p>这里的思路是从每个字符串开始从中间向两边扩散， 然后检查是否是回文， 时间复杂度还是O(N^2)。<br> 但是空间复杂度是O(1), 因为不需要保存二维dp数组了。<br> 我想这里的核心思想还是建立在dp的基础之上， 也就是<br> dp[i][j] = s.charAt(i) == s.charAt(j) &amp;&amp; (j-i &lt;= 1 || dp[i+1][j-1]);<br> 那么， 如果里面的小字符串不是回文的话， 外面的就一定不是回文， 所以我们从小到大开始计算的话，<br> 那遇到不符合的就可以直接退出了。</p> 
+<pre><code>public String longestPalindrome(String s) {
+    int maxlen = 0;
+    int maxstart = 0;
+    for(int i = 0; i &lt; s.length(); ++i) {
+        int len1 = getMaxLen(s, i, i);
+        int len2 = getMaxLen(s, i, i+1);
+        if(len1 &gt; maxlen) {
+            maxlen = len1;
+            maxstart = i-len1/2;
+        }
+        if(len2 &gt; maxlen) {
+            maxlen = len2;
+            maxstart = i-(len2-1)/2;
+        }
+    }
+    return s.substring(maxstart, maxstart+maxlen);
+}
+public int getMaxLen(String s, int left, int right) {
+    int len = 0;
+    while(left &gt;= 0 &amp;&amp; right &lt; s.length() &amp;&amp; s.charAt(left) == s.charAt(right)) {
+        len = right-left+1;
+        left--;
+        right++;
+    }
+    return len;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>还是O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
