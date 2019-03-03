@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1004 Max Consecutive Ones III题sliding windows java解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1004 Max Consecutive Ones III题sliding windows java解题笔记</h1>
+			</div>
+
+			<p><em>03 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1004-max-consecutive-ones-iii" id="题目-leetcode-1004-max-consecutive-ones-iii">题目 leetcode 1004 Max Consecutive Ones III</a></h2> 
+<p>具体题目在<a href="http://www.noteanddata.com/leetcode-1004-Max-Consecutive-Ones-III-java-solution-note.html">http://www.noteanddata.com/leetcode-1004-Max-Consecutive-Ones-III-java-solution-note.html</a>里面写了，就是在一个0/1数组里面变换K个0到1，问可以达到最大的连续1的长度是多少</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>在前面的解题报告里面，写了动态规划的思路和代码，以及二维数组转一维数组的过程， 比赛完学习了一下大牛的做法，基本都是用sliding window的做法，这里把学习的笔记记录如下。<br> 0. 当然，一个brute force的解法自然是对所有的[i,j]子数组，统计里面的0的个数，如果小于K就是符合要求的长度，然后统计里面长度的最大值。 这个做法时间复杂度是O(N^2), 当然肯定不会通过。<br> 1. 这个问题的重要特征是连续，也就是说题目需要求解的是变换后的1是连续的个数，我个人理解是理论上所有的sliding windows解法应该都只能应用于连续问题。 在前面的解题报告里面也说到，这个连续的特征非常重要, 因为连续才可以把二维数组转化成一维数组，做到空间的优化。<br> 连续子数组的主要好处是如果所有的i,j变化是连续的，那么结果也是连续的，不会存在跳跃的情况<br> 也就是说, [i,j]和[i,j+1]的关系， 或者是[i-1, j]和[i,j]的关系，都是最多只差一个。<br> 3. 那么，在这个连续的子数组里面，最多可以变换K个0，可以等价于一个[i,j]的窗口里面的0的个数小于K个。<br> 也就是说，设置一个窗口[i,j], 如果这个窗口里面的0的个数小于K个，那么这个窗口一定是合法，我们可以把j向前推进。<br> 如果窗口里面的0的个数已经大于K个了，那么这个窗口就不合法，我们需要把i向前推进，直到窗口里面的0的个数小于K个。<br> 然后在所有合法窗口里面找最大的就可以了。</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int longestOnes(int[] A, int K) {
+    int max = 0;
+    int zeroCount = 0; // zero count in current window
+    int i = 0; // slow pointer
+    for(int j = 0; j &lt; A.length; ++j) {
+        if(A[j] == 0) { // move forward j, if current is 0, increase the zeroCount
+            zeroCount++;
+        }
+        
+        // when current window has more than K, the window is not valid any more
+        // we need to loop the slow pointer until the current window is valid
+        while(zeroCount &gt; K) {  
+            if(A[i] == 0) {
+                zeroCount--;
+            }
+            i++;
+        }
+        max = Math.max(max, j-i+1); // everytime we get here, the current window is valid 
+    }
+    return max;
+}
+</code></pre> 
+<h2><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h2> 
+<p>两个指针，都只遍历了一次数组，所以时间复杂度是O(N)</p> 
+<h2><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h2> 
+<p>使用了常数空间，所以空间复杂度是O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
