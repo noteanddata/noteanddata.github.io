@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1003 Check If Word Is Valid After Substitutions题java解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1003 Check If Word Is Valid After Substitutions题java解题笔记</h1>
+			</div>
+
+			<p><em>02 March 2019</em></p>
+
+			<p><h2><a href="#题目leetcode-1003-check-if-word-is-valid-after-substitutions" id="题目leetcode-1003-check-if-word-is-valid-after-substitutions">题目–leetcode 1003 Check If Word Is Valid After Substitutions</a></h2> 
+<ol> 
+ <li>首先定义字符串abc是valid</li> 
+ <li>然后，定义对任意的valid的字符串，可以把该字符串拆成X+Y(其中X和Y都可以是空字符串), 然后X + “abc” + Y也是valid的</li> 
+ <li>输入一个字符串，要求判断该字符串是否是valid的</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>一开始想的比较复杂，以为要用到什么动态规划记忆化搜索，比如遇到abc以后，把左右拼起来再递归处理，然后看数据量又决定可能内存会溢出，还好仔细想了一下。 其实这个添加字符串的模式是固定每次添加abc的，直接从左到右用一个stack来判断就可以，一次遍历就可以处理完</li> 
+ <li>具体做法其实和判断字符串里面括号是否匹配类似，用一个stack，遇到a入栈，遇到b判断现在是否有一个a在栈顶，遇到c判断现在栈顶是否有a和b， 其他情况都是非法的</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<p>具体实现代码如下</p> 
+<pre><code>public boolean isValid(String S) {
+    Stack&lt;Character&gt; stack = new Stack&lt;&gt;();
+    for(char ch: S.toCharArray()) {
+        if(ch == 'a') {
+            stack.push(ch);
+        }
+        else if(ch == 'b') {
+            if(stack.isEmpty() || stack.peek() != 'a') {
+                return false;
+            }
+            stack.push(ch);
+        }
+        else { // ch == 'c'
+            if(stack.isEmpty() || stack.pop() != 'b') {
+                return false;
+            }
+            if(stack.isEmpty() || stack.pop() != 'a') {
+                return false;
+            }
+        }
+    }
+    return stack.isEmpty();
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>一次遍历，时间复杂度是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>stack的最大长度可能会和字符串的长度一样，所以空间复杂度也是O(N)。<br> 输入字符串全部是a的时候，比如"aaaaaaaaaa"的时候，stack的长度是N</p> 
+<h2><a href="#其他一些代码" id="其他一些代码">其他一些代码</a></h2> 
+<p>只对字母c做处理，代码上略简洁一点，当然一些情况效率会略低一点，没有及时退出</p> 
+<pre><code>public boolean isValid(String S) {
+    Stack&lt;Character&gt; stack = new Stack&lt;&gt;();
+    for(char ch: S.toCharArray()) {
+        if(ch == 'c') {
+            if(stack.size() &lt; 2) {
+                return false;
+            }
+            if(stack.pop() != 'b') {
+                return false;
+            }
+            if(stack.pop() != 'a') {
+                return false;
+            }
+        }
+        else {
+            stack.push(ch);
+        }
+    }
+    return stack.isEmpty();
+}
+
+</code></pre> 
+<p>还可以对上面的代码合并一下，看上去更加简洁一点。</p> 
+<pre><code>public boolean isValid(String S) {
+    Stack&lt;Character&gt; stack = new Stack&lt;&gt;();
+    for(char ch: S.toCharArray()) {
+        if(ch == 'c') {
+            if(stack.size() &lt; 2 || stack.pop() != 'b' || stack.pop() != 'a') {
+                return false;
+            }
+        }
+        else {
+            stack.push(ch);
+        }
+    }
+    return stack.isEmpty();
+}
+
+</code></pre> 
+<p>后来还写了一个字符串拼接的方法，还好没有用什么递归记忆搜索, 后来想了一下这个和stack没有区别</p> 
+<pre><code>public boolean isValid(String S) {
+    if(S.length() &lt; 3) {
+        return false;
+    }
+    StringBuilder sb = new StringBuilder();
+    for(int i = 0; i &lt; S.length(); ++i) {
+        char ch = S.charAt(i);
+        if(ch == 'c') {
+            if(sb.length() &lt; 2) {
+                return false;
+            }
+            if(sb.charAt(sb.length()-1) != 'b' || sb.charAt(sb.length()-2) != 'a') {
+                return false;
+            }
+            sb.deleteCharAt(sb.length()-1);
+            sb.deleteCharAt(sb.length()-1);
+        }
+        else {
+            sb.append(S.charAt(i));
+        }
+    }
+    return sb.length()== 0;
+}
+</code></pre> 
+<p>然后学习了一下别人的代码，brute force也可以过</p> 
+<pre><code>public boolean isValid(String S) {
+    while(S.contains("abc")) {
+        S = S.replaceAll("abc", "");
+    }    
+    return S.length() == 0;
+}
+</code></pre> 
+<p>还可以递归brute force</p> 
+<pre><code>public boolean isValid(String S) {
+    if(S.length() &lt; 3) return false;
+    String t = S.replaceAll("abc", "");
+    return t.length() == 0 || (t.length() != S.length() &amp;&amp; isValid(t));
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
