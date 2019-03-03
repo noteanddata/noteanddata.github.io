@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 9 Palindrome Number解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 9 Palindrome Number解题笔记</h1>
+			</div>
+
+			<p><em>28 February 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-9-palindrome-number" id="题目-leetcode-9-palindrome-number">题目 leetcode 9 Palindrome Number</a></h2> 
+<ol> 
+ <li>输入一个数字， 判断这个数字是否是回文数</li> 
+ <li>follow up, 能不能用不转化成字符串的方式来做</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>这是一个简单题， 可是看自己的提交记录， 这个简单题也做错过。而且后来虽然ac了，但是代码也不是很简洁。。<br> 实际上，后面发现follow up做的时候， 也没有做的非常好，虽然可以ac，实际上自己一开始一些细节的地方处理的还是有一些问题的。主要是整数溢出的情况没有考虑到.<br> 1. 常规的做法， 把数字转化成字符串， 然后判断这个字符串是否是回文就好<br> 2. 针对follow up， 主要的思路是生成一个reversed的数字， 然后看这个数字是否和原数字相同。</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<p>字符串方法的代码</p> 
+<pre><code>public  boolean isPalindrome(int x) {
+   if(x &lt; 0) return false;
+   String s = String.valueOf(x);
+   int begin = 0, end = s.length()-1;
+    while(begin &lt; end) {
+        if(s.charAt(begin) != s.charAt(end)) {
+            return false;
+        }
+        begin++;
+        end--;
+    }
+   return true;
+}
+
+</code></pre> 
+<p>不转化成字符串的代码, 主要思路是生成反向数字， 但是有一些特殊的情况要考虑。<br> a. 数字溢出, 所以这里在x&gt;mirror的时候就退出了， 相当于反向生成了一半<br> b. 因为反向生成了一半， 所以数字转化成字符串是奇数长度又变得特殊了, 比如12321， 所以最后return的时候没有直接判断是否一样<br> c. 因为是反向生成了一半， 然后因为对上面12321的情况特殊处理了一下， 又多出来一种特殊情况， 比如10或者100的情况。</p> 
+<p>总体来说，感觉这个代码实现还不是很优美，特殊情况太多， 而且都是为了处理一种情况而cover另外一种情况，我个人并不是很喜欢。更好的处理方式，有待后续学习。</p> 
+<pre><code>public  boolean isPalindrome(int x) {
+   if(x &lt; 0 || (x != 0 &amp;&amp; x%10 == 0)) return false;
+   int mirror = 0;
+   while(x &gt; mirror) {
+       mirror = mirror * 10 + x%10;
+       x /= 10;
+   }
+   return mirror == x || mirror/10 == x;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>相当于字符串遍历一次 ， O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#一些有问题的代码" id="一些有问题的代码">一些有问题的代码</a></h2> 
+<p>下面这个版本可以ac， 但是处理的过程中没有考虑整数溢出的情况， 虽然目前的test case里面不会有这样的情况。<br> 但是我不确定是否整数溢出后这样一路操作下来会不会出现和原来一样的数的情况。<br> 这里，基本上就是生成了一个反向的数字， 然后比较是否相等</p> 
+<pre><code>public  boolean isPalindrome(int x) {
+   if(x &lt; 0) return false;
+   int mirror = 0;
+   int v = x;
+   while(v &gt; 0) {
+       mirror = mirror * 10 + v%10;
+       v /= 10;
+   }
+   return mirror == x;
+}
+</code></pre> 
+<p>下面这个转字符串的方法也是可以ac的， 不过现在写代码不太喜欢通过计算index的方式来写，因为这个写法需要对边界条件思考一下， 而直接left/right的方法就几乎不会出错，所以后来都改成left/right的方法了</p> 
+<pre><code>public  boolean isPalindrome(int x) {
+   if(x &lt; 0) return false;
+   String s = String.valueOf(x);
+   for(int i = 0; i &lt; s.length() / 2; ++i) {
+       if(s.charAt(i) != s.charAt(s.length() - i-1)) {
+           return  false;
+       }
+   }
+   return true;
+}
+</code></pre> 
+<p>下面这个代码也可以ac，但是时间比前面的版本都要慢很多，在leetcode上测试， 11507个测试数据，前面的版本都是大约80ms左右，下面的代码是300ms。 所以，自己手动整数转字符串比String.valueOf(i)要慢多了，<br> 进去看了下jdk代码，写jdk代码的都是高人，里面是一堆位操作！</p> 
+<pre><code>public  boolean isPalindrome(int x) {
+   // if(x &lt; 0) x = -1 * x;
+   if(x &lt; 0) return false;
+   StringBuilder sb = new StringBuilder();
+   while(x != 0) {
+       int remain = x % 10;
+       sb.append(remain);
+       x = x/10;
+   }
+   for(int i = 0; i &lt; sb.length() / 2; ++i) {
+       if(sb.charAt(i) != sb.charAt(sb.length() - i-1)) {
+           return  false;
+       }
+   }
+   return true;
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
