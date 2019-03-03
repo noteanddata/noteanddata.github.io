@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 3 Longest Substring Without Repeating Characters解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 3 Longest Substring Without Repeating Characters解题笔记</h1>
+			</div>
+
+			<p><em>03 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-3-longest-substring-without-repeating-characters" id="题目-leetcode-3-longest-substring-without-repeating-characters">题目 leetcode 3 Longest Substring Without Repeating Characters</a></h2> 
+<p>输入一个字符串，要求返回没有重复字符的substring的最大长度</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目leetcode卡的比较宽，我之前写了一个brute force对所有的substring判断也可以通过， 当然这个做法没有什么价值，这里就不写了。</li> 
+ <li>现在写这个是因为昨天在leetcode 1004 Max Consecutive Ones III，我做的时候用了一个动态规划的做法<a href="http://www.noteanddata.com/leetcode-1004-Max-Consecutive-Ones-III-java-solution-note.html">http://www.noteanddata.com/leetcode-1004-Max-Consecutive-Ones-III-java-solution-note.html</a>来做，不是最优，而大部分人都是用sliding windows的方法做的，所以这里找一些sliding windows的经典题目，把以前自己写的和参考别人的代码再总结一下，加深记忆。</li> 
+ <li>现在这个题目是一个经典的sliding windows的题目，这里的重要特点还是连续，也就是随着index的变化，比如[i,j] vs [i,j+1] 或者[i,j] vs [i+1,j], 状态的变化也是连续的</li> 
+ <li>所以可以维护一个窗口[i,j], 只要这个窗口的状态是合法的，就把j++， 继续判断是否合法；<br> 如果窗口已经变成不合法的，那么就把i++，值得窗口变成合法的。<br> 在这个题目中， 合法窗口的定义就是在这个窗口里面，没有重复的字符。 那么我们可以用一个Map&lt;Character, Integer&gt; countMap, 来表示当前窗口里面每个字符出现的次数， 然后判断里面有没有一个字符的个数是多于一个的。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int lengthOfLongestSubstring(String s) {
+    Map&lt;Character, Integer&gt; countMap = new HashMap&lt;&gt;();
+    int maxLen = 0;
+    int j = 0;
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        countMap.put(ch, countMap.getOrDefault(ch, 0)+1);
+        while(!valid(countMap)) {
+            char chj = s.charAt(j);
+            countMap.put(chj, countMap.get(chj)-1);
+            j++;
+        }            
+        int len = i-j+1;
+        maxLen = Math.max(maxLen, len);
+    }
+    return maxLen;
+}
+
+boolean valid(Map&lt;Character, Integer&gt; countMap) {
+    for(Map.Entry&lt;Character, Integer&gt; entry: countMap.entrySet()) {
+        if(entry.getValue() &gt; 1) {
+            return false;
+        }
+    }
+    return true;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组遍历了一次，每次可能对26个字符进行循环，所以时间复杂度是O(N*26)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>保存状态的map最多会有26个，所以可以理解成O(1)</p> 
+<h2><a href="#sliding-windows滑动窗口的特征和基本模版" id="sliding-windows滑动窗口的特征和基本模版">sliding windows滑动窗口的特征和基本模版</a></h2> 
+<p>从前面的例子，以及<a href="http://www.noteanddata.com/leetcode-1004-Max-Consecutive-Ones-III-java-sliding-window-solution-note.html">leetcode 1004 Max Consecutive Ones III题sliding windows java解题笔记</a>， 我们可以看到,</p> 
+<ol> 
+ <li>sliding windows题目的特征是连续， 就是index的变化是连续的，同时随着index的变化，状态的变化也是连续的</li> 
+ <li>sliding windows的模版如下<br> a. 首先需要定义当前窗口的状态<br> b. 然后移动一个快指针，更新状态<br> c. 如果状态变成不合法，移动慢指针，更新状态，这里要循环直到状态变成合法的</li> 
+</ol> 
+<pre><code>define state
+have two pointers i and j;
+for(i = 0; i &lt; end; ++i){
+  update state as i has moved;
+  while(state is not valid) {
+    move forward j; 
+    update state because of j
+  }
+  // now [j,i] is valid, fetch the max value needed 
+  max = Math.max(max, i-j+1);
+}
+
+</code></pre> 
+<h2><a href="#这个题目的简化版代码" id="这个题目的简化版代码">这个题目的简化版代码</a></h2> 
+<p>a. 当然，这个题目前面的代码不是最优的，原因在于，最初的状态一定是合法的，那么每次状态会变成非法的时候，一定是当前的i遇到了一个新的字符，在当前窗口上遇到过。<br> b. 比如，针对"abcdbegbhij"，最开始的时候j=0, 遇到i=4的时候，我们有一个重复字符b了(index=1)， 然后这时候，其实窗口可以直接更新到前面的那个b的下一个， 也就是index=2的时候，因为如果j一个一个移动的话，只要j&lt;=1, 一定都包含这个重复的b，所以可以直接跳到j=2。<br> c. 同时，因为我们最初的窗口状态是合法的，然后每次移动i的时候，都会检查窗口是否不合法，那么，第一次遇到窗口不合法的时候，只可能有一个字符在当前窗口上出现两次，所以我们把j跳到前面的index+1的时候，一定就是合法的。因为没有其他字符有重复， 而且当前这个字符也只重复了一次。<br> d. 所以，经过这次j的跳跃，窗口又变成合法了， 那么下次遇到窗口非法，也同样可以跳跃到重复字符的index+1的方法来直接回到合法状态， 可以省去一个一个移动慢指针j了。<br> e. 当然，为了维护这个跳跃，我们要做一个map，维护每个char-&gt;index的map，每次移动i都更新一下这个map，这样就可以跳跃到正确到值。</p> 
+<p>具体代码如下, 当然，对于ascii字符，也可以用一个int[256]的table来存储这个，可以更快一点，但是这个在复杂度上没有区别。</p> 
+<pre><code>public int lengthOfLongestSubstring(String s) {
+    Map&lt;Character, Integer&gt; map = new HashMap&lt;&gt;();
+    int max = 0;        
+    for(int i = 0, j = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        // every time we see an existing character, move j to lastindex+1, so all chars between i and j are unique 
+        j = Math.max(j, map.getOrDefault(ch, -1)+1); 
+        max = Math.max(max, i-j+1);
+        map.put(ch, i);
+    }
+    return max;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组遍历一次，每次都是常数访问，O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>map最大是26个元素， O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
