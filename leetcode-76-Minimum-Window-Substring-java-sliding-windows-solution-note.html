@@ -69,7 +69,7 @@ var _hmt = _hmt || [];
 <ol> 
  <li>这个还是sliding windows, 继续前面的sliding windows题目的总结<a href="http://www.noteanddata.com/leetcode-3-Longest-Substring-Without-Repeating-Characters-java-sliding-windows-solution-note.html">http://www.noteanddata.com/leetcode-3-Longest-Substring-Without-Repeating-Characters-java-sliding-windows-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-1004-Max-Consecutive-Ones-III-java-sliding-window-solution-note.html">http://www.noteanddata.com/leetcode-1004-Max-Consecutive-Ones-III-java-sliding-window-solution-note.html</a></li> 
  <li>同样，求符合某个条件的最小的substring。 使用两个指针i和j， 首先让i向前移动，直到符合要求。 然后在符合要求的情况下，让j向前移动。<br> 具体一点，就是让i向前移动，直到窗口包含了所有的t的字符，这时候就合法了，记录长度和初始的index，<br> 然后如果一直valid的话，继续在循环中移动j</li> 
- <li></li> 
+ <li>同样，这里map也可以用一个int[256] table代替，会略快一点，但是对于复杂度没有区别</li> 
 </ol> 
 <h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
 <pre><code>public String minWindow(String s, String t) {
