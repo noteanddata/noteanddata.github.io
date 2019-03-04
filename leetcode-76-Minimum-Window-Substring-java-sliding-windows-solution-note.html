@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>题目 leetcode 76 Minimum Window Substring解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>题目 leetcode 76 Minimum Window Substring解题笔记</h1>
+			</div>
+
+			<p><em>04 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-76-minimum-window-substring" id="题目-leetcode-76-minimum-window-substring">题目 leetcode 76 Minimum Window Substring</a></h2> 
+<ol> 
+ <li>输入两个字符串，分别是S和T， 要求返回S的最短的substring, 其中这个substring要包含T里面的所有字符，</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个还是sliding windows, 继续前面的sliding windows题目的总结<a href="http://www.noteanddata.com/leetcode-3-Longest-Substring-Without-Repeating-Characters-java-sliding-windows-solution-note.html">http://www.noteanddata.com/leetcode-3-Longest-Substring-Without-Repeating-Characters-java-sliding-windows-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-1004-Max-Consecutive-Ones-III-java-sliding-window-solution-note.html">http://www.noteanddata.com/leetcode-1004-Max-Consecutive-Ones-III-java-sliding-window-solution-note.html</a></li> 
+ <li>同样，求符合某个条件的最小的substring。 使用两个指针i和j， 首先让i向前移动，直到符合要求。 然后在符合要求的情况下，让j向前移动。<br> 具体一点，就是让i向前移动，直到窗口包含了所有的t的字符，这时候就合法了，记录长度和初始的index，<br> 然后如果一直valid的话，继续在循环中移动j</li> 
+ <li></li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public String minWindow(String s, String t) {
+    Map&lt;Character, Integer&gt; tmap = new HashMap&lt;&gt;();
+    for(char ch: t.toCharArray()) {
+        tmap.put(ch, tmap.getOrDefault(ch, 0) + 1);
+    }
+    int j = 0;
+    int minlen = Integer.MAX_VALUE;
+    int minstart = -1;
+    Map&lt;Character, Integer&gt; curMap = new HashMap&lt;&gt;();
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        curMap.put(ch, curMap.getOrDefault(ch, 0) + 1);
+        while(j &lt;= i &amp;&amp; valid(curMap, tmap)) {
+            int len = i-j+1;
+            if(len &lt; minlen) {
+                minlen = len;
+                minstart = j;
+            }
+            char chj = s.charAt(j);
+            curMap.put(chj, curMap.get(chj)-1);
+            j++;
+        }
+    }
+    if(minlen == Integer.MAX_VALUE) return "";
+    return s.substring(minstart, minstart+minlen);
+}
+
+boolean valid(Map&lt;Character, Integer&gt; curMap, Map&lt;Character, Integer&gt; tmap) {
+    if(tmap.size() == 0) return false;
+    for(Map.Entry&lt;Character, Integer&gt; tentry: tmap.entrySet()) {
+        if(tentry.getValue() &gt; curMap.getOrDefault(tentry.getKey(), 0)) {
+            return false;
+        }
+    }
+    return true;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>对S循环一次，最差情况下，每次循环都要遍历256个字符（如果t里面有所有的字符的话），O(N*256)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>map最大都是256个entry，所以相当于是O(1)</p> 
+<h2><a href="#sliding-windows的模版的修正" id="sliding-windows的模版的修正">sliding windows的模版的修正</a></h2> 
+<p>这里对之前文章中提到的sliding windows的模版稍微修正一下， 在里面的while循环加了一个条件j&lt;= i<br> 因为对sliding windows来说，j&gt;i肯定没有意义， 如果后面的状态判断函数写的不是很严谨的话，会报错</p> 
+<pre><code>define state
+have two pointers i and j;
+for(i = 0; i &lt; end; ++i){
+  update state as i has moved;
+  while(j &lt;= i &amp;&amp; state is in some state) { // valid or invalid depending on cases
+    move forward j; 
+    update state because of j
+  }
+  // now [j,i] is valid, fetch the max value needed 
+  max = Math.max(max, i-j+1);
+}
+
+</code></pre> 
+<p>触发上面模版修正的是我写了一个可以ac但是有点问题的代码<br> 我自己用S=“abc”, T=""测试了下发现报错了， 具体细节可以对比前面的代码和这个测试数据来理解.</p> 
+<pre><code>public String minWindow(String s, String t) {
+    Map&lt;Character, Integer&gt; tmap = new HashMap&lt;&gt;();
+    for(char ch: t.toCharArray()) {
+        tmap.put(ch, tmap.getOrDefault(ch, 0) + 1);
+    }
+    int j = 0;
+    int minlen = Integer.MAX_VALUE;
+    int minstart = -1;
+    Map&lt;Character, Integer&gt; curMap = new HashMap&lt;&gt;();
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        curMap.put(ch, curMap.getOrDefault(ch, 0) + 1);
+        while(valid(curMap, tmap)) {
+            int len = i-j+1;
+            if(len &lt; minlen) {
+                minlen = len;
+                minstart = j;
+            }
+            char chj = s.charAt(j);
+            curMap.put(chj, curMap.get(chj)-1);
+            j++;
+        }
+    }
+    if(minlen == Integer.MAX_VALUE) return "";
+    return s.substring(minstart, minstart+minlen);
+}
+
+boolean valid(Map&lt;Character, Integer&gt; curMap, Map&lt;Character, Integer&gt; tmap) {
+    for(Map.Entry&lt;Character, Integer&gt; tentry: tmap.entrySet()) {
+        if(tentry.getValue() &gt; curMap.getOrDefault(tentry.getKey(), 0)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
