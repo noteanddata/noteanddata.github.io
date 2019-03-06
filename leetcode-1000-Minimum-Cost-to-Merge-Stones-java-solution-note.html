@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1000 Minimum Cost to Merge Stones题java解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1000 Minimum Cost to Merge Stones题java解题笔记</h1>
+			</div>
+
+			<p><em>05 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1000-minimum-cost-to-merge-stones" id="题目-leetcode-1000-minimum-cost-to-merge-stones">题目 leetcode 1000 Minimum Cost to Merge Stones</a></h2> 
+<ol> 
+ <li>输入一个整数数组，表示一堆石头的重量， 然后再输入一个整数K</li> 
+ <li>定义一个merge操作，每次可以把K个石头合并到一起， 然后这个操作的成本是这K个石头的重量和</li> 
+ <li>问，能不能最后把所有的石头都合并到一起？ 如果可以的话，其中最小的操作成本是多少？</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这还是一个经典的动态规划题目， 但是比较难， 比前一篇文章写的<a href="http://www.noteanddata.com/leetcode-375-Guess-Number-Higher-or-Lower-II-java-solution-note.html">http://www.noteanddata.com/leetcode-375-Guess-Number-Higher-or-Lower-II-java-solution-note.html</a>要难很多。</li> 
+ <li>先考虑几个特殊情况，<br> a. 如果正好有K个石头， 那么， 自然可以合并成一堆，然后总成本就是所有石头的重量和<br> b. 如果正好有K+1个石头， 那么，第一步只有两种操作可能， 一种是先把前面的K个合并成一个， 另外一种是先把后面的K个合并成一个<br> 这时候， 如果K=2， 那么，可以继续合并成一堆。 如果K &gt; 2 , 那么，就无法合并了。<br> c. 如果有K+2个石头，第一步只有三种操作可能， [0,K), [1,K+1), [2,K+2), 然后，合并完以后，还剩下三个石头， 如果K=3, 那么，可以合并成一个石头，否则，就不能合并。</li> 
+ <li> <p>从上面的特殊情况可以看到，<br> a. 无论如何操作，如果最后可以合并，最后一步，一定是把K个石头合并成一个，然后最后的成本都是固定的。<br> b. 这里，我当时在做题的时候陷入了错误的方向， 我考虑在n个位置里面做组合选k-1个位置出来, 这样可以把n个数分成k个，<br> 然后再递归+memorization， 然后马上就陷入充满荆棘的错误道路。<br> c. 实际上，进一步思考一下， 最后一步有k堆，<br> 但是状态可以定义成三维数组， dp[i][j][c]表示从i到j的数组， 然后有c个石头的最小成本, 其中c&lt;=k,<br> 这样，做k个石头的merge的时候， 可以不用选择k-1个位置， 而直接选择一个位置， 这个位置后面是1个石头， 这个位置前面是k-1个石头，<br> 这样，就可以通过在空间上升一维（二维变三维)，从而把时间复杂度大大降低。<br> 遇到一个problem(i,j,c)的时候，可以直接对i和j之间的每个位置做循环， 把前面的分成c-1个， 后面分成1个，<br> d. 这样，普通成本的递推关系就是dp[i][j][c] = dp[i][t][c-1] + dp[t+1][j][1]<br> 如果是求dp[i][j][1] = dp[i][j][k] + sum[i][j]<br> e. 上面两个公式略有点奇怪， 因为通常的dp公式都是一个公式解决所有的递推关系的，<br> 其中dp[i][j][1] = dp[i][j]k] + sum[i][j]非常好理解，这就是做一个merge的操作<br> 而另外一个公式， dp[i][j][c] = dp[i][t][c-1] + dp[t+1][j][1]， 这里的含义其实是指寻找切分， 并没有做merge的操作。<br> f. 这里可能会有个问题， 为什么不直接merge了呢？ 比如直接定义dp[i][j][k] = dp[i][t][k-1] + dp[t+1][j][1] + sum[i][j]?<br> 这是因为虽然对k可以这样定义， 但是k-1的时候就不能这样定义了。 因为我们merge只发生在k的时候， 所以，定义成切分会比较合理，<br> 假设k=3， dp[i][j][3] = dp[i][t][2] + dp[t+1][j][1]<br> dp[i][j][2] = dp[i][t][1] + dp[t+1][j][1]<br> 定义成切分，那就比较容易理解， 左边分成两个石头的情况就是一个石头+一个石头的情况。<br> h. 边界条件，主要就是i=j的情况，<br> dp[i][i][1] = 0 // 一个石头分一堆，不需要任何成本<br> dp[i][i][x] = invalid // if x &gt; 1, 一个石头分成多堆是不可能的</p> </li> 
+</ol> 
+<p>然后要用一个max判断一下不能切分的情况</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<ol> 
+ <li>代码里面用了presum方便求和</li> 
+</ol> 
+<pre><code>public int mergeStones(int[] stones, int K) {
+    int[] presum = new int[stones.length+1];
+    for(int i = 1; i &lt;= stones.length; ++i) {
+        presum[i] = presum[i-1] + stones[i-1];
+    }
+    
+    int[][][] dp = new int[stones.length][stones.length][K+1];
+    
+    int min = find(K,stones, 0, stones.length-1, 1, dp, presum);    
+    return min == Integer.MAX_VALUE ? -1 : min;
+}
+
+int find(int k, int[] stones, int from, int to, int count, int[][][] dp, int[] presum) {
+    if(from == to) { // if there's only one element, only one pile is valid
+        return count == 1 ? 0 : Integer.MAX_VALUE;
+    }
+    if(dp[from][to][count] &gt; 0) {
+        return dp[from][to][count];
+    }
+    
+    int min = Integer.MAX_VALUE;
+    if(count == 1) {
+        int v = find(k, stones, from, to, k, dp, presum); 
+        if(v != Integer.MAX_VALUE) {
+            min = v + presum[to+1] - presum[from]; // the sum is only happening when we do merge from k to 1 
+        }
+    }
+    else {
+        for(int i = from; i &lt; to; ++i) {
+            int left = find(k, stones, from, i, count-1, dp, presum);
+            int right = find(k, stones, i+1, to, 1, dp, presum);
+            if(left != Integer.MAX_VALUE &amp;&amp; right != Integer.MAX_VALUE) {
+                int cost = left + right ; 
+                min = Math.min(min, cost);
+            }
+        }
+    }
+    dp[from][to][count] = min;
+    return min;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^3)?</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>用了一个三维数组， 所以空间复杂度是O(N<em>N</em>k)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
