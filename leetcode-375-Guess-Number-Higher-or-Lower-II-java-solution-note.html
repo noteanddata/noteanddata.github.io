@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 375 Guess Number Higher or Lower II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 375 Guess Number Higher or Lower II解题笔记</h1>
+			</div>
+
+			<p><em>05 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-375-guess-number-higher-or-lower-ii" id="题目-leetcode-375-guess-number-higher-or-lower-ii">题目 leetcode 375 Guess Number Higher or Lower II</a></h2> 
+<ol> 
+ <li>输入一个数字n，表示某人有一个1&lt;=x&lt;=n, 然后进行猜数字的游戏，<br> 如果猜的t=x, 那就直接返回，不需要付钱；<br> 如果猜的t&lt;x, 对方会告诉你猜的数字太小了，同时你需要付出t的成本<br> 如果猜的t&gt;x, 对方会告诉你猜的数字太大了，同样你需要付出t的成本</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li> <p>这还是一个动态规划的题目，我还是不太熟练这类题，最开始我觉得二分应该不对，<br> 后来想了下我以为还是二分是最佳策略，然后因为右边一定比左边大，所以每次把右边的值算出来，就是结果。<br> 当然，这自然是错的，<br> 比如这个例子， [1,2,3,4,5,6,7,8]， 如果二分， 那么第一次应该猜4， 然后如果是小的话那左边一定代价更小。<br> 然后在右边里面最少要再猜5和7两次，那么答案是16.<br> 但是，如果我们第一次猜5，然后右边最多只需要猜一次7就可以。 如果是在左边的话最多只需要猜1和3就可以，<br> 那么，最多只需要付出10的成本，就可以猜到结果。<br> 所以，这里不能用二分的根本原因是，每次猜的时候被加上了权重了，如果数组比较大，那么右边的权重会越来越高，然后第一次猜的位置就可以向右边移动比较多。</p> </li> 
+ <li> <p>考虑动态规划， 这里面关键的一步是，第一次选择哪个数字（当然很多时候也可以猜想最后一步选择哪个数字），<br> 因为我们不知道结果，所以只能brute force把所有可能的数字都尝试一遍。<br> 然后选择了一个数以后，就把数组分成了左右两边， 这时候，左边和右边就形成了重叠子问题。<br> 也就是说，对于一个数组arr, 如果要计算from到to，如果选择了arr[i],<br> 那么， 成本就变成Math.max(cost[from,i-1], cost[i+1][to]) + arr[i]<br> 这样，就可以通过递归+memorization的方式来top down解决</p> </li> 
+ <li>一些边界条件可以特殊处理下, from&lt;=to的话，相当于只剩下一个数，直接猜中这个数，并不需要付钱，所以直接返回0就好</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int getMoneyAmount(int n) {
+    int[] arr = new int[n];
+    for(int i = 0; i &lt; n; ++i) {
+        arr[i] = i+1;
+    }
+    int[][] dp = new int[n][n];
+    for(int[] dpi : dp) {
+        Arrays.fill(dpi, -1);
+    }
+    return find(arr, 0, n-1, dp);
+}
+
+public int find(int[] arr, int from, int to, int[][] dp) {
+    if(to &lt;= from) return 0;
+    if(dp[from][to] != -1) {
+        return dp[from][to];
+    }
+    int min = Integer.MAX_VALUE;
+    for(int i = from; i &lt;= to; ++i) {
+        int left = find(arr, from, i-1, dp);
+        int right = find(arr, i+1, to, dp);
+        int cost = Math.max(left, right) + arr[i];
+        min = Math.min(min, cost);
+    }
+    dp[from][to] = min;
+    return min;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>递归的过程相当于是一棵树，根节点的大小是n，两个子节点的大小是n/2, 然后每个子节点又会分成两半。<br> 最后会变成每个是1的节点，所以整体上,树的高度应该是lgN，时间复杂度应该是O(NlgN)?</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>使用了一个二维数组，空间复杂度是O(N^2)</p> 
+<h2><a href="#一些错误的代码" id="一些错误的代码">一些错误的代码</a></h2> 
+<p>虽然dp， 但是两边没有只取一边。 因为第一个数字猜了以后， 已经知道大小，其实只需要猜剩下的就好，不需要把两边的cost加起来。</p> 
+<pre><code>public int getMoneyAmount(int n) {
+    int[] arr = new int[n];
+    for(int i = 0; i &lt; n; ++i) {
+        arr[i] = i+1;
+    }
+    int[][] dp = new int[n][n];
+    for(int[] dpi : dp) {
+        Arrays.fill(dpi, -1);
+    }
+    for(int i = 0; i &lt; n; ++i) {
+        dp[i][i] = 0;
+    }
+    return find(arr, 0, n-1, dp);
+}
+
+public int find(int[] arr, int from, int to, int[][] dp) {
+    if(to &lt;= from) return 0;
+    if(dp[from][to] != -1) {
+        return dp[from][to];
+    }
+    int min = Integer.MAX_VALUE;
+    for(int i = from; i &lt;= to; ++i) {
+        int left = find(arr, from, i-1, dp);
+        int right = find(arr, i+1, to, dp);
+        int cost = left + right + arr[i];
+        min = Math.min(min, cost);
+    }
+    dp[from][to] = min;
+    return min;
+}
+
+</code></pre> 
+<p>虽然dp， 但是边界上没有计算，比如输入2就直接返回Integer.MAX_VALUE</p> 
+<pre><code>public int getMoneyAmount(int n) {
+    int[] arr = new int[n];
+    for(int i = 0; i &lt; n; ++i) {
+        arr[i] = i+1;
+    }
+    int[][] dp = new int[n][n];
+    for(int[] dpi : dp) {
+        Arrays.fill(dpi, -1);
+    }
+    for(int i = 0; i &lt; n; ++i) {
+        dp[i][i] = 0;
+    }
+    return find(arr, 0, n-1, dp);
+}
+
+public int find(int[] arr, int from, int to, int[][] dp) {
+    if(dp[from][to] != -1) {
+        return dp[from][to];
+    }
+    int min = Integer.MAX_VALUE;
+    for(int i = from+1; i &lt; to; ++i) {
+        int left = find(arr, from, i-1, dp);
+        int right = find(arr, i+1, to, dp);
+        int cost = left + right + arr[i];
+        min = Math.min(min, cost);
+    }
+    dp[from][to] = min;
+    return min;
+}
+
+
+</code></pre> 
+<p>最开始的naive的二分，自然不能通过</p> 
+<pre><code>public int getMoneyAmount(int n) {
+    int[] arr = new int[n];
+    for(int i = 0; i &lt; arr.length; ++i) {
+        arr[i] = i+1;
+    }
+    
+    int from = 1, end = n;
+    int cost = 0;
+    while(from != end) {
+        int mid = from + (end-from)/2;
+        cost += mid;
+        from = mid+1;
+    }
+    return cost;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
