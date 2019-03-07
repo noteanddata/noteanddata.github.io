@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 312 Burst Balloons题java解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 312 Burst Balloons题java解题笔记</h1>
+			</div>
+
+			<p><em>06 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-312-burst-balloons" id="题目-leetcode-312-burst-balloons">题目 leetcode 312 Burst Balloons</a></h2> 
+<ol> 
+ <li>输入一个整数数组，每个数表示每个气球的价格，气球可以被扎， 每次扎一个气球，收到的钱是nums[left] * nums[i] * nums[right],<br> 就是左边的气球价格<em>当前的气球价格</em>右边的气球价格。 对于边界的气球，假设最左边和最右边都有一个价格为1的气球。</li> 
+ <li>问，把所有的气球都扎破以后，可以得到的最大价格是多少？</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>从一个小样本开始，如果输入的气球是[3,1,5,8]<br> 那么，我们第一步可能有4种情况如下<br> a. 选择第一个气球， total_price = 1<em>3</em>1 + calc_price(1,5,8)<br> b. 选择第二个气球， total_price = 3<em>1</em>5 + calc_price(3,5,8)<br> c. 选择第三个气球， total_price = 1<em>5</em>8 + calc_price(3,1,8)<br> d. 选择第四个气球， total_price = 5<em>8</em>1 + calc_price(3,1,5)</li> 
+</ol> 
+<p>这样来看，虽然问题有点类似重叠子问题，好像可以用动态规划，但是这里难点在于，由于气球被扎了以后，重叠的子问题变化比较大，不好定义。<br> 因为每次扎了任何一个中间的气球以后，左边和右边的气球发生变化了。 导致状态定义比较困难。</p> 
+<p>如果用brute force递归硬算的话，时间复杂度会是O(N!), 空间复杂度也会特别高， 因为每次需要拷贝生成一个新的数组</p> 
+<ol> 
+ <li>从前面的分析，大概可以看到有点重叠子问题的意思， 因为扎了一个气球以后，可以算出当前的价格，然后剩下的问题，又变成一个数据规模更小的一样的问题。<br> 所以这里可以想一下大概怎么用动态规划的思路。<br> 前面写了两个动态规划的题解，和这个题目多少有点类似<br> <a href="http://www.noteanddata.com/leetcode-375-Guess-Number-Higher-or-Lower-II-java-solution-note.html">http://www.noteanddata.com/leetcode-375-Guess-Number-Higher-or-Lower-II-java-solution-note.html</a> 这个稍微简单一点，因为每次选择，当前的选择是不影响后面每次选择当次的价格，也就是单次价格只由自己决定，和之前的选择没有关系， 所以可以从前向后算。</li> 
+</ol> 
+<p><a href="http://www.noteanddata.com/leetcode-1000-Minimum-Cost-to-Merge-Stones-java-solution-note.html">http://www.noteanddata.com/leetcode-1000-Minimum-Cost-to-Merge-Stones-java-solution-note.html</a>就和现在这个burst balloon有点类似了， 每次选择后，会影响到左边和右边的状态，那么, 在前面的题目中，我们考虑了最后一次操作的场景。<br> 所以，这里可以考虑一下是不是也可以用最后一次操作的场景来判断状态和子问题的递推关系呢？</p> 
+<ol> 
+ <li>假设考虑最后一个被扎的气球， 那么最后一个气球的价格就是1<em>num[i]</em> 1, 最后一个气球左边的成本可以在一个二维数组里面表示为dp[0][i-1],<br> 最后一个气球右边的成本可以表示为dp[i+1][n-1],<br> 那么，dp[0][n-1] = max(nums[i] + dp[0][i-1] + dp[i+1][n-1])<br> 这时候，重叠子问题已经形成了， 我们需要考虑对于任意的dp[i][j]怎么计算？ 同样，我们也可以选择考虑第一步或者最后一步。<br> 如果考虑第一步一样会会陷入前面说的状态变化太大的问题。 我们再考虑如果做最后一步是怎么样？<br> 这里， dp[i][j]的最后一步会有一个好处， 就是最后一步的左边和右边是确定的。 就是nums[i-1]和nums[j+1].<br> 如果从第一步开始考虑就不会有这个好处， 前面的例子已经解释了， 第一步开始考虑的话左边和右边就会发生变化。</li> 
+ <li>为什么从最后一步开始做的话, dp[i][j]的左右都是固定的呢？ 因为我们从后向前递推的话，每次要算dp[i]j]的时候，左边和右边都是在后面， 那么， 左边和右边都还没有被扎， 所以对于所有[i,j]里面的最后一个气球， 左边和右边都是num[i-1]和nums[j+1],<br> 这样， 就有dp[i][j] = max(nums[i-1] * nums[t] * nums[j+1] + dp[i][t-1] + dp[t+1][j])<br> 这个从后向前计算的重点在于左边和右边是固定的。</li> 
+ <li> <p>所以， 我们可以用top-down + memorization 的方式做递归的动态规划</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int maxCoins(int[] nums) {        
+    int n = nums.length;
+    if(n == 0) {
+        return 0;
+    }
+    int[][] dp = new int[n][n];
+    for(int[] arr: dp) {
+        Arrays.fill(arr, -1);
+    }
+    return find(nums, 0, n-1, dp);
+}
+
+int find(int[] nums, int from, int to, int[][] dp) {
+    if(dp[from][to] != -1) {
+        return dp[from][to];
+    }
+    // note, the loop is is to loop the last balloon to burst
+    for(int i = from; i &lt;= to; ++i) {
+        // every balloon between [from,to] can be bursted 
+        int points = nums[i] * getValue(nums, from-1) * getValue(nums, to+1);  
+        if(i &gt; from) { // if there is left part 
+            points += find(nums, from, i-1, dp);
+        }
+        if(i &lt; to) { // if there is right part 
+            points += find(nums, i+1, to, dp);
+        }                
+        dp[from][to] = Math.max(dp[from][to], points);
+    }
+    return dp[from][to];
+
+}
+int getValue(int[] nums, int i) {
+    if(i &lt; 0 || i &gt;= nums.length) return 1;
+    return nums[i];
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^2)?</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N^2)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
