@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 843 Guess the Word解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 843 Guess the Word解题笔记</h1>
+			</div>
+
+			<p><em>08 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-843-guess-the-word" id="题目-leetcode-843-guess-the-word">题目 leetcode 843 Guess the Word</a></h2> 
+<ol> 
+ <li>输入一个单词列表， 然后里面有一个单词是我们需要猜的, 每次我们可以选择猜一个单词， 对方会告诉我们有几个字符匹配。</li> 
+ <li>其中单词列表中的每个单词都是6个字符长。</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这个类型的题目之前没见过，拿到题目尝试分析了一下，还是没有个所以然， 向别人学习了下，一开始还没有明白，多看了几个代码以后才明白怎么做，后来发现想通了以后还是比较好理解的。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>首先第一次猜，没有任何信息，只能随便猜一个</li> 
+ <li>第一次猜了以后，这时候我们知道最后的答案有几个字符和第一个的单词相符，假设这个数是n， 那么，对于剩下要猜的单词， 我们可以做一些判断， 对于这些单词里面的任何一个，如果和前面猜的单词匹配的字符数也是n， 那么就可能是答案。 如果匹配的字符数不是n，那么就不可能是答案。</li> 
+ <li>所以， 对于一次猜测，我们可以剔除一些单词。 那么后面的每次猜测，都可以从剩下的单词列表里面剔除一些单词，然后随机选择一个就好。 这个过程基本就是最佳思路</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public void findSecretWord(String[] wordlist, Master master) {
+    Random r = new Random();
+    int index = r.nextInt(wordlist.length);
+    String word = wordlist[index];
+    List&lt;String&gt; curList = new ArrayList&lt;&gt;();
+    for(String w: wordlist) {
+        curList.add(w);
+    }
+    while(true) {
+        int matchCount = master.guess(word);
+        if(matchCount == 6) {
+            return;
+        }
+        List&lt;String&gt; nextList = new ArrayList&lt;&gt;();
+        for(String w: curList) {
+            if(matchCount == match(w, word)) {
+                nextList.add(w);
+            }
+        }
+        index = r.nextInt(nextList.size());
+        word = nextList.get(index);
+        curList = nextList;
+    }
+    
+}
+
+int match(String w1, String w2) {
+    int count = 0;
+    for(int i = 0; i &lt; w1.length(); ++i) {
+        if(w1.charAt(i) == w2.charAt(i)) {
+            count++;
+        }
+    }
+    return count;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N) ?</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>每次循环需要一个新的list， 所以是O(N)</p> 
+<h2><a href="#一个错误的代码" id="一个错误的代码">一个错误的代码</a></h2> 
+<p>选剩余列表的时候，每次都从最开始都列表里面选match的，这样剔除就不够充分。 导致之前的信息就被浪费了。</p> 
+<pre><code>public void findSecretWord(String[] wordlist, Master master) {
+    Random r = new Random();
+    int index = r.nextInt(wordlist.length);
+    String word = wordlist[index];
+    while(true) {
+        int matchCount = master.guess(word);
+        if(matchCount == 6) {
+            return;
+        }
+        List&lt;String&gt; nextList = new ArrayList&lt;&gt;();
+        for(String w: wordlist) {
+            if(matchCount == match(w, word)) {
+                nextList.add(w);
+            }
+        }
+        index = r.nextInt(nextList.size());
+        word = nextList.get(index);
+    }
+    
+}
+
+int match(String w1, String w2) {
+    int count = 0;
+    for(int i = 0; i &lt; w1.length(); ++i) {
+        if(w1.charAt(i) == w2.charAt(i)) {
+            count++;
+        }
+    }
+    return count;
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
