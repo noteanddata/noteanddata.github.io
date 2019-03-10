@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1007 Minimum Domino Rotations For Equal Row题java解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1007 Minimum Domino Rotations For Equal Row题java解题笔记</h1>
+			</div>
+
+			<p><em>09 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1007-minimum-domino-rotations-for-equal-row" id="题目-leetcode-1007-minimum-domino-rotations-for-equal-row">题目 leetcode 1007 Minimum Domino Rotations For Equal Row</a></h2> 
+<ol> 
+ <li>有两行骰子， 每行个数一样多</li> 
+ <li>然后定义一个换位操作，就是在某一个index， 把两行骰子在这个index上的位置互换</li> 
+ <li>问， 最少经过多少次操作以后，可以让两行骰子里面的某一行的值都是一样的</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>今天的比赛其实这个题最难一点，第4题反而非常简单。 而整体今天的难度并不是特别大，本来是做4题的最好机会，这从今天的比赛结果也可以看出来，作出4题的有1000多人， 可惜我在这个题目上又卡壳比较长时间，花了好长时间才整理清楚动态规划的状态递推关系。前面在第一题两次做错以后，第二题又花了比较长的时间验证，整体时间消耗比较多。 最后晚了2分钟才通过。很是郁闷，感觉水平还比较差。</li> 
+ <li>而且最近这周重点学习了动态规划，这个题目在动态规划里面并不是算特别难的。 状态分析老是傻傻的搞不清楚。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个就最小操作的情况，拿到题目就觉得是dp</li> 
+ <li>主要是分析状态, 首先，对于某一个index=i， 肯定最少需要两个状态<br> dp[i][0]表示第一行是完全一样的最小操作<br> dp[i][1]表示第二行是完全一样的最小操作<br> 但是问题来了， 对于下面这个例子， 显然最小操作应该是2， 就是把index=0和index=2的放到第二行<br> 2,5,2,1,3<br> 5,2,5,2,2<br> 但是如果我们只定义dp[i][0]和dp[i][1], 假设在index=2的时候，无法表达第二行全部是2和全部是5的两种不同的情况，<br> 而后续的结果，是依赖于这两种不同的状态。</li> 
+ <li>所以，<br> 定义dp[i][0]表示第一行， 最后是A[i]的完全一样的最小操作<br> 定义dp[i][1]表示第一行， 最后是B[i]的完全一样的最小操作<br> 定义dp[i][2]表示第一行， 最后是B[i]的完全一样的最小操作<br> 定义dp[i][3]表示第一行， 最后是A[i]的完全一样的最小操作</li> 
+ <li> <p>这样，就可以定义递推关系<br> 如果A[i] == A[i-1]<br> – dp[i][0] = dp[i-1][0], 相当于第一行不变<br> – dp[i][3] = dp[i-1][3]+1, 相当于在i-1把A[i-1]换到第二行后，在i也把A[i]换到第二行</p> </li> 
+</ol> 
+<p>如果B[i] == B[i-1]<br> – dp[i][2] = dp[i-1][2], 相当于第二行不变<br> – dp[i][1] = dp[i-1][1]+1， 相当于在i-1把A[i-1]换到第一行后，在i也把A[i]换到第一行</p> 
+<p>如果A[i] == B[i-1],<br> –dp[i][0] = dp[i-1][1], 相当于在i-1的位置， 把B[i-1]换到A的最小操作<br> –dp[i][3] = dp[i-1][2] + 1; 相当于在i的位置把A换到第二行<br> 如果B[i] == A[i-1],<br> –dp[i][2] = dp[i-1][3], 相当于在i-1的位置， 把A[i-1]换到B的最小操作<br> –dp[i][1] = dp[i-1][0] + 1; 相当于在i的位置把B换到第一行</p> 
+<ul> 
+ <li>当然，上面所有的操作都要考虑有多个可能的情况， 每个都取最小值.</li> 
+ <li>然后， 还要考虑不合法的情况（我这里用了Integer.MAX_VALUE来判断， 那么要对overflow做判断)</li> 
+</ul> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int minDominoRotations(int[] A, int[] B) {
+    int[][] dp = new int[A.length][4];
+    for(int[] arr: dp) {
+        Arrays.fill(arr, Integer.MAX_VALUE);
+    }
+    
+    dp[0][0] = dp[0][2] = 0;
+    dp[0][1] = dp[0][3] = 1;
+    
+    for(int i = 1; i &lt; A.length; ++i) {
+        if(A[i] == A[i-1]) {
+            dp[i][0] = dp[i-1][0];
+            if(dp[i-1][3] != Integer.MAX_VALUE) {
+                dp[i][3] = Math.min(dp[i][3], dp[i-1][3]+1);    
+            }
+            
+        }
+        if(B[i] == A[i-1]) {
+            dp[i][2] = Math.min(dp[i][2], dp[i-1][3]);
+            if(dp[i-1][0] != Integer.MAX_VALUE) {
+                dp[i][1] = dp[i-1][0] + 1;    
+            }
+        }
+        if(A[i] == B[i-1]) {
+            dp[i][0] = Math.min(dp[i][0], dp[i-1][1]);
+            if(dp[i-1][2] != Integer.MAX_VALUE) {
+                dp[i][3] = dp[i-1][2] + 1;
+            }                                    
+        }
+        
+        if(B[i] == B[i-1]) {
+            dp[i][2] = dp[i-1][2];
+            if(dp[i-1][1] != Integer.MAX_VALUE) {
+                dp[i][1] = Math.min(dp[i][1], dp[i-1][1]+1);    
+            }
+        }
+    }
+    int min = Integer.MAX_VALUE;
+    for(int j = 0; j &lt; 4; ++j) {
+        min = Math.min(min, dp[A.length-1][j]);
+    }
+    return min == Integer.MAX_VALUE ? -1: min;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N), 当然，实际上这里每次都只依赖于前面一个状态，可以把空间优化到O(1), 只用4个变量就可以， 这个后续再学习记录。</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
