@@ -68,12 +68,10 @@ var _hmt = _hmt || [];
  <li>如果一个字符串是另外一个字符串的前缀， 那么那个前缀是更小的</li> 
 </ol> 
 <h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
-<ol> 
- <li>这个题目和之前的很多题目一样， 需要做bottom up 遍历， 也就是从叶节点遍历</li> 
- <li>对于bottom up 遍历， 通常我们需要做递归的post order从下向上遍历，</li> 
- <li>由于只需要返回一个最小的值， 那么对于任何一个节点， 我们都只需要取当前的最小值， 因为每个节点向上的值都是固定的<br> 区别只在于子节点上的路径， 所以，对于任意一个节点，都从子节点中取最小值</li> 
-</ol> 
+<p><strong>更新@2019-03-10, 现在这个版本是错的， 具体分析在这片文章里面写了错误的原因和相关的test case,<br> <a href="http://www.noteanddata.com/leetcode-988-Smallest-String-Starting-From-Leaf-java-solution-update.html">http://www.noteanddata.com/leetcode-988-Smallest-String-Starting-From-Leaf-java-solution-update.html</a><br> 这里保留下面错误的分析一字不改， 好让自己或者读者看的时候，可以更好的看到当时为什么是错的</strong></p> 
+<p><del>1. 这个题目和之前的很多题目一样， 需要做bottom up 遍历， 也就是从叶节点遍历</del><br> ~~2. 对于bottom up 遍历， 通常我们需要做递归的post order从下向上遍历， ~~<br> <del>3. 由于只需要返回一个最小的值， 那么对于任何一个节点， 我们都只需要取当前的最小值， 因为每个节点向上的值都是固定的<br> 区别只在于子节点上的路径， 所以，对于任意一个节点，都从子节点中取最小值</del></p> 
 <h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<p><strong>这个代码是错的</strong></p> 
 <pre><code>public String smallestFromLeaf(TreeNode root) {
     return dfs(root);
 }
