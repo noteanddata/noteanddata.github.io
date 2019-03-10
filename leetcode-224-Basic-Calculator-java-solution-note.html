@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 224 Basic Calculator解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 224 Basic Calculator解题笔记</h1>
+			</div>
+
+			<p><em>10 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-224-basic-calculator" id="题目-leetcode-224-basic-calculator">题目 leetcode 224 Basic Calculator</a></h2> 
+<p>输入一个字符串，里面有加号，减号，左括号和右括号，要求返回这个字符串的数学结果</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>同样是让人爱恨交加的实现题， 和前面的实现题一样， <a href="http://www.noteanddata.com/leetcode-8-String-to-Integer-atoi-java-solution-note.html">http://www.noteanddata.com/leetcode-8-String-to-Integer-atoi-java-solution-note.html</a>, 自己写的又长又臭， 别人写的简洁漂亮</li> 
+ <li>思考， 如何可以训练到遇到这类实现题新题也可以一次行云流水的写出简洁漂亮的代码呢？是要多在分析不同的test case， 分类处理上下功夫？ 还是如何？ 感觉通过看代码刷代码一时也不一定学的好。 别说新题了，就算是之前刷过的，也未必一定能再刷的好。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这里有几个部分， 先从最简单的部分开始考虑， 就是数字， 这个基本就两种做法，一种是记录数字开始的index, 一种是直接边遍历边计算值。 这个题我开始是用记录数字开始的index来做的，实际做下来感觉这样代码会比较冗余。 不如直接一边遍历一边计算。<br> 这个套路在前面的atoi里面也用到。<br> 这里总结一下， 循环转化字符串数字到整数的套路</li> 
+</ol> 
+<pre><code>while(Character.isDigit(ch)) {
+  cur = cur * 10 + (int)(ch - '0');
+}
+cur = cur * sign;
+</code></pre> 
+<p>当然，符号需要之前先用一个sign保存一下当前的符号</p> 
+<pre><code>sign = (ch == '-') ? -1 : 1; // set sign 
+</code></pre> 
+<ol> 
+ <li>括号， 需要处理优先级， 这个通常需要用stack来处理。 这里不同的处理方法又会带来代码简洁程度的巨大差异。<br> 我之前写的版本， 每一个数字都通过stack来操作， 这样不同的状态就会比较多，处理起来会比较复杂。<br> 实际上， 这里只有加减号和括号，所以，对于同一个括号里面的值，可以直接用一个变量来计算，不需要进入堆栈， 这样情况的处理就会简洁很多。<br> 堆栈只用来处理括号的优先级。这样需要处理的情况就会少很多，代码一下子会减少差不多一半。<br> 当然，为了达到这样的处理，需要把括号前面的加号或者减号处理成1或者-1, 然后stack里面就全部是数字，最后所有的外部操作都用加法来完成，代码就会非常简洁.</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int calculate(String s) {
+    s = s + " "; // so that we can finish all processing in one for loop
+    Stack&lt;Integer&gt; stack = new Stack&lt;&gt;(); // to store last value and sign before any parentheses 
+    int ret = 0;  // current result within one priority (in the same parentheses)
+    int cur = 0;  // current number 
+    int sign = 1; // current sign 
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        if(Character.isDigit(ch)) { // always process digit first 
+            cur = cur * 10 + (int)(ch - '0');
+        }
+        else { // if not digit, 
+            ret = ret + cur * sign; // cur has ended 
+            if(ch == '(') { // a new level, push ret and sign to stack 
+                stack.push(ret);
+                stack.push(sign);
+                ret = 0;  // start a new result in this level
+            }
+            else if(ch == ')') { // finish one level 
+                ret = ret * stack.pop(); // sign
+                ret = ret + stack.pop(); // process result before sign 
+            }
+            cur = 0;                     // reset cur 
+            sign = (ch == '-') ? -1 : 1; // reset sign 
+        }
+    }
+    return ret;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)， 因为字符串只遍历了一次</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N), 因为stack最大可能和N一样长</p> 
+<h2><a href="#最开始写的比较长的版本" id="最开始写的比较长的版本">最开始写的比较长的版本</a></h2> 
+<pre><code>public int calculate(String s) {
+    s = s + " ";
+    Stack&lt;String&gt; stack = new Stack&lt;&gt;();
+    int nstart = -1;
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        if(Character.isDigit(ch)) {
+            if(nstart &lt; 0) {
+                nstart = i;
+            }
+        }
+        else {
+            if(nstart &gt;= 0) { // number ends
+                String part = s.substring(nstart, i);
+                int v = Integer.valueOf(part);
+                if(stack.isEmpty()) {
+                    stack.push(String.valueOf(v));    
+                }
+                else {
+                    String peek = stack.peek();
+                    if("(".equals(peek)) {
+                        stack.push(part);
+                    }
+                    else if("+".equals(peek)) {
+                        stack.pop();
+                        int last = Integer.valueOf(stack.pop());
+                        int ret = last+v;
+                        stack.push(String.valueOf(ret));
+                    }
+                    // else if("-".equals(peek)) {
+                    else { // should be -
+                        stack.pop();
+                        if("(".equals(stack.peek())) {
+                            stack.push(String.valueOf(-v));
+                        }
+                        else { // should be a number
+                            int last = Integer.valueOf(stack.pop());
+                            int ret = last-v;
+                            stack.push(String.valueOf(ret));
+                        }
+                    }
+                }
+            }
+            
+            nstart = -1;
+            if(ch == ' ') {
+                continue; // do nothing
+            }
+            else if(ch == '(' || ch == '+' || ch == '-') {
+                stack.push(String.valueOf(ch));
+            }
+            else if(ch == ')') {
+                int last = Integer.valueOf(stack.pop()); // should be a number
+                
+                stack.pop();  // pop one, should be (
+                if(stack.isEmpty() || stack.peek().equals("(")) {
+                    stack.push(String.valueOf(last));
+                }
+                else { // should be + or -
+                    String op = stack.pop();
+                    int prev = Integer.valueOf(stack.pop());
+                    if("+".equals(op)) {
+                        int oneret = prev+last;
+                        stack.push(String.valueOf(oneret));
+                    }
+                    else {
+                        int oneret = prev-last;
+                        stack.push(String.valueOf(oneret));
+                    }
+                }
+            }
+        }
+    }
+    int ret = Integer.valueOf(stack.pop());
+    return ret;
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
