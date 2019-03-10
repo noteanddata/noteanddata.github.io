@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1005 Maximize Sum Of Array After K Negations题java解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1005 Maximize Sum Of Array After K Negations题java解题笔记</h1>
+			</div>
+
+			<p><em>09 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1005-maximize-sum-of-array-after-k-negations" id="题目-leetcode-1005-maximize-sum-of-array-after-k-negations">题目 leetcode 1005 Maximize Sum Of Array After K Negations</a></h2> 
+<ol> 
+ <li>输入一个整数数组， 然后输入一个整数K</li> 
+ <li>定义一次操作是把a[i]变成-a[i]</li> 
+ <li>问，在进行K次操作以后，数组的和最大值是多少？</li> 
+ <li>可以对同一个数组里面的数字多次操作</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这是比赛第一题， easy难度，结果还是错了两次，以前比赛每次都会检查下test case，做了几次发现easy题都可以直接过，今天想干脆直接提交看看，结果悲催了。水平还是不够。能够自己写test case验证正确性找到bug和直接代码一气呵成有相当的距离。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>整个应该算了一个贪心的思路.<br> 1. 如果有负数， 那肯定是优先做负数， 而且是从最小的负数开始操作（绝对值最大的）<br> 2. 如果负数操作的次数已经到K了， 那么就当前的操作就已经是最后的结果了<br> 3. 如果从负数开始操作到0， 那么，剩下最好的操作一定是对0进行不停的操作直到K， 因为如果去操作正数的话会导致结果变小<br> 4. 如果没有0， 只有正数了，还剩下x次要操作， 那么这时候有两种情况，<br> 如果x是偶数，那么，sum保持当前状态不变，因为可以对同一个数做偶数次操作，相当于没有操作。<br> 如果x是奇数，那么，我们要做一次操作，sum会变小，这时候，应该选绝对值最小的数， 然后剩下做偶数次操作，sum不变。</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int largestSumAfterKNegations(int[] A, int K) {
+    Arrays.sort(A);
+    int sum = 0;
+    for(int v: A) {
+        sum += v;
+    }
+    int count = 0;
+    int minabs = Math.abs(A[0]);
+    for(int v: A) {
+        minabs = Math.min(minabs, Math.abs(v));
+        if(v &lt; 0) {
+            sum += 2 * Math.abs(v);
+            count++;
+            if(count &gt;= K) {
+                break;
+            }
+        }
+        else if(v == 0) {
+            break;
+        }
+        else {
+            int remain = K-count;
+            if(remain%2 == 1) {
+                sum -= 2 * minabs;
+            }
+            break;
+        }
+    }
+    return sum;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>做了排序，所以时间复杂度是 O(N*lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#一些错误的代码" id="一些错误的代码">一些错误的代码</a></h2> 
+<p>直接取整数里面最小的未必是最优的， 比如下面这个test case<br> [-2,9,9,8,4]<br> 5</p> 
+<pre><code>public int largestSumAfterKNegations(int[] A, int K) {
+    Arrays.sort(A);
+    int sum = 0;
+    for(int v: A) {
+        sum += v;
+    }
+    int count = 0;
+    for(int v: A) {
+        if(v &lt; 0) {
+            sum += 2 * Math.abs(v);
+            count++;
+            if(count &gt;= K) {
+                break;
+            }
+        }
+        else if(v == 0) {
+            break;
+        }
+        else {
+            sum -= 2*v;
+            break;
+        }
+    }
+    return sum;
+}
+</code></pre> 
+<p>想取绝对值最小的数，但是排序以后A[0]已经是负数里面绝对值最大的数了，所以这也是不对的</p> 
+<pre><code>public int largestSumAfterKNegations(int[] A, int K) {
+    Arrays.sort(A);
+    int sum = 0;
+    for(int v: A) {
+        sum += v;
+    }
+    int count = 0;
+    boolean hasneg = false;
+    for(int v: A) {
+        if(v &lt; 0) {
+            sum += 2 * Math.abs(v);
+            count++;
+            if(count &gt;= K) {
+                break;
+            }
+            hasneg = true;
+        }
+        else if(v == 0) {
+            break;
+        }
+        else {
+            int remain = K-count;
+            if(remain%2 == 1) {
+                int minabs = Math.min(Math.abs(A[0]), v);
+                sum -= 2 * minabs;
+            }
+            break;
+        }
+    }
+    return sum;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
