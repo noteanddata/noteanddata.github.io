@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 8 String to Integer (atoi)解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 8 String to Integer (atoi)解题笔记</h1>
+			</div>
+
+			<p><em>10 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-8-string-to-integer-atoi" id="题目-leetcode-8-string-to-integer-atoi">题目 leetcode 8 String to Integer (atoi)</a></h2> 
+<ol> 
+ <li>输入一个字符串， 要求解析出一个整数</li> 
+ <li>在最前面的空格都是可以忽略的</li> 
+ <li>里面的数字可能有符号，就是有+或者-</li> 
+ <li>如果空格以后的第一个字符不是数字或者符号的话，那么就表示整个字符串是非法的，需要返回0</li> 
+ <li>假设数字只能是32位有符号整数，所以如果溢出的话，就返回最大整数或者最小整数</li> 
+ <li>如果合法的数字后面有其他字符的话，忽略其他字符， 前面解析的数字仍然合法</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这是一个实现题， 很多时候不太喜欢做这样的题目， 有时候总觉得这样的题目没有考到什么数据结构或者算法，纯粹看实现。 但是类似这样的实现题，又在面试中时不时的会出现，所以还是不得不刷。</li> 
+ <li>另外一方面，实现题通常会对各种边界条件要求比较多，对各种test case需要想的比较全，这无论是对实际写代码也好，还是其他算法或者数据结构题目也好，也有比较大的价值。 很多时候其他题目不能ac，也是因为一些test case没有想到，或者写的时候没有考虑到。 从这个角度来说，实现题也有比较大的价值。 可以训练自己先想好所有的可能性，边界条件和test case，然后才开始写代码。</li> 
+ <li>还有一点就是，很多实现题，我自己写了以后虽然能够ac，或者是再差一点是想的不清楚，然后反复出错后才ac，最后的代码会显得非常冗长，一点都不简洁。 而实际去看很多高手的代码，很多看上去很复杂的实现题，最后也能够写的比较简洁清晰。<br> 感觉这是思维模式上的差距，对问题的分析，几种不同情况的归类和处理不够透彻， 所以导致大量的if/else， 代码非常难看。<br> 而高手可以做到对多种情况的分析比较彻底，然后归类到比较简洁的情况来处理，代码通常具有美感。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>下面这个思路是我比较了自己的写法和论坛上其他高手的写法后最后总结的，感觉这个最清晰，简洁，具有美感。<br> 1. 题目说前面可能是空格，如果空格以后的字符不是数字或者整数的话，那么就是非法的。 然后又说如果有数字或者整数，那么后面的其他字符都忽略。 如果整个处理过程放在一个循环里面,那么会需要比较多的变量来判断当前的状态。<br> 实际上，一个比较简洁的做法就是，先跳过前面所有的空格，然后就直接进入要么合法数字，要么是非法字符的处理。<br> 2. 跳过空格以后， 需要处理一下符号位。 然后，这时候只需要处理当前的合法数字， 如果循环结束的话， 那么后面的就可以直接不处理了。<br> 3. 在循环的过程中，注意要处理一下溢出的情况。 所以这里可以用一个long来保存一下值， 32位溢出后就直接退出。</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<p>下面是完整代码，整个函数大约20行左右，逻辑也非常简洁清晰。 对比后面我自己先写的代码，就会感觉到差距巨大。</p> 
+<pre><code>public int myAtoi(String str) {
+    int sign = 1;
+    int i = 0;
+    long v = 0;
+    while(i &lt; str.length() &amp;&amp; str.charAt(i) == ' ') {
+        i++;
+    }
+    if(i &lt; str.length() &amp;&amp; (str.charAt(i) == '-' || str.charAt(i) == '+')) {
+        if(str.charAt(i) == '-')  sign = -1;
+        i++;
+    }
+    while(i &lt; str.length() &amp;&amp; Character.isDigit(str.charAt(i))) {
+        v = v * 10 + (long)(str.charAt(i) - '0');
+        if(v &gt; Integer.MAX_VALUE || v &lt; Integer.MIN_VALUE) break;
+        i++;
+    }
+    v = v * sign;
+    if(v &gt; Integer.MAX_VALUE) return Integer.MAX_VALUE;
+    if(v &lt; Integer.MIN_VALUE) return Integer.MIN_VALUE;
+    return (int)v;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>字符串遍历一次， 所以时间复杂度O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#其他代码" id="其他代码">其他代码</a></h2> 
+<p>下面是我开始写的一个可以通过的代码， 对各种情况也做了考虑， 但是把所有情况都放在一个循环里面处理，代码显得非常冗余，不够简洁。</p> 
+<pre><code>public int myAtoi(String str) {
+    long v = 0;
+    boolean neg = false;
+    boolean begin = false;
+    for(int i = 0; i &lt; str.length(); ++i) {
+        char ch = str.charAt(i);
+        if(ch != ' ') {
+            if(!begin) { // so it's the 1st character
+                begin = true;
+                if(ch != '+' &amp;&amp; ch != '-' &amp;&amp; !Character.isDigit(ch)) {
+                    return 0;
+                }
+                if(ch == '-') {
+                    neg = true;
+                }
+                if(Character.isDigit(ch)) {
+                    v = (long)(ch -'0');
+                }
+            }
+            else {
+                if(Character.isDigit(ch)) {
+                    v = v * 10 + (long)(ch-'0');
+                    if(v &gt; Integer.MAX_VALUE || v &lt; Integer.MIN_VALUE) {
+                        break;
+                    }
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        else { // is white space 
+            if(begin) { // if we've processed a number, then finish here
+                break;
+            }
+            else { // otherwise, we've not started, so do nothing 
+                
+            }
+        }
+    }
+
+    if(neg) {
+        v = -v;
+    }
+    
+    if(v &gt; Integer.MAX_VALUE) {
+        return Integer.MAX_VALUE;
+    }
+    if(v &lt; Integer.MIN_VALUE) {
+        return Integer.MIN_VALUE;
+    }
+    return (int)v;
+}
+
+</code></pre> 
+<p>开始写的一个错误的代码， 针对下面这个输入会出错, 主要错误在于没有考虑到数字太长以后， long也会溢出<br> Input: “9223372036854775808”<br> Output: -2147483648<br> Expected: 2147483647</p> 
+<pre><code>public int myAtoi(String str) {
+    long v = 0;
+    boolean neg = false;
+    boolean begin = false;
+    for(int i = 0; i &lt; str.length(); ++i) {
+        char ch = str.charAt(i);
+        if(ch != ' ') {
+            if(!begin) { // so it's the 1st character
+                begin = true;
+                if(ch != '+' &amp;&amp; ch != '-' &amp;&amp; !Character.isDigit(ch)) {
+                    return 0;
+                }
+                if(ch == '-') {
+                    neg = true;
+                }
+                if(Character.isDigit(ch)) {
+                    v = (long)(ch -'0');
+                }
+            }
+            else {
+                if(Character.isDigit(ch)) {
+                    v = v * 10 + (long)(ch-'0');
+                }
+                else {
+                    break;
+                }
+            }
+        }
+        else { // is white space 
+            if(begin) { // if we've processed a number, then finish here
+                break;
+            }
+            else { // otherwise, we've not started, so do nothing 
+                
+            }
+        }
+    }
+
+    if(neg) {
+        v = -v;
+    }
+    
+    if(v &gt; Integer.MAX_VALUE) {
+        return Integer.MAX_VALUE;
+    }
+    if(v &lt; Integer.MIN_VALUE) {
+        return Integer.MIN_VALUE;
+    }
+    return (int)v;
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
