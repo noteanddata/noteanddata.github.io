@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 988 Smallest String Starting From Leaf解题笔记更新</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 988 Smallest String Starting From Leaf解题笔记更新</h1>
+			</div>
+
+			<p><em>10 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-988-smallest-string-starting-from-leaf" id="题目-leetcode-988-smallest-string-starting-from-leaf">题目 leetcode 988 Smallest String Starting From Leaf</a></h2> 
+<ol> 
+ <li>一个二叉树， 里面每个节点的值是一个整数，表示一个字符串</li> 
+ <li>对于所有从叶节点到根节点的路径， 找到最小的路径字符串 （lexicographically smallest string）</li> 
+ <li>如果一个字符串是另外一个字符串的前缀， 那么那个前缀是更小的</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>虽然之前写的代码通过了oj， 但是test case实际上不全， 而自己的思路也有一些问题。 什么时候可以用bottom up, 什么时候不能用bottom up, 需要进一步思考。 lca作为经典的bottom up, 为什么那个场景可以用bottom up, 而这里不能用，需要好好体会</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>原来的版本是错的， 之前在这里写来一个解题报告<a href="http://www.noteanddata.com/leetcode-988-Smallest-String-Starting-From-Leaf-java-solution-note.html">http://www.noteanddata.com/leetcode-988-Smallest-String-Starting-From-Leaf-java-solution-note.html</a><br> 可是后来被人指出是错的， 具体在这里<a href="https://leetcode.com/problems/smallest-string-starting-from-leaf/discuss/231117/java-dfs-on/246263">https://leetcode.com/problems/smallest-string-starting-from-leaf/discuss/231117/java-dfs-on/246263</a>, 我的问题由@ayyildiz指出， 更多讨论在@jamespb在<a href="https://leetcode.com/problems/smallest-string-starting-from-leaf/discuss/244205/divide-and-conquer-technique-doesnt-work-for-this-problem">https://leetcode.com/problems/smallest-string-starting-from-leaf/discuss/244205/divide-and-conquer-technique-doesnt-work-for-this-problem</a>指出。</li> 
+ <li>具体的错误原因，是因为我们采取了bottom up的做法， 然后对于[25,1,null,0,0,1,null,null,null,0]<br> 有两条路径， 一条是ababz, 另外一条是abz， 如果采取bottom up的方法， 那么因为ab小于abab, 所以在子节点的时候就直接返回ab了， 然后最后合成abz,<br> 但是,对于两个长度不相同的字符串， s1 &lt; s2, 不能推出s1+ch &lt; s2+ch</li> 
+ <li> <p>所以， 这个题目应该要用top down的做法，递归的时候，把从上到下的字符串传入， 然后倒过来构造字符串，然后递归到叶节点的时候才返回，这样，每次返回的字符串都是完整的从叶节点到根节点的字符串，信息都是完整的(而bottom up的做法只有部分字符串), 所以这样做比较应该是正确的结果。</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public String smallestFromLeaf(TreeNode root) {
+    return dfs(root, "");
+}
+
+public String dfs(TreeNode node, String suffix) {
+    if(null == node) {
+        return suffix;
+    }
+    suffix = "" + (char)('a' + node.val) + suffix;
+    if(null == node.left &amp;&amp; null == node.right) {
+        return suffix;
+    }
+    if(null == node.left || null == node.right) {
+        return (null == node.left)? dfs(node.right, suffix) :dfs(node.left, suffix);
+    }
+    
+    String left = dfs(node.left, suffix);
+    String right = dfs(node.right, suffix);
+    
+    return left.compareTo(right) &lt;= 0? left: right;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N) 每个节点最多遍历一次</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N^2)？</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
