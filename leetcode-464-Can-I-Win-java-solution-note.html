@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 464 Can I Win解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 464 Can I Win解题笔记</h1>
+			</div>
+
+			<p><em>11 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-464-can-i-win" id="题目-leetcode-464-can-i-win">题目 leetcode 464 Can I Win</a></h2> 
+<ol> 
+ <li>两个人玩游戏， 然后输入两个数字， maxChoosableInteger和desiredTotal</li> 
+ <li>每个人每次都只能选择1到maxChoosableInteger里面到数字， 并且数字在两个人里面都不能重复，</li> 
+ <li>两个每次选择的数字都会加到一起，谁在自己的这轮使得这个sum&gt;=desiredTotal了， 那就赢了。</li> 
+ <li>假设每个人都使用最佳策略</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这题刷了很苦，开始TLE，后面各种状态分析出错WA， 虽然刷完了以后感觉状态其实还比较清晰，过程也不是特别复杂，但是刷的时候各种苦手。</li> 
+ <li>这个是经典的min-max问题， 我最开始用全排列的方式做， 直接就TLE了</li> 
+ <li>然后用递归+记忆化搜索的方式来搞， 也就是top down dynamic programming + memorization, 但是状态老是搞错</li> 
+ <li>后面状态终于搞清楚了， 记忆化的key复制成本太高（用了hashset做key), 导致还是TLE</li> 
+ <li>最后把key编码成string， 终于可以通过大部分case了， 还有边界条件， sum&lt; total的时候要直接返回false， 否则在递归里面会被判断成true（如果递归没有处理sum的情况的话)</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>对于min-max， 通常是采用top down dynamic programming+memorization的方式， 也就是递归的过程中记录</li> 
+ <li>min-max的基本框架可以如下<br> 对于当前的所有选项， 做一个选择， 然后看对方是否在剩下的选择里面不能赢， 如果对手不能赢， 那现在这方就选择这个策略，也就是自己赢。<br> 如果当前不能找到一个选择，使得对手不能赢，那么就是无论当前选择什么，对手都可以赢， 那么就是自己输。<br> 这个过程有时候觉得很好理解，有些题目又会绕糊涂。 如果这个基本框架有疑问， 花一个树把每一步的可能都画出来会比较清晰。</li> 
+</ol> 
+<pre><code>boolean win(optionList){
+  for(option: optionList) {
+    current.select(option);
+    if(!win(remaining_optionList)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+</code></pre> 
+<ol> 
+ <li> <p>直接全部递归，一定会超时。 然后呢，递归的过程会有很多重复的计算。<br> 举例， 假设maxChoosableInteger=5, 考虑下面两种情况:<br> -如果A选择1，B选择2， 那么还剩下[3,4,5], 然后这个时候轮到A；<br> -这时候我们考虑另外一个情况， A选择2， B选择1， 同样剩下[3,4,5], 这时候还是轮到A；<br> 所以, 这两种情况，都需要计算轮到A在[3,4,5]里面做选择的结果， 所以， 类似的重复计算是很多的。</p> </li> 
+ <li> <p>那么，这个状态就是已经选择的数，或者是剩下的数。<br> 我们可以用一个Set
+   <integer>
+    来表示当前的状态， 然后用Map&lt;Set
+    <integer>
+     , Boolean&gt;来表示记忆化的结果
+     <br> 当然，这样会涉及到每次的拷贝， 因为Set在递归的过程中传入修改，所以放到map里面去的时候，会需要拷贝一个新的,
+     <br> 这样代价会比较大。
+     <br> 为了节省内存和拷贝的时间，我们可以在每次进入函数的时候，把这个Set
+     <integer>
+      序列化成一个字符串作为key，
+      <br> 然后Map&lt;String, Boolean&gt;用来存储记忆化的结果。
+     </integer>
+    </integer>
+   </integer></p> </li> 
+ <li> <p>另外， 这个Set
+   <integer>
+    , 也可以简化成一个boolean[]数组
+   </integer></p> </li> 
+ <li>每次进入递归和出来的时候，都要记得重设一下状态， 这样才可以保证状态是正确的当前状态。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public boolean canIWin(int maxChoosableInteger, int desiredTotal) {        
+    int sum = maxChoosableInteger * (maxChoosableInteger + 1) / 2;
+    if (sum &lt; desiredTotal) return false;
+    
+    boolean[] visited = new boolean[maxChoosableInteger];
+    return canWin(maxChoosableInteger, desiredTotal, visited, new HashMap&lt;&gt;());
+}
+
+String getKey(boolean[] visited) {
+    char[] arr = new char[visited.length];
+    for(int i = 0; i &lt; visited.length; ++i) {            
+        arr[i] = (char)('0' + (visited[i] ? 1 : 0));
+    }
+    return new String(arr);
+}
+
+boolean canWin(int n, int total, boolean[] visited, Map&lt;String, Boolean&gt; map) {
+    String key = getKey(visited);
+    Boolean ret = map.get(key);
+    if(null != ret) {
+        return ret;
+    }
+
+    for(int i = 1; i &lt;= n; ++i) {
+        if(visited[i-1]) {
+            continue;
+        }
+        if(i &gt;= total) {
+            map.put(key, true);
+            return true;
+        }
+
+        visited[i-1] = true;
+        if(!canWin(n, total-i, visited, map)) {
+            visited[i-1] = false;
+            map.put(key, true);
+            return true;
+        }
+        visited[i-1] = false;
+    }
+    map.put(key, false);
+    return false;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>每个位置有选和不选两种可能， 时间复杂度是O(2^N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>这个map的key也可能有2^N个，所以空间复杂度也是O(2^N)</p> 
+<h2><a href="#进一步改进" id="进一步改进">进一步改进</a></h2> 
+<p>这个代码可以AC，但是效率并不是最优的，后续还可以继续优化。</p> 
+<h2><a href="#一些错误的代码" id="一些错误的代码">一些错误的代码</a></h2> 
+<h3><a href="#没有处理desiredtotal太大的情况" id="没有处理desiredtotal太大的情况">没有处理desiredTotal太大的情况，</a></h3> 
+<p>既没有在递归的地方判断，也没有在函数进入的地方判断</p> 
+<pre><code>public boolean canIWin(int maxChoosableInteger, int desiredTotal) {        
+    boolean[] visited = new boolean[maxChoosableInteger];
+    return canWin(maxChoosableInteger, desiredTotal, visited, new HashMap&lt;&gt;());
+}
+
+String getKey(boolean[] visited) {
+    char[] arr = new char[visited.length];
+    for(int i = 0; i &lt; visited.length; ++i) {            
+        arr[i] = (char)('0' + (visited[i] ? 1 : 0));
+    }
+    return new String(arr);
+}
+
+boolean canWin(int n, int total, boolean[] visited, Map&lt;String, Boolean&gt; map) {
+    String key = getKey(visited);
+    Boolean ret = map.get(key);
+    if(null != ret) {
+        return ret;
+    }
+
+    for(int i = 1; i &lt;= n; ++i) {
+        if(visited[i-1]) {
+            continue;
+        }
+        if(i &gt;= total) {
+            map.put(key, true);
+            return true;
+        }
+
+        visited[i-1] = true;
+        if(!canWin(n, total-i, visited, map)) {
+            visited[i-1] = false;
+            map.put(key, true);
+            return true;
+        }
+        visited[i-1] = false;
+    }
+    map.put(key, false);
+    return false;
+}
+</code></pre> 
+<h3><a href="#状态没有正确的reset" id="状态没有正确的reset">状态没有正确的reset</a></h3> 
+<p>表面上看这个时候已经返回结果了， 但是这个状态是在递归的过程中共享的，所以还是必须要重设。<br> 失败的case是maxChoosableInteger=10,desiredTotal=40</p> 
+<pre><code>public boolean canIWin(int maxChoosableInteger, int desiredTotal) {        
+    boolean[] visited = new boolean[maxChoosableInteger];
+    return canWin(maxChoosableInteger, desiredTotal, visited, new HashMap&lt;&gt;());
+}
+
+String getKey(boolean[] visited) {
+    char[] arr = new char[visited.length];
+    for(int i = 0; i &lt; visited.length; ++i) {            
+        arr[i] = (char)('0' + (visited[i] ? 1 : 0));
+    }
+    return new String(arr);
+}
+
+boolean canWin(int n, int total, boolean[] visited, Map&lt;String, Boolean&gt; map) {
+    String key = getKey(visited);
+    Boolean ret = map.get(key);
+    if(null != ret) {
+        return ret;
+    }
+
+    for(int i = 1; i &lt;= n; ++i) {
+        if(visited[i-1]) {
+            continue;
+        }
+        if(i &gt;= total) {
+            map.put(key, true);
+            return true;
+        }
+
+        visited[i-1] = true;
+        if(!canWin(n, total-i, visited, map)) {
+            //visited[i-1] = false;
+            map.put(key, true);
+            return true;
+        }
+        visited[i-1] = false;
+    }
+    map.put(key, false);
+    return false;
+}
+</code></pre> 
+<h3><a href="#过多的拷贝" id="过多的拷贝">过多的拷贝</a></h3> 
+<p>导致超时</p> 
+<pre><code>public boolean canIWin(int maxChoosableInteger, int desiredTotal) {        
+    return canWin(maxChoosableInteger, desiredTotal, new HashSet&lt;&gt;(), new HashMap&lt;&gt;());
+}
+
+boolean canWin(int n, int total, Set&lt;Integer&gt; visited, Map&lt;Set&lt;Integer&gt;, Boolean&gt; map) {
+    Boolean ret = map.get(visited);
+    if(null != ret) {
+        return ret;
+    }
+
+    for(int i = 1; i &lt;= n; ++i) {
+        if(visited.contains(i)) {
+            continue;
+        }
+        if(i &gt;= total) {
+            map.put(new HashSet&lt;&gt;(visited), true);
+            return true;
+        }
+
+        visited.add(i);
+        if(!canWin(n, total-i, visited, map)) {
+            visited.remove(i);
+            map.put(new HashSet&lt;&gt;(visited), true);
+            return true;
+        }
+        visited.remove(i);
+    }
+    map.put(new HashSet&lt;&gt;(visited), false);
+    return false;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
