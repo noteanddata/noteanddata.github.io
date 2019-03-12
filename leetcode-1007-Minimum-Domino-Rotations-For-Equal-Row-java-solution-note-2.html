@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1007 Minimum Domino Rotations For Equal Row题java解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1007 Minimum Domino Rotations For Equal Row题java解题笔记2</h1>
+			</div>
+
+			<p><em>12 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1007-minimum-domino-rotations-for-equal-row" id="题目-leetcode-1007-minimum-domino-rotations-for-equal-row">题目 leetcode 1007 Minimum Domino Rotations For Equal Row</a></h2> 
+<ol> 
+ <li>有两行骰子， 每行个数一样多</li> 
+ <li>然后定义一个换位操作，就是在某一个index， 把两行骰子在这个index上的位置互换</li> 
+ <li>问， 最少经过多少次操作以后，可以让两行骰子里面的某一行的值都是一样的</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<p>这个当时是用动态规划做的, <a href="http://www.noteanddata.com/leetcode-1007-Minimum-Domino-Rotations-For-Equal-Row-java-dynamic-programming-solution-note.html">http://www.noteanddata.com/leetcode-1007-Minimum-Domino-Rotations-For-Equal-Row-java-dynamic-programming-solution-note.html</a>, 当时空间复杂度是N，本来想可以找个时间优化到O(1)的空间复杂度，结果看了下大家居然直接是一个很简单的做法做的，又感受到一万点暴击。</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>无论怎么换位置，如果最后可以让某一行的数字完全一样，每个位置上只有两个可能，这个数要么是A的，要么是B的。 那么，对第0个数字来说，要么是A[0], 要么是B[0]。</li> 
+ <li>那么，不管在那一行，后面的数字要么和A[0]相同， 要么和B[0]相同， 否则就不能达到效果。</li> 
+ <li>所以，<br> –遍历数组一次， 如果可以在A或者B里面在每个位置上都找到和A[0]相同的元素，那么就可以把某一行全部变成A[0]<br> –再遍历数组一次， 如果可以在A或者B里面在每个位置上都找到和B[0]相同的元素，那么就可以把某一行全部变成B[0]</li> 
+</ol> 
+<p>然后，在两次遍历的时候都分别计数，看看有几个一样的， 那么n-count就是需要换的个数。</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int minDominoRotations(int[] A, int[] B) {
+    int n = A.length;
+    for(int i = 0, a = 0, b = 0; i &lt; n &amp;&amp; (A[i] == A[0] || B[i] == A[0]); ++i) {
+        if(A[i] == A[0]) a++;
+        if(B[i] == A[0]) b++;
+        if(i == n-1) return Math.min(n-a, n-b);
+    }
+    for(int i = 0, a = 0, b = 0; i &lt; n &amp;&amp; (A[i] == B[0] || B[i] == B[0]); ++i) {
+        if(A[i] == B[0]) a++;
+        if(B[i] == B[0]) b++;
+        if(i == n-1) return Math.min(n-a, n-b);
+    }
+    return -1;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
