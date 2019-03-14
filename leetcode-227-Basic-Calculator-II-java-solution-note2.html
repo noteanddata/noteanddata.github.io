@@ -107,7 +107,37 @@ Output: 5
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
 <p>O(N)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>O(1)</p></p>
+<p>O(1)</p> 
+<h2><a href="#之前代码结构的o1空间版本" id="之前代码结构的o1空间版本">之前代码结构的O(1)空间版本</a></h2> 
+<p>把之前stack版本的代码也改了一下改成O(1), 循环结构仍然采用原来的循环方式</p> 
+<pre><code>public int calculate(String s) {
+    int prev = 0;
+    int total = 0;
+    int cur = 0;
+    char op = '+';
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        if(Character.isDigit(ch)) {
+            cur = cur * 10 + (int)(ch - '0');
+        }
+        if((i == s.length()-1) || (ch == '+' || ch == '-' || ch == '*' || ch == '/') ) {
+            if(op == '+') prev += cur;
+            if(op == '-') prev -= cur;
+            if(op == '*') prev *= cur;
+            if(op == '/') prev /= cur;
+            
+            if(ch == '+' || ch == '-') {
+                total += prev;
+                prev = 0;
+            }
+
+            cur = 0;
+            op = ch;
+        }
+    }
+    return total + prev;
+}
+</code></pre></p>
 	</div>		
 
 <div class="col-sm-4">
