@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 227 Basic Calculator II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 227 Basic Calculator II解题笔记</h1>
+			</div>
+
+			<p><em>13 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-227-basic-calculator-ii" id="题目-leetcode-227-basic-calculator-ii">题目 leetcode 227 Basic Calculator II</a></h2> 
+<p>输入一个字符串，里面有数字，空格， <code>+/*/</code>4个符号</p> 
+<pre><code>Input: " 3+5 / 2 "
+Output: 5
+</code></pre> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>又是一个实现题， 和前面的计算器有所不同<a href="http://www.noteanddata.com/leetcode-224-Basic-Calculator-java-solution-note.html">http://www.noteanddata.com/leetcode-224-Basic-Calculator-java-solution-note.html</a><br> 对于这类题目，还是写的不得方法，总是会出现很多的if/else, 而且经常通不过很多的test case。 现在的感觉是要分析清楚总共有哪几种状态， 然后状态是怎么变换的， 然后在这个状态变换过程中求解， 才会比较清晰，而不容易出错。</li> 
+ <li>这个题解写的还不是特别清晰， 主要是我的理解还不是很透彻。 然后这个题目还可以用O(1)空间的做法完成， 这些以后再改进</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>分析总共有几种字符， 总共只有6种字符： 数字，加号，减号，乘号，除号，空格</li> 
+ <li>先分析最简单的情况， 比如是取出当前的数字， 可以用index来取， 也可以直接用下面的模版处理</li> 
+</ol> 
+<pre><code>if(Character.isDigit(ch)) {
+    cur = cur * 10 + (int)(ch - '0');
+}
+</code></pre> 
+<ol> 
+ <li> <p>什么时候完成数字的提取？<br> 遇到空格或者是运算符， 还有一个情况就是最后一个字符的时候， 由于后面没有空格和运算符了，这个数字也必须要提取, 这个如果忘记的话会bug<br> 比如"3+4/5"</p> </li> 
+ <li> <p>运算符怎么处理？<br> 一个重要的问题就是乘法和除法的优先级比加法和减法的优先级高。怎么处理这个优先级是一个关键， 每次遇到乘号和除法以后，需要把后面的数和前面的数做乘法或者除法。<br> 也就是说，每次遇到+和-的时候，后面的数不能直接做计算，因为可能后面会有乘号和除号。<br> 但是，遇到乘号和除号的时候，后面的数字可以直接也前面的数做计算。<br> 那么，我们每次可以保存上一次的运算符， 然后遇到一个数结束的时候，对前面一个数做判断。<br> 这时候， 前面一个数可以用一个stack来表示，如果前一个运算符</p> </li> 
+</ol> 
+<ul> 
+ <li>是加号就保存原值；</li> 
+ <li>是减号就保存负值；</li> 
+ <li>是乘号和除号就对stack.pop()和当前值做运算</li> 
+</ul> 
+<ol> 
+ <li>空格怎么处理？<br> 如果没有空格，情况会简单很多。 那么，我们遇到空格可以直接不处理. 当然，如果是最后一个字符是空格，那还是要处理的</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int calculate(String s) {
+    Stack&lt;Integer&gt; stack = new Stack&lt;&gt;();
+    int cur = 0;
+    char op = '+';
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        if(Character.isDigit(ch)) {
+            cur = cur * 10 + (int)(ch - '0');
+        }
+        if((i == s.length()-1) || (ch == '+' || ch == '-' || ch == '*' || ch == '/') ) {
+            if(op == '+') {
+                stack.push(cur);
+            }
+            else if(op == '-') {
+                stack.push(-cur);
+            }
+            else if(op == '*') {
+                stack.push(stack.pop() * cur);
+            }
+            else { // op == '/'
+                stack.push(stack.pop() / cur);
+            }
+            
+            cur = 0;
+            op = ch;
+        }
+    }
+    int ret = 0;
+    while(!stack.isEmpty()) {
+        ret += stack.pop();
+    }
+    return ret;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>字符串遍历一次 O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>stack最多可能会和所有的数字一样长，所以也是O(N)</p> 
+<h2><a href="#另外几个可以通过的代码" id="另外几个可以通过的代码">另外几个可以通过的代码</a></h2> 
+<p>直接跳过空格，只处理四个运算符和最后一个可能的数字</p> 
+<pre><code>public int calculate(String s) {
+    Stack&lt;Integer&gt; stack = new Stack&lt;&gt;();
+    int cur = 0;
+    char op = '+';
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        if(ch == ' ') {
+            continue;
+        }
+        if(Character.isDigit(ch)) {
+            cur = cur * 10 + (int)(ch - '0');
+        }
+        if(ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+            process(op, cur, stack);
+            cur = 0;
+            op = ch;
+        }
+    }
+    // in case the last number is not processed
+    process(op, cur, stack);    
+    
+    int ret = 0;
+    while(!stack.isEmpty()) {
+        ret += stack.pop();
+    }
+    return ret;
+}
+
+void process(char op, int cur, Stack&lt;Integer&gt; stack) {
+    if(op == '+') {
+        stack.push(cur);
+    }
+    else if(op == '-') {
+        stack.push(-cur);
+    }
+    else if(op == '*') {
+        stack.push(stack.pop() * cur);
+    }
+    else { // op == '/'
+        stack.push(stack.pop() / cur);
+    }
+    
+}
+</code></pre> 
+<p>把空格单独拉出来处理</p> 
+<pre><code>public int calculate(String s) {
+    Stack&lt;Integer&gt; stack = new Stack&lt;&gt;();
+    int cur = 0;
+    char op = '+';
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        if(ch == ' ') {
+            if(i == s.length()-1) {
+                process(op, cur, stack);    
+            }
+            continue;
+        }
+        if(Character.isDigit(ch)) {
+            cur = cur * 10 + (int)(ch - '0');
+        }
+        if((i == s.length()-1) || (ch == '+' || ch == '-' || ch == '*' || ch == '/') ) {
+            process(op, cur, stack);
+            cur = 0;
+            op = ch;
+        }
+    }
+    int ret = 0;
+    while(!stack.isEmpty()) {
+        ret += stack.pop();
+    }
+    return ret;
+}
+
+void process(char op, int cur, Stack&lt;Integer&gt; stack) {
+    if(op == '+') {
+        stack.push(cur);
+    }
+    else if(op == '-') {
+        stack.push(-cur);
+    }
+    else if(op == '*') {
+        stack.push(stack.pop() * cur);
+    }
+    else { // op == '/'
+        stack.push(stack.pop() / cur);
+    }
+    
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
