@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Google面试题leetcode 772 Basic Calculator III解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Google面试题leetcode 772 Basic Calculator III解题笔记</h1>
+			</div>
+
+			<p><em>15 March 2019</em></p>
+
+			<p><h2><a href="#google面试题目-leetcode-772-basic-calculator-iii" id="google面试题目-leetcode-772-basic-calculator-iii">Google面试题目 leetcode 772 Basic Calculator III</a></h2> 
+<ol> 
+ <li>输入数字，加减乘除，还有括号， 求解表达式</li> 
+</ol> 
+<pre><code>"1 + 1" = 2
+" 6-4 / 2 " = 4
+"2*(5+5*2)/3+(6/2+8)" = 21
+"(2+6* 3+5- (3*14/7+2)*5)+3"=-12
+</code></pre> 
+<ol> 
+ <li>输入一定是合法表达式， 其中的数字是非负整数， 任何中间结果和最后都不会溢出整数</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目我并没有太好的思路， 原来的几个做法，都不能直接应用到这里了。 当然也可以间接使用一定的套路<br> <a href="http://www.noteanddata.com/leetcode-224-Basic-Calculator-java-solution-note.html">http://www.noteanddata.com/leetcode-224-Basic-Calculator-java-solution-note.html</a><br> 比如这里对括号做堆栈计算, 直接用在这里感觉还是比较麻烦， 因为原来只有加号和减号， 现在有乘号和除号。<br> 不过<a href="http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note-facebook-interview-problem.html">http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note-facebook-interview-problem.html</a>和<a href="http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note2.html">http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note2.html</a>这里的做法到是可以借鉴，<br> 假设括号里面的数完全替代成一个数的话， 那么， 这个题目就和227一样了。</li> 
+ <li>那么，如何计算括号里面的值呢， 一个比较简单的做法就是递归， 因为这里括号也可能会有多层， 所以就需要递归处理。<br> 虽然，这样效率上会低一点， 但是逻辑相对比较清晰， 实现相对简单一点。 （虽然我还是写错了好多次）</li> 
+ <li>对括号部分递归后， 剩余的结构都可以参考227这题， 然后继续做。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int calculate(String s) {
+        int total = 0;
+        int prev = 0;
+        char lastop = '+';
+        for(int i = 0; i &lt; s.length(); ++i) {
+            char ch = s.charAt(i);
+            if(Character.isDigit(ch)) {
+                int cur = 0;
+                while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                    cur = cur * 10 + (int)(s.charAt(i) - '0');
+                    i++;
+                }
+                prev = calc(prev, cur, lastop);
+            }
+            else if(ch == '(') {
+                int count = 0;
+                int j = i;
+                while(j &lt; s.length()) {
+                    if(s.charAt(j) == '(') {
+                        count++;
+                    }
+                    else if(s.charAt(j) == ')') {
+                        count--;
+                        if(count == 0) {
+                            break;
+                        }
+                    }
+                    j++;
+                }
+                String sub = s.substring(i+1, j);
+                int v = calculate(sub);
+                prev = calc(prev, v, lastop);
+                i = j+1;
+            }
+            if(i &lt; s.length()) {
+                ch = s.charAt(i);
+                if(ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+                    if(ch == '+' || ch == '-') {
+                        total += prev;
+                        prev = 0;
+                    }
+                    lastop = ch;
+                }            
+            }
+        }
+        return total + prev;
+    }
+    int calc(int prev, int cur, char lastop) {
+        if(lastop == '+') prev += cur;
+        if(lastop == '-') prev -= cur;
+        if(lastop == '*') prev *= cur;
+        if(lastop == '/') prev /= cur;                
+        return prev;        
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>这个时间复杂度最差是O(N!)???</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#其他笔记和一些错误的代码" id="其他笔记和一些错误的代码">其他笔记和一些错误的代码</a></h2> 
+<p>227的第二片文章的做法，虽然相对比较清晰， 其实还是略有点容易入坑的， 主要是在遇到运算符的更新上。<br> 下面是我开始写的一些错误代码， 希望自己下次不要再错了。<br> 1. 括号计算的时候初始值不对</p> 
+<pre><code>class Solution {
+    public int calculate(String s) {
+        int total = 0;
+        int prev = 0;
+        char lastop = '+';
+        for(int i = 0; i &lt; s.length(); ++i) {
+            char ch = s.charAt(i);
+            if(Character.isDigit(ch)) {
+                int cur = 0;
+                while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                    cur = cur * 10 + (int)(s.charAt(i) - '0');
+                    i++;
+                }
+                //System.out.println("cur=" + cur + ", prev=" + prev);
+                prev = calc(prev, cur, lastop);
+            }
+            else if(ch == '(') {
+                int count = 1;
+                int j = i;
+                while(j &lt; s.length()) {
+                    if(s.charAt(j) == '(') {
+                        count++;
+                    }
+                    else if(s.charAt(j) == ')') {
+                        count--;
+                        if(count == 0) {
+                            break;
+                        }
+                    }
+                    j++;
+                }
+                String sub = s.substring(i+1, j);
+                int v = calculate(sub);
+                prev = calc(prev, v, lastop);
+                i = j+1;
+            }
+            if(i &lt; s.length()) {
+                ch = s.charAt(i);
+                if(ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+                    if(ch == '+' || ch == '-') {
+                        total += prev;
+                        prev = 0;
+                    }
+                    lastop = ch;
+                }            
+            }
+        }
+        return total + prev;
+    }
+    int calc(int prev, int cur, char lastop) {
+        if(lastop == '+') prev += cur;
+        if(lastop == '-') prev -= cur;
+        if(lastop == '*') prev *= cur;
+        if(lastop == '/') prev /= cur;                
+        return prev;        
+    }
+}
+</code></pre> 
+<ol> 
+ <li>没有考虑到i已经out of index的情况<br> 比如 “1 + 1”</li> 
+</ol> 
+<pre><code>class Solution {
+    public int calculate(String s) {
+        int total = 0;
+        int prev = 0;
+        char lastop = '+';
+        for(int i = 0; i &lt; s.length(); ++i) {
+            char ch = s.charAt(i);
+            if(Character.isDigit(ch)) {
+                int cur = 0;
+                while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                    cur = cur * 10 + (int)(s.charAt(i) - '0');
+                    i++;
+                }
+                //System.out.println("cur=" + cur + ", prev=" + prev);
+                prev = calc(prev, cur, lastop);
+            }
+            else if(ch == '(') {
+                int count = 1;
+                int j = i;
+                while(j &lt; s.length()) {
+                    if(s.charAt(j) == '(') {
+                        count++;
+                    }
+                    else if(s.charAt(j) == ')') {
+                        count--;
+                        if(count == 0) {
+                            break;
+                        }
+                    }
+                    j++;
+                }
+                String sub = s.substring(i+1, j);
+                int v = calculate(sub);
+                prev = calc(prev, v, lastop);
+                i = j+1;
+            }
+            ch = s.charAt(i);
+            if(i == s.length()-1 || ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+                if(ch == '+' || ch == '-') {
+                    total += prev;
+                    prev = 0;
+                }
+                lastop = ch;
+            }            
+        }
+        return total + prev;
+    }
+    int calc(int prev, int cur, char lastop) {
+        if(lastop == '+') prev += cur;
+        if(lastop == '-') prev -= cur;
+        if(lastop == '*') prev *= cur;
+        if(lastop == '/') prev /= cur;                
+        return prev;        
+    }
+}
+
+</code></pre> 
+<ol> 
+ <li>ch取值后， 再提取数字或者提取括号里面的值以后， 当前的i已经更新了， 但是ch还是用旧值</li> 
+</ol> 
+<pre><code>class Solution {
+    public int calculate(String s) {
+        int total = 0;
+        int prev = 0;
+        char lastop = '+';
+        for(int i = 0; i &lt; s.length(); ++i) {
+            char ch = s.charAt(i);
+            if(Character.isDigit(ch)) {
+                int cur = 0;
+                while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                    cur = cur * 10 + (int)(s.charAt(i) - '0');
+                    i++;
+                }
+                prev = calc(prev, cur, lastop);
+            }
+            else if(ch == '(') {
+                int count = 1;
+                int j = i;
+                while(j &lt; s.length()) {
+                    if(s.charAt(j) == '(') {
+                        count++;
+                    }
+                    else if(s.charAt(j) == ')') {
+                        count--;
+                        if(count == 0) {
+                            break;
+                        }
+                    }
+                    j++;
+                }
+                String sub = s.substring(i+1, j);
+                int v = calculate(sub);
+                prev = calc(prev, v, lastop);
+            }
+            if(i == s.length()-1 || ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+                if(ch == '+' || ch == '-') {
+                    total += prev;
+                    prev = 0;
+                }
+                lastop = ch;
+            }            
+        }
+        return total + prev;
+    }
+    int calc(int prev, int cur, char lastop) {
+        if(lastop == '+') prev += cur;
+        if(lastop == '-') prev -= cur;
+        if(lastop == '*') prev *= cur;
+        if(lastop == '/') prev /= cur;                
+        return prev;        
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
