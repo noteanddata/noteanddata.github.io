@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>facebook面试题目 lintcode 370 Convert Expression to Reverse Polish Notation解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>facebook面试题目 lintcode 370 Convert Expression to Reverse Polish Notation解题笔记</h1>
+			</div>
+
+			<p><em>16 March 2019</em></p>
+
+			<p><h2><a href="#facebook面试题目-lintcode-370-convert-expression-to-reverse-polish-notation" id="facebook面试题目-lintcode-370-convert-expression-to-reverse-polish-notation">facebook面试题目 lintcode 370 Convert Expression to Reverse Polish Notation</a></h2> 
+<p>输入一个中序表达式， 要求输出一个后序表达式， 也就是逆波兰表达式</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li> <p>之前刷了几个计算器的题目<br> <a href="http://www.noteanddata.com/leetcode-772-Basic-Calculator-III-google-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-772-Basic-Calculator-III-google-interview-problem-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note2.html">http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note2.html</a><br> <a href="http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note-facebook-interview-problem.html">http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note-facebook-interview-problem.html</a></p> </li> 
+ <li> <p>看到有些解法是用逆波兰表达式做的，然后这里学习了一下逆波兰表达式的求解过程<br> <a href="http://www.noteanddata.com/leetcode-150-Evaluate-Reverse-Polish-Notation-linked-interview-question-java-solution-note.html">http://www.noteanddata.com/leetcode-150-Evaluate-Reverse-Polish-Notation-linked-interview-question-java-solution-note.html</a></p> </li> 
+ <li> <p>今天这片，主要学习一下怎么把中序表达式转化成后序表达式。</p> </li> 
+ <li>事实上， 这个算法可以直接求解中序表达式， 之前的很多代码和stack算法，以及把O(N)空间的stack做法转化成O(1)空间的做法，其实或多或少都有一些这个算法的思想。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个转化过程有一个算法叫做Shunting Yard Algorithm(调度场算法)， 主要的思路是用一个堆栈。 这个算法是由Dijkstra发明的， 没错，就是那个最短路径算法里面的Dijkstra<br> 参考资料:<br> <a href="https://web.stanford.edu/class/archive/cs/cs106b/cs106b.1126/lectures/05/Slides05.pdf">https://web.stanford.edu/class/archive/cs/cs106b/cs106b.1126/lectures/05/Slides05.pdf</a>第75页</li> 
+ <li>算法过程<br> 首先准备一个堆栈用来保存操作符<br> a. 如果遇到一个数，就直接输出到最终结果<br> b. 如果遇到左括号，就压到堆栈<br> c. 如果遇到右括号，那就把堆栈里面的操作符直接出栈到最终结果，直到遇到左括号<br> d. 如果遇到操作符，<br> –如果堆栈是空的，那么就直接把操作符压到堆栈<br> –如果当前的操作符比堆栈顶部的操作符优先级要低或者一样， 这个时候， 前面所有的高优先级的操作符都可以先处理，循环从堆栈中弹出元素，直到当前元素的优先级比栈顶的元素高<br> –如果当前的元素比栈顶的操作符优先级高，那么需要先把这个操作符压到堆栈里面（核心原理是， 如果遇到高优先级的操作符，那就先放到堆栈里面，直到遇到低优先级的操作符，才可以把前面的计算掉。 )</li> 
+ <li> <p>举例<br> 每次遇到一个操作符，是不知道自己是否能够直接计算的， 因为后面可能遇到更高优先级的操作符。<br> 比如3+4*5—&gt; 3 4 5 * +</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public List&lt;String&gt; convertToRPN(String[] expression) {
+    // write your code here
+    Stack&lt;String&gt; stack = new Stack&lt;&gt;();
+    List&lt;String&gt; list = new ArrayList&lt;&gt;();
+    for(String token: expression) {
+        if(tryParseInt(token)) {
+            list.add(token);
+        }
+        else {
+            if(stack.isEmpty()) {
+                stack.push(token);
+            }
+            else {
+                if(token.equals("(")) {
+                    stack.push(token);
+                }
+                else if(token.equals(")")){
+                    while(!stack.isEmpty()) {
+                        String top = stack.pop();
+                        if(top.equals("(")) {
+                            break;
+                        }
+                        list.add(top);
+                    }
+                }
+                else {
+                    
+                    if(token.equals("+") || token.equals("-")) {
+                        while(!stack.isEmpty()  &amp;&amp; !stack.peek().equals("(")) {
+                            list.add(stack.pop());
+                        }
+                    }
+                    else if(token.equals("*") || token.equals("/")) {
+                        while(!stack.isEmpty() &amp;&amp; 
+                                (stack.peek().equals("*") || stack.peek().equals("/"))) {
+                            list.add(stack.pop());
+                        }
+                    }
+                    stack.push(token);
+                }
+            }
+        }
+    }
+    while(!stack.isEmpty()) {
+        list.add(stack.pop());
+    }
+    return list;
+}
+
+boolean tryParseInt(String s) {
+    try {
+        Integer.parseInt(s);
+        return true;
+    }
+    catch(Exception e) {
+        return false;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
