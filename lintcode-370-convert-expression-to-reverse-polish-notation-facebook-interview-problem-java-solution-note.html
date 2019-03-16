@@ -140,7 +140,131 @@ boolean tryParseInt(String s) {
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
 <p>O(N)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>O(N)</p></p>
+<p>O(N)</p> 
+<h2><a href="#一些错误的代码" id="一些错误的代码">一些错误的代码</a></h2> 
+<p>遇到加号和减号， 不能所有的都pop，因为有可能前面是括号， 只能一直pop乘法或者除法</p> 
+<pre><code>public List&lt;String&gt; convertToRPN(String[] expression) {
+    // write your code here
+    Stack&lt;String&gt; stack = new Stack&lt;&gt;();
+    List&lt;String&gt; list = new ArrayList&lt;&gt;();
+    for(String token: expression) {
+        if(tryParseInt(token)) {
+            list.add(token);
+        }
+        else {
+            if(stack.isEmpty()) {
+                stack.push(token);
+            }
+            else {
+                if(token.equals("(")) {
+                    stack.push(token);
+                }
+                else if(token.equals(")")){
+                    while(!stack.isEmpty()) {
+                        String top = stack.pop();
+                        if(top.equals("(")) {
+                            break;
+                        }
+                        list.add(top);
+                    }
+                }
+                else {
+                    
+                    if(token.equals("+") || token.equals("-")) {
+                        while(!stack.isEmpty()) {
+                            list.add(stack.pop());
+                        }
+                    }
+                    else if(token.equals("*") || token.equals("/")) {
+                        while(!stack.isEmpty() &amp;&amp; 
+                                (stack.peek().equals("*") || stack.peek().equals("/"))) {
+                            list.add(stack.pop());
+                        }
+                    }
+                    stack.push(token);
+                }
+            }
+        }
+    }
+    while(!stack.isEmpty()) {
+        list.add(stack.pop());
+    }
+    return list;
+}
+
+boolean tryParseInt(String s) {
+    try {
+        Integer.parseInt(s);
+        return true;
+    }
+    catch(Exception e) {
+        return false;
+    }
+}
+
+</code></pre> 
+<p>遇到加号和减号， 要对前面的乘号和除号做循环pop, 只pop一个是不够的</p> 
+<pre><code>public List&lt;String&gt; convertToRPN(String[] expression) {
+    // write your code here
+    Stack&lt;String&gt; stack = new Stack&lt;&gt;();
+    List&lt;String&gt; list = new ArrayList&lt;&gt;();
+    for(String token: expression) {
+        if(tryParseInt(token)) {
+            list.add(token);
+        }
+        else {
+            if(stack.isEmpty()) {
+                stack.push(token);
+            }
+            else {
+                if(token.equals("(")) {
+                    stack.push(token);
+                }
+                else if(token.equals(")")){
+                    while(!stack.isEmpty()) {
+                        String top = stack.pop();
+                        if(top.equals("(")) {
+                            break;
+                        }
+                        list.add(top);
+                    }
+                }
+                else {
+                    String top = stack.peek();
+                    if(top.equals("+") || top.equals("-")) {
+                        if(token.equals("+") || token.equals("-")) {
+                            list.add(stack.pop());    
+                        }
+                        stack.push(token);
+                    }
+                    else if(top.equals("*") || top.equals("/")) { // top == "*" or "/"
+                        list.add(stack.pop());
+                        stack.push(token);
+                    }
+                    else { // top == "("
+                        stack.push(token);
+                    }
+                }
+            }
+        }
+    }
+    while(!stack.isEmpty()) {
+        list.add(stack.pop());
+    }
+    return list;
+}
+
+boolean tryParseInt(String s) {
+    try {
+        Integer.parseInt(s);
+        return true;
+    }
+    catch(Exception e) {
+        return false;
+    }
+}
+
+</code></pre></p>
 	</div>		
 
 <div class="col-sm-4">
