@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Google面试题 leetcode 1014 Capacity To Ship Packages Within D Days解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Google面试题 leetcode 1014 Capacity To Ship Packages Within D Days解题笔记</h1>
+			</div>
+
+			<p><em>17 March 2019</em></p>
+
+			<p><h2><a href="#google面试题-leetcode-1014-capacity-to-ship-packages-within-d-days" id="google面试题-leetcode-1014-capacity-to-ship-packages-within-d-days">Google面试题 leetcode 1014 Capacity To Ship Packages Within D Days</a></h2> 
+<ol> 
+ <li>输入一个整数数组，表示货物的重量， 这些货物需要从一个港口运输到另外一个港口，</li> 
+ <li>又输入一个整数D，表示需要在D天内把这些货物运输完成</li> 
+ <li>货物必须按顺序运输，不能随意选择</li> 
+ <li>问，每天的运力最少需要多少？</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>今天又是遭遇暴击的一天，这题没做出来。 今天比赛的时候也写了dp，然后一直TLE，怎么也优化不出来。<br> 在dp之前我写了一个循环判断各个数是否可能的解， 中间有一些case出错了， 然后也没有仔细调， 改写dp， 结果dp无论怎么样都无法优化， 毕竟O(N^3)的复杂度， 当然前面也没有想到二分的做法， 只想到min和max， 但是没有想到二分搜索。。。</li> 
+ <li>后来比赛完调试了一下最开始的代码，有一些bug， 但是一路调试下去的话，其实是可以ac的， 这次并不需要O(N*lgN)的算法才可以ac， 直接O(N^2)就可以ac，真是郁闷。 当然，一直在O(N^3)的dp里面想着怎么优化也是傻</li> 
+ <li>这个题目和<a href="http://www.noteanddata.com/leetcode-410-Split-Array-Largest-Sum-google-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-410-Split-Array-Largest-Sum-google-interview-problem-java-solution-note.html</a>是同一个题目， 当时那题dp可以过，而实际上dp是非常低效的做法。 结果到这里果然GG了。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这里先写暴力解， 直接针对每个可能的值遍历一下是否valid，遇到最小的可能值就返回。</li> 
+ <li>主要特征是连续运输， 所以valid比较好判断</li> 
+ <li>当然，最佳做法应该是二分</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int shipWithinDays(int[] weights, int D) {
+        int target = weights[0];        
+        while(!valid(weights, target, 0, D)) {
+            target++;
+        }
+        return target;
+    }
+    
+    boolean valid(int[] weights, int target, int from, int d) {
+        int t = 0;
+        for(int i = from; i &lt; weights.length; ++i) {
+            if(t+weights[i] == target) {
+                t = 0;
+                d--;
+            }
+            else if(t+weights[i] &gt; target) {
+                t = 0;
+                d--;
+                i--;
+            }
+            else {
+                t += weights[i];
+            }
+            if(d == 0 &amp;&amp; i &lt; weights.length-1) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#超时的dp代码" id="超时的dp代码">超时的dp代码</a></h2> 
+<pre><code>class Solution {
+    public int shipWithinDays(int[] weights, int D) {
+        if(D == weights.length) {
+            int max = weights[0];
+            for(int i = 0 ; i &lt; weights.length; ++i) {
+                max = Math.max(max, weights[i]);
+            }
+            return max;
+        }
+        
+        int[] presum = new int[weights.length+1];
+        for(int i = 0; i &lt; weights.length; ++i) {
+            presum[i+1] = presum[i] + weights[i];
+        }
+        
+        int[][] dp = new int[weights.length][D+1];
+        for(int i = 0; i &lt; dp.length; ++i) {
+            dp[i][1] = presum[i+1];
+        }
+        for(int i = 0; i &lt; dp.length; ++i) {
+            for(int d = 2; d &lt;= D; ++d) {
+                dp[i][d] = Integer.MAX_VALUE;
+                for(int k = i-1; k &gt;= 0; --k) {
+                    int tail = presum[i+1] - presum[k+1];
+                    if(tail &gt; dp[i][d]) {
+                        break;
+                    }
+                    int max1 = Math.max(dp[k][d-1], tail);
+                    dp[i][d] = Math.min(dp[i][d], max1);
+                }
+            }
+        }
+        return dp[weights.length-1][D];
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
