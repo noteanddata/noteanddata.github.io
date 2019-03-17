@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Google面试题目leetcode 410 Split Array Largest Sum解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Google面试题目leetcode 410 Split Array Largest Sum解题笔记</h1>
+			</div>
+
+			<p><em>17 March 2019</em></p>
+
+			<p><h2><a href="#google面试题目leetcode-410-split-array-largest-sum" id="google面试题目leetcode-410-split-array-largest-sum">Google面试题目leetcode 410 Split Array Largest Sum</a></h2> 
+<ol> 
+ <li>输入一个非负整数数组nums, 和一个整数m， 把nums数组分成m个非空的连续子数组</li> 
+ <li>求其中的一个分割，使得这个分割的连续子数组的和的最大值是所有分割里面最小的。</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>今天写这个解题报告是因为今天比赛1014题目几乎和这个410一样， <a href="https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/description/">https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/description/</a>,<br> 然而这个410我只做了dp， 虽然dp也能过， 但是二分是更好的做法， 而1014就没有那么好了， dp是过不了的。</li> 
+ <li>这里先记录一下dp的做法， 后面学了二分再做。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>假设dp[i][j]是有i组， 然后在index=j的最大和， 那么, 考虑最后一个分组，<br> – dp[i][j] = min(Math.max(dp[i-1][k] , sum[k+1, j])) // for 0 &lt;= k &lt; j<br> – dp[1][j] = presum[j]</li> 
+</ol> 
+<p>这样， 整个递推关系和动态规划的实现就比较简单了。</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int splitArray(int[] nums, int m) {
+    // dp[i][j] is the result with i group, and also ends at index j
+    int total = 0;
+    int[] presum = new int[nums.length];
+    for(int i = 0; i &lt; nums.length; ++i) {
+        total += nums[i];
+        presum[i] = total;
+    }
+    
+    // dp[i][j] = min(Math.max(dp[i-1][k] , sum[k+1, j])) // for 0 &lt;= k &lt; j
+    // border case dp[1][j] = sum[0....j]
+    int[][] dp = new int[m+1][nums.length];
+    for(int i = 1; i &lt;= m; ++i) {
+        if(i == 1) {
+            for(int j = 0; j &lt; nums.length; ++j) {
+                dp[i][j] = presum[j];
+            }
+        }
+        else {
+            for(int j = 0; j &lt; nums.length; ++j) {
+                int ret = Integer.MAX_VALUE;
+                for(int k = 0; k &lt; j; ++k) {
+                    int sum = presum[j] - presum[k];
+                    int v = Math.max(dp[i-1][k], sum);
+                    ret = Math.min(ret, v);
+                }
+                dp[i][j] = ret;
+            }
+        }
+    }
+    return dp[m][nums.length-1];
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(m*N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M*N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
