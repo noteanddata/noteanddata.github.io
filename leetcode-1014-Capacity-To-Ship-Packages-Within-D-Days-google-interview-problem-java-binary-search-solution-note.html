@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Google面试题 leetcode 1014 Capacity To Ship Packages Within D Days二分搜索解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Google面试题 leetcode 1014 Capacity To Ship Packages Within D Days二分搜索解题笔记</h1>
+			</div>
+
+			<p><em>18 March 2019</em></p>
+
+			<p><h2><a href="#google面试题-leetcode-1014-capacity-to-ship-packages-within-d-days" id="google面试题-leetcode-1014-capacity-to-ship-packages-within-d-days">Google面试题 leetcode 1014 Capacity To Ship Packages Within D Days</a></h2> 
+<ol> 
+ <li>输入一个整数数组，表示货物的重量， 这些货物需要从一个港口运输到另外一个港口，</li> 
+ <li>又输入一个整数D，表示需要在D天内把这些货物运输完成</li> 
+ <li>货物必须按顺序运输，不能随意选择</li> 
+ <li>问，每天的运力最少需要多少？</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这个题目之前写了动态规划的代码和暴力枚举的代码， 今天这里写一下二分搜索的笔记</li> 
+ <li>之前类似题目的动态规划做法 <a href="http://www.noteanddata.com/leetcode-410-Split-Array-Largest-Sum-google-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-410-Split-Array-Largest-Sum-google-interview-problem-java-solution-note.html</a></li> 
+ <li>同样这个题目的暴力搜索解法和超时的动态规划的解法<a href="http://www.noteanddata.com/leetcode-1014-Capacity-To-Ship-Packages-Within-D-Days-google-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-1014-Capacity-To-Ship-Packages-Within-D-Days-google-interview-problem-java-solution-note.html</a></li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这里， 每天最少的运力应该至少是货物的最大重量， 否则这个最重的货物就无法运输了</li> 
+ <li>最大的运力就是所有货物的重量和， 相当于一天之内全部运完了</li> 
+ <li>那么，我们确定了这个解的上限和下限， 那么，可以用二分搜索来查找符合要求的最佳解</li> 
+ <li>给定一个运力， 我们需要计算需要多少天可以把货物运输完。 按顺序计算目前的重量， 如果超时了就重新开始一天就好</li> 
+ <li>对于任何一个运力，知道需要多少天以后，我们需要修改上限和下限， 这里需要仔细一点，<br> – 如果middays &lt; D, 那就不符合要求，运力太少了，运力一定是需要增加， 那么一定是low=mid+1<br> – 如果middays == D, 那有可能当前的运力是答案， 因为可能运力减少1以后就不符合要求了， 所以这里设置high=mid<br> – 如果middays &gt; D, 同样，这时候也应该设置high=mid, 因为运力减少1以后也有可能不符合要求</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int shipWithinDays(int[] weights, int D) {
+        int low = 0;
+        int high = 0;
+        for(int weight: weights) {
+            high += weight;
+            low = Math.max(low, weight);
+        }
+        while(low &lt; high) {
+            int mid = low + (high-low)/2;
+            int middays = calcDays(weights, mid);
+            if(middays &lt; D) {
+                high = mid; // mid-1?
+            }
+            else if(middays == D) {
+                high = mid;
+            }
+            else {  // &gt; D
+                low = mid+1;
+            }
+        }
+        return low;
+    }
+    
+    public int calcDays(int[] weights, int capacity) {
+        int count = 1;
+        int cursum = 0;
+        for(int weight: weights) {
+            if(cursum + weight &gt; capacity) {
+                count++;
+                cursum = weight;
+            }
+            else { // &lt;= capacity
+                cursum += weight;
+            }
+        }
+        return count;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
