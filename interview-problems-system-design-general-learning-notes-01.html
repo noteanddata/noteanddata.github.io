@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>面试系统设计的基本方法学习笔记1--确定问题</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>面试系统设计的基本方法学习笔记1--确定问题</h1>
+			</div>
+
+			<p><em>18 March 2019</em></p>
+
+			<p><h2><a href="#面试系统设计的基本方法学习笔记1确定问题" id="面试系统设计的基本方法学习笔记1确定问题">面试系统设计的基本方法学习笔记1–确定问题</a></h2> 
+<p>今天学习一下系统设计的基本方法， 这里做一个笔记。 整体感觉是系统设计也有一个基本的方法论， 当然在每个问题的细节上，会有很多不同的领域知识， 真正深入了解需要比较深入的知识。 但是整体的方法论和套路如果不掌握的话， 通常会给人感觉不系统，没有成体系，只是在一些细节上有一些局部的认识。</p> 
+<h2><a href="#参考资料" id="参考资料">参考资料</a></h2> 
+<p><a href="https://github.com/donnemartin/system-design-primer">https://github.com/donnemartin/system-design-primer</a></p> 
+<h2><a href="#系统设计的步骤一-确定问题" id="系统设计的步骤一-确定问题">系统设计的步骤一： 确定问题</a></h2> 
+<p>系统设计问题通常可以分成几个固定的步骤， 这里先说第一个步骤： 确定问题。</p> 
+<p>通常需要设计一个系统的时候，需求一般是比较high level的， 这也符合实际情况, 实际项目的需求通常开始也是一个比较high level的需求， 然后很多需求都是比较模糊的， 那这时候非常重要的一点不是直接上来就做， 而是要把问题变得更加明确。<br> 主要需要确定的方面可以有这些：<br> 1. 系统的用户<br> 系统有哪些用户使用？<br> 2. 用户的规模<br> 这个非常重要， 用户的规模直接觉得系统的整体设计，是to B的还是to C的？ 用户规模在百万，千万，亿级，10亿级会需要的设计都会完全不一样。<br> 3. 系统的输入和输出<br> 4. 系统的使用场景和主要功能<br> 5. 系统的数据量<br> 系统会产生多少数据量, 这个也非常重要，对后端数据的存储会产生重大的影响， 每天生成GB, TB, PB的数据会对系统的设计产生非常重大的影响。<br> 6. 系统的访问量<br> 系统有多少rps, 这个也非常重要， 几千rps, 几万rps, 几十万rps, 几百万rps的系统，需要的设计也是完全不一样的<br> 7. 系统可靠性的要求<br> SLA需要的是几个9， 有些系统可能只是周期性的任务，有些系统可能是需要严格<br> 8. 数据可靠性的要求<br> 数据需要保存多久， 是否可以允许少量数据的丢失。 比如交易系统，支付系统，那就需要数据非常可靠。<br> 有一些其他系统，可以允许少量数据的丢失。<br> 9. 系统的latency的要求<br> 是要求100ms, 1000ms, 还是更长。<br> 10. 系统实时性的要求<br> 有一些系统是OLTP, 需要实时响应。 有一些系统是属于OLAP, 不需要实时的响应<br> 11. 系统一致性的要求<br> 是否需要强一致？ 比如用户的评论，就可以不强一致， 可以读缓存， 缓存也不一定需要实时刷新。<br> 又比如一些news feed top stories 排行榜的计算， 可以不需要实时， 只要计算最近几分钟的top stories排行榜就可以</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
