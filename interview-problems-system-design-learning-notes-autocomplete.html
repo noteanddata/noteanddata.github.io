@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Google系统设计面试题--设计一个auto complete 系统(type ahead系统)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Google系统设计面试题--设计一个auto complete 系统(type ahead系统)</h1>
+			</div>
+
+			<p><em>19 March 2019</em></p>
+
+			<p><h2><a href="#google系统设计面试题设计一个auto-complete-系统type-ahead系统" id="google系统设计面试题设计一个auto-complete-系统type-ahead系统">Google系统设计面试题–设计一个auto complete 系统(type ahead系统)</a></h2> 
+<ol> 
+ <li>这是一个常见的系统设计问题， 同时这个系统在实践中也有大量的应用。 我们每天搜索google， youtube， baidu, 使用chrome浏览器等都有大量的type ahead。</li> 
+ <li>看了一下系统设计，感觉我还没有建立良好的系统设计的方法和套路，所以这一片， 主要还是以auto complete系统，记录一下这个系统设计会遇到的一些问题， 具体的解答方式，还需要后面再深入学习。</li> 
+</ol> 
+<h2><a href="#参考资料" id="参考资料">参考资料</a></h2> 
+<ol> 
+ <li>主要学习了花花酱的视频<br> System Design 之 Autocomplete - 花花酱 CS大讲堂 EP7<br> <a href="https://www.youtube.com/watch?v=uIqvbYVBiCI&amp;t=1s">https://www.youtube.com/watch?v=uIqvbYVBiCI&amp;t=1s</a><br> 这里强烈推荐花花酱的博客和视频， 这个最近出的系统设计视频讲的非常好。 还有很多刷题的视频也讲的非常透彻， 水平非常高。<br> 花花酱的博客地址是这个 <a href="https://zxi.mytechroad.com/blog/">https://zxi.mytechroad.com/blog/</a></li> 
+ <li><a href="https://www.interviewbit.com/problems/design-search-typeahead/">https://www.interviewbit.com/problems/design-search-typeahead/</a></li> 
+ <li><a href="https://medium.com/@prefixyteam/how-we-built-prefixy-a-scalable-prefix-search-service-for-powering-autocomplete-c20f98e2eff1">https://medium.com/@prefixyteam/how-we-built-prefixy-a-scalable-prefix-search-service-for-powering-autocomplete-c20f98e2eff1</a></li> 
+ <li><a href="https://hackernoon.com/design-auto-complete-system-in-python-8fab1470cd92">https://hackernoon.com/design-auto-complete-system-in-python-8fab1470cd92</a></li> 
+ <li><a href="https://stackoverflow.com/questions/7058724/how-to-create-an-efficient-auto-complete">https://stackoverflow.com/questions/7058724/how-to-create-an-efficient-auto-complete</a></li> 
+ <li>还有一些相关的数据结构， 这里先记录一下， 还没来得及看<br> <a href="https://www.coursera.org/lecture/algorithms-part2/ternary-search-tries-yQM8K">https://www.coursera.org/lecture/algorithms-part2/ternary-search-tries-yQM8K</a><br> <a href="https://cs.stackexchange.com/questions/63048/what-is-the-difference-between-radix-trees-and-patricia-tries">https://cs.stackexchange.com/questions/63048/what-is-the-difference-between-radix-trees-and-patricia-tries</a></li> 
+</ol> 
+<h2><a href="#相关笔记" id="相关笔记">相关笔记</a></h2> 
+<h3><a href="#系统设计的基本情况" id="系统设计的基本情况">系统设计的基本情况</a></h3> 
+<ol> 
+ <li>系统设计问题不一定存在一个唯一解</li> 
+ <li>面试官会根据面试者的回答和背景就某一个细节深入挖掘</li> 
+ <li>常见考察的方面</li> 
+</ol> 
+<ul> 
+ <li>availability</li> 
+ <li>scalability</li> 
+ <li>数据的存储(SQL/NOSQL方案的设计， 数据表的设计， 数据表的关系, Query如何做优化)</li> 
+ <li>数据的查询</li> 
+ <li>数据的计算</li> 
+ <li>大规模数据的处理</li> 
+ <li>如何做trade off</li> 
+ <li>在有限的资源情况下如何做优化</li> 
+</ul> 
+<ol> 
+ <li>什么是系统设计？<br> 设计系统的下面4个方面， 来满足特定的需求</li> 
+</ol> 
+<ul> 
+ <li>架构</li> 
+ <li>模块</li> 
+ <li>接口</li> 
+ <li>数据</li> 
+</ul> 
+<ol> 
+ <li>需要明确的需求</li> 
+</ol> 
+<ul> 
+ <li>SLA (qps, latency, availability time)….</li> 
+ <li>数据的来源</li> 
+ <li>数据量, 机器的数量(cpu/内存/disk/…)</li> 
+</ul> 
+<ol> 
+ <li>设计</li> 
+</ol> 
+<ul> 
+ <li>架构／算法／数据结构／DB schema</li> 
+ <li>如何scale, scale up vs scale out, shard vs replica</li> 
+ <li>前后端的接口</li> 
+ <li>明确系统的trade off ，牺牲了什么特性， 成本和代价是什么，最后满足了什么条件</li> 
+</ul> 
+<h3><a href="#autocomplete的具体设计" id="autocomplete的具体设计">Autocomplete的具体设计</a></h3> 
+<h4><a href="#google的autocomplete的实际情况" id="google的autocomplete的实际情况">Google的Autocomplete的实际情况</a></h4> 
+<ol> 
+ <li>在Google搜索框中输入"what is system", 打开网络面板，可以看到google在每次输入一个字符的时候，都发了一个http request,<br> 然后返回了以当前输入开头的前10个关键字</li> 
+ <li>返回的response里面有Expires和Cache-Control(max-age=3600)两个关于缓存的http header， 其中Expires会被Cache-Control覆盖， 也就是这个请求会缓存3600秒</li> 
+</ol> 
+<h4><a href="#设计问题举例" id="设计问题举例">设计问题举例</a></h4> 
+<p>要求设计一个Youtube的Auto Complete. 这时候， 我们需要先明确需求，细节可以参考前面说的或者这一片， <a href="http://www.noteanddata.com/interview-problems-system-design-general-learning-notes-01.html">http://www.noteanddata.com/interview-problems-system-design-general-learning-notes-01.html</a><br> 假设问了以后需求如下:<br> * 总共有100亿的entry<br> * 数据来源是用户的搜索日志<br> * 响应时间要求p99在100ms以内<br> * 机器是4CPU, 16G内存, 20G共享磁盘</p> 
+<h4><a href="#high-level-design" id="high-level-design">high level Design</a></h4> 
+<ol> 
+ <li>离线的日志处理系统, 通过map reduce或者spark类似的批处理或者streaming处理系统，对日志做分析， 生成tries</li> 
+ <li>在线的service， 用来处理用户的请求<br> – 在线的service需要访问生成的tries的结果<br> – 在线的service这里通常是无状态的<br> – 通常需要在多个机房部署多个服务， 第一提高可用性， 一组机器扛不住流量， 第二是根据用户的地理位置路由到最近的机房</li> 
+</ol> 
+<h4><a href="#components-design" id="components-design">components design</a></h4> 
+<p>tries的具体实现细节？</p> 
+<p>sharding如何做？</p> 
+<h4><a href="#api的设计" id="api的设计">API的设计</a></h4> 
+<p>List
+ <word>
+   getByPrefix(String prefix);
+ </word></p> 
+<h4><a href="#数据结构的设计" id="数据结构的设计">数据结构的设计</a></h4> 
+<p>class TrieNode {<br> Map&lt;Character, TrieNode&gt; children;<br> List
+ <word>
+   topWords;
+  <br> }
+ </word></p> 
+<p>这里， 每个TrieNode要存储已经计算好的top K的结果， 这样可以让online的service在O(L)的时间内返回结果， L是搜索单词的长度</p> 
+<h4><a href="#后端细节" id="后端细节">后端细节</a></h4> 
+<ul> 
+ <li> <p>时间和空间复杂度是多少？</p> </li> 
+ <li> <p>trie多久更新一次？ 具体如何更新trie?</p> </li> 
+ <li> <p>trie通常的实现有用数组的，有用hashmap的， 这里用哪种？<br> 在leetcode里面我们经常使用数组， 但是这里用户搜索输入词范围肯定是unicode， 那一定非常稀疏， 所以必须要用hashmap</p> </li> 
+ <li> <p>单机装不下一个完整的trie怎么办？搜索词的prefix分布很不均衡怎么办？</p> </li> 
+ <li> <p>如何结合trending query?<br> 当前发生热门突发事件， 用户的搜索日志还没有来得及处理这些搜索词， 但是需要加入结果，怎么办？</p> </li> 
+ <li> <p>如何做用户个性化的结果？</p> </li> 
+ <li> <p>存储trie的节点如果挂了怎么办？ 如何提高可用性？</p> </li> 
+ <li> <p>整个trie是直接放在内存里面嘛？ 还是放在文件里面？ 还是放在其他类似redis或者memcache的系统里面？</p> </li> 
+ <li> <p>online的service需要做cache嘛?</p> </li> 
+</ul> 
+<h4><a href="#前端细节" id="前端细节">前端细节</a></h4> 
+<ul> 
+ <li> <p>如何减少系统qps？如何做缓存？</p> </li> 
+ <li> <p>如何提高可用性？ online service 挂了怎么办?</p> </li> 
+ <li> <p>前端请求如何路由到最近的节点?</p> </li> 
+</ul> 
+<h4><a href="#更多问题" id="更多问题">更多问题</a></h4> 
+<ul> 
+ <li>如何支持自动纠错？</li> 
+ <li>如何以正确的方法对系统的数据和qps做估算？ 如果有100亿的搜索词的话，会产生多少大的trie？ 会有多少的type ahead的qps?</li> 
+ <li>这个系统在CAP里面选择了哪些？ 牺牲了哪些？</li> 
+ <li>如何定义这个系统的KPI和核心metrics？</li> 
+ <li>如何监控，报警，运维</li> 
+</ul></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
