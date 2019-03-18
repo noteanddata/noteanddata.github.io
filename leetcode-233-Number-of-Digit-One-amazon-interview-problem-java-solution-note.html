@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>亚马逊面试题 leetcode 233 Number of Digit One解题报告</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>亚马逊面试题 leetcode 233 Number of Digit One解题报告</h1>
+			</div>
+
+			<p><em>19 March 2019</em></p>
+
+			<p><h2><a href="#亚马逊面试题-leetcode-233-number-of-digit-one解题报告" id="亚马逊面试题-leetcode-233-number-of-digit-one解题报告">亚马逊面试题 leetcode 233 Number of Digit One解题报告</a></h2> 
+<p>输入一个整数n， 返回&lt;=n的正整数里面， 总共有几个数字1</p> 
+<pre><code>Input: 13
+Output: 6 
+Explanation: Digit 1 occurred in the following numbers: 1, 10, 11, 12, 13.
+
+</code></pre> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这个题目有很多解法， 有做各种各样的分析的， 有迭代，有递归</li> 
+ <li>但是类似的题目有很多变换， 有些会非常难分析， 现在这个求总共有多少个1并不是特别难分析， 但是如果题目改成求总共有多少个9， 或者总共有多少个连续的1， 或者总共有多少个连续三个5， 或者定义数字里面如果有出现38或者7是非法的， 等等可以加上各种条件， 很多时候常规的逻辑分析或者特征分析就比较难以求解了， 今天才学习了一下这类题目有一个统一的general方案， 叫做数位dp, 英文叫做digit dp。<br> 基本上用这个方法可以解决这一大类问题。</li> 
+ <li>很不幸， 数位dp的资料基本都是搞acm的人写的， 经常开头就是“显然，略”， 看了一下并不太明白。 所以这个题目暂时先用传统的特征分析来写一下思路。 数位dp的做法后面再学习</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>拿到题目显然毫无思路， 那么从小数据开始看。<br> 先分析各个区间段上总共有多少个1</li> 
+</ol> 
+<pre><code>[1--9]--&gt; 1
+[10--19] --&gt; 11
+[20--29] --&gt; 1
+[30--39] --&gt; 1
+....
+[90--99] --&gt; 1
+[100--199] --&gt; 100 + count(99) 
+[200-299] ---&gt; count(99) 
+....
+[900-999] ---&gt; count(99)
+[1000-1999]  -&gt; 1000 + count(999) // 首先千位数上一直都是1， 所以这里有1000个1， 然后在个位，十位和百位上的1就是count(999)
+[2000-2999] --&gt; count(999) 
+[3000-3999] --&gt; count(999) 
+... 
+[9000-9999] --&gt; count(999)
+</code></pre> 
+<ol> 
+ <li>上面的数看上去已经有点规律了， 那么我们如果要求解符合题目要求的n总共有多少个1，<br> a. 假设n=2345,<br> 那么f(2345) = 1000 + f(345) + f(999) * 2<br> 相当于[0–999]之间的1会需要计数两次， 然后呢， 加上千位数的1会计数1000次。 最后， 还有345需要计数<br> b. 假设n=3568,<br> 那么f(3568) = 1000 + f(568) + f(999) * 3<br> 同理， [1000-1999]在千位数上的1有1000个， 然后， [0–999]需要计数三次，就是千位数分别数0，1，2的时候总共有三次，<br> 最后， 千位数是3的时候，568的时候需要计数。<br> c. 假设n=1729,<br> 那么f(1729) = 729+1 + f(999) + f(729)<br> 考虑千位数的时候， 千位数数1的情况和前面两个情况不太一样， 这时候， 千位数是1的数是[1000-1729], 所以总共有729+1个，<br> 然后， 千位数数0的时候， [0–999]就是f(999), 千位数是1的时候， 还有f(729)需要计数</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int countDigitOne(int n) {
+    if(n &lt;= 0) return 0;
+    if(n &lt; 10) return 1;
+    
+    int based = (int)Math.pow(10, String.valueOf(n).length()-1);
+    int v = n%based;
+    int cfirst = n/based;
+    if(cfirst == 1) {
+        return v+1 + countDigitOne(v) + countDigitOne(based-1);
+    }
+    else {
+        return based + countDigitOne(v) + countDigitOne(based-1) * cfirst;
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lgN)? 每次递归的时候都把N降到了少一位？</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1), 使用了常数的额外空间？</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
