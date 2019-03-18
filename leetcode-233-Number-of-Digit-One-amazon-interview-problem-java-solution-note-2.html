@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>亚马逊面试题 leetcode 233 Number of Digit One解题报告2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>亚马逊面试题 leetcode 233 Number of Digit One解题报告2</h1>
+			</div>
+
+			<p><em>20 March 2019</em></p>
+
+			<p><h2><a href="#亚马逊面试题-leetcode-233-number-of-digit-one" id="亚马逊面试题-leetcode-233-number-of-digit-one">亚马逊面试题 leetcode 233 Number of Digit One</a></h2> 
+<p>输入一个整数，</p> 
+<pre><code>Input: 13
+Output: 6 
+Explanation: Digit 1 occurred in the following numbers: 1, 10, 11, 12, 13.
+</code></pre> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<p>前面写了递归的解题报告<a href="http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note.html</a>, 然后想学习一下数位dp的方式， 不过还是没到这一步， 今天这片是循环的解题报告</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>所有的1一定是在每一位上的1加起来的总数， 所以这里的思路是分析每一位上会出现多少个1</li> 
+ <li>假设数字是一个四位数， 然后我们要分析十位数上的1， 那么会有几种情况</li> 
+</ol> 
+<ul> 
+ <li>4302, 十位数是0， 那么， 所有十位数是1的数就是把十位数固定成1， 然后把其他位数遍历一下， 左边可以从00遍历到42, 右边可以从0遍历到9. 左边不能遍历到43， 因为431x &gt; 4302。 而对于左边是00到42的所有数，右边是可以从0遍历到9的， 因为421x &lt; 4302,</li> 
+ <li>4312, 十位数是1， 那么， 所有4302的情况都包括， 还有[4310-4312]这三个数</li> 
+ <li>4322， 十位数大于1， 那么， 包括所有4302的情况， 还有就是[4310-4319]这十个数</li> 
+</ul> 
+<ol> 
+ <li> <p>总结规律<br> abcd,<br> if c == 0, ab * 10<br> if c == 1, ab * 10 + d+1<br> if c &gt; 1, (ab+1) * 10</p> </li> 
+ <li> <p>可以从右到左对每一位进行计算</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<p>注意， 这里如果不用long的话，d会溢出</p> 
+<pre><code>public int countDigitOne(int n) {
+    if(n &lt;= 0) return 0;
+    
+    long total = 0;        
+    long d = 1;
+    
+    while(n/d != 0) {
+        long low = n%d;
+        long cur = (n/d)%10;
+        long high = n/(d*10);
+        if(cur == 0) {
+            total += high * d;
+        }
+        else if(cur == 1) {
+            total += high * d + low+1;
+        }
+        else {
+            total += (high+1) * d;
+        }
+        
+        d *= 10;
+    }
+    
+    return (int)total;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#错误的溢出代码" id="错误的溢出代码">错误的溢出代码</a></h2> 
+<p>下面是错误的代码和失败的test case</p> 
+<pre><code>Input: 1410065408
+Output: 32151694
+Expected: 1737167499
+</code></pre> 
+<pre><code>public int countDigitOne(int n) {
+    if(n &lt;= 0) return 0;
+    if(n &lt; 10) return 1;
+    
+    int total = 0;
+    
+    int d = 1;
+    
+    while(n/d != 0) {
+        int r = n%d;
+        int cur = (n/d)%10;
+        int v = n/(d*10);
+        if(cur == 0) {
+            total += v * d;
+        }
+        else if(cur == 1) {
+            total += v * d + r+1;
+        }
+        else {
+            total += (v+1) * d;
+        }
+        
+        d *= 10;
+    }
+    
+    return total;
+}
+
+
+</code></pre> 
+<h2><a href="#其他问题" id="其他问题">其他问题</a></h2> 
+<p>这个问题可以扩展到其他问题， 比如求数字是9的个数， 数字是连续1的个数</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
