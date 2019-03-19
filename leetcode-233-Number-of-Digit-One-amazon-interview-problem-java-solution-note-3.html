@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>亚马逊面试题 leetcode 233 Number of Digit One解题报告3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>亚马逊面试题 leetcode 233 Number of Digit One解题报告3</h1>
+			</div>
+
+			<p><em>21 March 2019</em></p>
+
+			<p><h2><a href="#亚马逊面试题-leetcode-233-number-of-digit-one" id="亚马逊面试题-leetcode-233-number-of-digit-one">亚马逊面试题 leetcode 233 Number of Digit One</a></h2> 
+<p>输入一个整数n， 返回&lt;=n的正整数里面， 总共有几个数字1</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>之前写了两个解题报告，<br> 按位判断递归的写法<br> <a href="http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note.html</a><br> 按位判断循环的写法, 对每一位上总共有多少个1做判断 <a href="http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note-2.html">http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note-2.html</a></li> 
+ <li>今天学习了一个略有点dp影子的写法，不过感觉上和正统的数位dp还差的比较远， 这个写法只是把部分结果提前打表, 本质上还上按位判断然后递归的做法</li> 
+ <li>这个写法感觉代码上略冗余， 因为原来的递归的方法已经是通用的递归，可以覆盖求999这样的情况。 当然，从时间复杂度来说，纯递归计算的会多一些， 这个打表的方法把这些值都直接算好了， 所以时间效率会略高一点。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>首先判断[0-9], [0-99], [0-999]的数总共有多少个1， 建立一个dp表格表示这些结果，<br> –[0-9]只有一个1<br> –[0-99]在个位数上有10个[0-9]，也就上10个1， 在十位数上也有10个1, 总共是20个<br> –[0-999]有10个[0-99],还有在百位上有100个1。<br> 所以， dp[i] = dp[i-1] * 10 + (int)Math.pow(10, i-1)</li> 
+ <li>同时还要一个递归函数， 这个和之前的递归方法差不多，都是按位判断.</li> 
+ <li>这里的写法略有点不一样的是传入了字符串和from， 然后对0需要做一个特殊的判断， 原来递归数字的方法对不会有左边第一位是0的情况</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int countDigitOne(int n) {
+        if(n &lt;= 0) return 0;
+        
+        String s = String.valueOf(n);
+        
+        // dp[i] is the count of digit one for max number of length i
+        // dp[1] = number of digit one for 9 = 1
+        // dp[2] = number of digit one for 99 = dp[0] * 10 + 10
+        // dp[3] = number of digit one for 999 = dp[1] * 10 + 100
+        // dp[4] = number of digit one for 9999 = dp[2] * 10 + 100
+        int[] dp = new int[s.length()+1]; 
+        for(int i = 1; i &lt; dp.length; ++i) {
+            dp[i] = dp[i-1] * 10 + (int)Math.pow(10, i-1);
+        }
+        
+        return find(s, 0, dp);
+    }
+    
+    public int find(String s, int from, int[] dp) {
+        if(from == s.length()-1) {
+            return (s.charAt(from) == '0') ? 0 : 1;
+        }
+        int remain = Integer.valueOf(s.substring(from+1));
+        int first = (int)(s.charAt(from)-'0');
+        if(first == 0) {
+            return find(s, from+1, dp);
+        }
+        else if(first == 1) { 
+            // 1357 = 
+            // - 357+1   // for the digit 1 in thousand place
+            // - dp[999]  // for all digit 1 from 0 to 999
+            // - find(357) // for all digit 1 from 1000 to 1357 in non-thousand place
+            return remain +1 + dp[s.length()-from-1] + find(s, from+1, dp);
+        }
+        else { // 3357
+            return (int)Math.pow(10, s.length()-from-1) + first * dp[s.length()-from-1] + find(s, from+1, dp);
+        }
+    }
+    
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
