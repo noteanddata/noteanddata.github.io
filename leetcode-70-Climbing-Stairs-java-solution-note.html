@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>微软面试题 leetcode 70 Climbing Stairs解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>微软面试题 leetcode 70 Climbing Stairs解题笔记</h1>
+			</div>
+
+			<p><em>19 March 2019</em></p>
+
+			<p><h2><a href="#微软面试题-leetcode-70-climbing-stairs" id="微软面试题-leetcode-70-climbing-stairs">微软面试题 leetcode 70 Climbing Stairs</a></h2> 
+<p>一个楼梯总共有n阶， 每次可以走一阶或者二阶，问总共有多少种不同的走法可以走完这个楼梯</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这个题目就是求斐波那契数列， 题目比较简单， 但是是非常好的递归和动态规划的入门题， 动态规划的完整思路，都在这里有体现。<br> 包括这个从直接递归开始， 然后做记忆化搜索， 然后做O(N)空间的bottom up的动态规划， 最后做O(1)空间的动态规划</li> 
+ <li>这个算法还有一个时间复杂度是O(lgN)的算法， 这里没有展开， 因为我也没看明白。 大概思路是构造一个矩阵， 然后做矩阵的分治乘法。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>假设走到第n阶需要的步骤是f(n), 那么， 走到第n阶只有两种可能， 从n-1走一步到n, 或者n-2直接走两步到n， 这两种走法是可以不重叠的计算的， 所以， 自然有f(n) = f(n-1) + f(n-2)， 这样复杂度是O(2^N)</li> 
+ <li>递归的做法比较直接， 但是递归的做法有大量的重复计算, 每个递归过程中的函数值都是单独计算的, 然后也可以开辟一个数组， 做记忆化搜索， 把递归的结果保存起来</li> 
+ <li>有了递归+记忆化搜索的方法后，又可以改写成自底向上的方法来循环做这个计算， 因为每次的值都依赖于前面一个方向的值，所以直接从小到大循环就好</li> 
+ <li>最后， 因为这个值只依赖于前面两个状态， 那么， 空间可以直接节省到O(1), 不需要O(N)的数组保存所有的状态。<br> 这里， 很多复杂的动态规划，经常也是先列出完整的状态转移方程，最后才做空间的节省的。 这里空间的节省比较直接，有时候一些空间的节省会需要一些技巧， 比如改变循环的方向等。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<ol> 
+ <li>递归+memorization的代码</li> 
+</ol> 
+<pre><code>public int climbStairs(int n) {
+    if(n == 0 || n == 1) return 1;
+    int[] dp = new int[n+1];
+    Arrays.fill(dp, -1);
+    dp[0] = dp[1] = 1;
+    return find(n, dp);
+}
+int find(int n, int[] dp) {
+
+    if(dp[n] != -1) {
+        return dp[n];
+    }
+    int v = find(n-1, dp) + find(n-2, dp);
+    dp[n] = v;
+    return v;
+}
+</code></pre> 
+<ol> 
+ <li>bottom up + O(N)空间复杂度的代码</li> 
+</ol> 
+<pre><code>public int climbStairs(int n) {
+    if(n == 0 || n == 1) return 1;
+    int[] dp = new int[n+1];
+    dp[0] = dp[1] = 1;
+    for(int i = 2; i &lt;= n; ++i) {
+        dp[i] = dp[i-1] + dp[i-2];
+    }
+    return dp[n];
+}
+</code></pre> 
+<ol> 
+ <li>bottom up + O(1)空间复杂度的代码</li> 
+</ol> 
+<pre><code>public int climbStairs(int n) {
+    if(n == 0 || n == 1) {
+        return 1;
+    }
+    int prev1 = 1;
+    int prev2 = 1;
+    for(int i = 2; i &lt;= n; ++i) {
+        int cur = prev1 + prev2;
+        prev2 = prev1;
+        prev1 = cur;
+    }
+    return prev1; // cur
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#超时的递归代码" id="超时的递归代码">超时的递归代码</a></h2> 
+<pre><code>public int climbStairs(int n) {
+    if(n == 0 || n == 1) {
+        return 1;
+    }
+    return climbStairs(n-1) + climbStairs(n-2);
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
