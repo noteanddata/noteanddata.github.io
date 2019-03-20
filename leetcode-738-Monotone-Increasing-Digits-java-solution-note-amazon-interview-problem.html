@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Amazon面试题 leetcode 738 Monotone Increasing Digits解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Amazon面试题 leetcode 738 Monotone Increasing Digits解题笔记</h1>
+			</div>
+
+			<p><em>22 March 2019</em></p>
+
+			<p><h2><a href="#amazon面试题-leetcode-738-monotone-increasing-digits" id="amazon面试题-leetcode-738-monotone-increasing-digits">Amazon面试题 leetcode 738 Monotone Increasing Digits</a></h2> 
+<p>输入一个非负整数N， 返回&lt;=N的数里面， 在从左到右每一位数字都是变大或者相等的数里面返回最大的一个</p> 
+<pre><code>Example 1:
+
+Input: N = 10
+Output: 9
+
+Example 2:
+
+Input: N = 1234
+Output: 1234
+
+Example 3:
+
+Input: N = 332
+Output: 299
+
+
+</code></pre> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>有三种可能,<br> a. 本来就是符合要求的, 比如3456<br> b. 本来不符合要求， 然后一个直观的相符，如果要修改肯定是从最左边的不符合要求的第一位开始修改，然后后面全部改成9， 比如3546改成3499， 改完了以后就变成符合要求的<br> c. 本来不符合要求， 但是修改了一位后面全部改9以后，修改的这一位和前面的这一位变成递减了，<br> 比如3327， 这里本来是要把百位上的3改小一个改成2， 变成3299， 但是虽然后面符合要求了， 千位的3和百位的3本来是没问题的，因为百位改成2以后这里又不对了。</li> 
+ <li>第一种和第二种比较简单，直接从左到右处理就好。 第三种做法，可以先按照第一步逻辑处理，然后再递归。<br> 当然这样效率比较低。 一个更好的做法是， 既然这个改了以后的数字不符合要求的原因是因为数字变化了， 那么，如果我们从右向左判断， 这个影响直接可以在一个循环里面就判断出来， 并且任何更新都可以反应到左边一位的判断。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int monotoneIncreasingDigits(int N) {
+    char[] arr = String.valueOf(N).toCharArray();
+    int index = -1;
+    for(int i = arr.length-2; i &gt;= 0; --i) {
+        if(arr[i] &gt; arr[i+1]) {
+            arr[i] = (char)((int)arr[i]-1);
+            index = i;
+        }
+    }
+    if(index &gt;= 0) {
+        while(index+1 &lt; arr.length) {
+            arr[index+1] = '9';
+            index++;
+        }
+    }
+    return Integer.valueOf(new String(arr));
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#开始写的递归代码" id="开始写的递归代码">开始写的递归代码</a></h2> 
+<p>基本逻辑就是从左到右按位判断，</p> 
+<pre><code>public int monotoneIncreasingDigits(int N) {
+    if(N == 0) {
+        return 0;
+    }
+    String s = String.valueOf(N);
+    boolean valid = valid(s);
+    if(valid) {
+       return N; 
+    }
+    
+    StringBuilder sb = new StringBuilder();
+    boolean hasinvalid = false;
+    for(int i = 1; i &lt; s.length(); ++i) {
+        if(hasinvalid) {
+            sb.append('9');
+        }
+        else {
+            char cur = s.charAt(i);
+            char prev = s.charAt(i-1);
+            if(cur &gt;= prev) {
+                sb.append(prev);
+            }
+            else {
+                char item = (char)(prev -1);
+                sb.append(item).append('9');
+                hasinvalid = true;
+            }                
+        }
+    }
+    s = sb.toString();
+    if(valid(s)) {
+        return Integer.valueOf(s);    
+    }
+    else {
+        return monotoneIncreasingDigits(Integer.valueOf(s));
+    }
+    
+}
+
+boolean valid(String s) {
+    for(int i = 1; i &lt; s.length(); ++i) {
+        if(s.charAt(i) &lt; s.charAt(i-1)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
