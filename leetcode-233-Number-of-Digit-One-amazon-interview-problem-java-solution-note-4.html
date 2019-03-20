@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>亚马逊面试题 leetcode 233 Number of Digit One解题报告4</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>亚马逊面试题 leetcode 233 Number of Digit One解题报告4</h1>
+			</div>
+
+			<p><em>22 March 2019</em></p>
+
+			<p><h2><a href="#亚马逊面试题-leetcode-233-number-of-digit-one" id="亚马逊面试题-leetcode-233-number-of-digit-one">亚马逊面试题 leetcode 233 Number of Digit One</a></h2> 
+<p>输入一个整数n， 返回&lt;=n的正整数里面， 总共有几个数字1</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本上这里是把原来都递归写法做成了记忆化搜索， 感觉这个和常见都数位dp的做法还是有点差距。<br> 写的过程也是错误百出， 和递归简洁的实现相差太多。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int countDigitOne(int n) {
+        if(n &lt;= 0) return 0;
+        
+        // fulltable[1] = countDigitOne of 9
+        // fulltable[2] = countDigitOne of 99
+        int[] fulltable = new int[20];  
+        for(int i = 1; i &lt; fulltable.length; ++i) {
+            fulltable[i] = fulltable[i-1] * 10 + (int)Math.pow(10, i-1);
+        }
+        
+        String s = String.valueOf(n);
+        int[] dp = new int[s.length()]; // dp[i] is the countDigitOne on index i in s
+        Arrays.fill(dp, -1);
+        return dfs(s, 0, fulltable, dp);
+    }
+    
+    public int dfs(String s, int from, int[] fulltable, int[] dp) {
+        if(from == s.length()-1) {
+            return s.charAt(from) == '0' ? 0 : 1;
+        }
+        if(dp[from] != -1) {
+            return dp[from];
+        }
+
+        int cur = (int)(s.charAt(from)-'0');
+        int count = 0;
+        int remain = (from == s.length()-1) ? 0 : Integer.valueOf(s.substring(from+1));
+        if(cur == 1) {
+            count = remain + 1 + dfs(s, from+1, fulltable, dp) + fulltable[s.length()-from-1];
+        }
+        else {
+            count = dfs(s, from+1, fulltable, dp) + fulltable[s.length()-from-1] * cur;
+            if(cur &gt; 1) {
+                count += (int)Math.pow(10, s.length()-from-1) ; 
+            }
+        }
+        dp[from] = count;
+        return count;
+    }    
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
