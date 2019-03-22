@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>经典算法学习-数位动态规划(digit dynamic programming)1--求&lt;=n的所有整数的数字和</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>经典算法学习-数位动态规划(digit dynamic programming)1--求&lt;=n的所有整数的数字和</h1>
+			</div>
+
+			<p><em>22 March 2019</em></p>
+
+			<p><h2><a href="#经典算法学习-数位动态规划digit-dynamic-programming1求n的所有整数的数字和" id="经典算法学习-数位动态规划digit-dynamic-programming1求n的所有整数的数字和">经典算法学习-数位动态规划(digit dynamic programming)1–求&lt;=n的所有整数的数字和</a></h2> 
+<ol> 
+ <li>输入一个正整数n， 求所有&lt;=n的正整数里面，所有整数的每个数字加起来的和是多少</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li> <p>在之前的在做leetcode 233 Number of Digit One的题目分析里面， 一直想要试图用digit dp的方法来解， 但是一直都不得要领。<br> <a href="http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note-2.html">http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note-2.html</a><br> <a href="http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note-3.html">http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note-3.html</a><br> <a href="http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note-4.html">http://www.noteanddata.com/leetcode-233-Number-of-Digit-One-amazon-interview-problem-java-solution-note-4.html</a></p> </li> 
+ <li> <p>后面找了一些数位dp的资料，但是大部分资料都是竞赛大佬写的， 过程非常简洁，没有相关基础知识的话都看的云里雾里的。 好不容易找到这个比较简单的题目， 然后终于搞明白怎么做来， 这个题目没有找到对应的oj来验证， 但是这个题目我认为是最简单的dp, 最好的入门材料， 完整的包括了数位dp的整个结构。 希望这个笔记对自己做其他复杂的数位dp能够起到启蒙的作用， 然后希望这片文章对读者有点用。</p> </li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>写了一点时间发现自己对这个数位dp的理解也不是很透，文章写的不太清楚，只能给自己一个做一个笔记，读者将就着看吧。</li> 
+ <li>显然， 这个题目纯粹brute force的话效率是很低的， 因为N可以很大</li> 
+ <li>数位dp的第一步其实就是把整数当成是一个字符串看， 然后对每一位做操作，然后操作过程中有很多重复的计算，放在一个dp表格里面记录下来。<br> 举例， 比如整数是N=35697, 相当于"35697",<br> 然后从左到右对每一位进行分析，整理出一个递推公式来，来求f(35697)的值是多少。</li> 
+ <li></li> 
+</ol> 
+<p>a. 首先dp肯定要对每一位记录一个状态， 所以index是dp的一个维度<br> b. 第二呢， 从左到右选择的数字会影响后面的其他数字的选择， 比如第一位如果选0或者1或者2， 那么后面所有的位数都可以选0到9， 但是如果左边第一位选3， 那么第二位就只能选0-5.<br> 同样, 如果这时候第二选了0-4， 那么后面可以选0到9， 但是如果第二位选择5， 第三位就只能选择0-2。<br> 所以， 对于每一位的状态，又会有一个维度haslimit=true/false, 表示两种不同的状态。 这个会觉得后面会有的选择范围。<br> c. 前面两个维度基本上所有的数位dp都会有。 但是数位dp光这个通常还不够，一般至少需要第三个维度来表示dp的状态， 具体和题目有关。 这个题目里面，需要记录的是左边已经计算的sum。</p> 
+<p>这里，相当于记忆化搜索的部分是index相同， 当前位是否haslimit相同， 然后之前的sum也相同的情况。<br> 35697， 假设我们考虑百位, 如果前面选了1和3到百位， 和前面选了3和1到百位， 对最终结果的影响是一样的。<br> 1+3+f[2][4][0]<br> 3+1+f[2][4][0]</p> 
+<p>所以， dp[index][prevsum][limitIndex]是一个状态</p> 
+<ol> 
+ <li>状态递归如下<br> for(int i = 0; i &lt;= k; ++i) {<br> dp[index][prevsum][limitIndex] += find(index+1, prevsum+i, nextLimit)<br> }</li> 
+</ol> 
+<p>每一位的上界k比较直接<br> int k = haslimit ? digits[index] : 9;</p> 
+<p>然后nextLimit也非常直接，就是之前是limit，并且当前位已经是最大数字了， 那么下一个还是limit， 否则就都可以选择0-9<br> boolean nextLimit = haslimit &amp;&amp; digits[index] == i;</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int digitSum(int n) {
+    String s = String.valueOf(n);
+
+    int[] digits = new int[s.length()];
+    for(int i = 0; i &lt; digits.length; ++i) {
+        digits[i] = (int)(s.charAt(i) - '0');
+    }
+
+    int[][][] dp = new int[s.length()][s.length() * 9][2];
+    for(int i = 0; i &lt; dp.length; ++i) {
+        for(int j = 0; j &lt; dp[i].length; ++j) {
+            Arrays.fill(dp[i][j], -1);
+        }
+    }
+
+    // start from the 1st digit on the left 
+    return find(digits, 0, 0, true, dp);
+}
+
+/**
+ *
+ * @param digits: the digits of the number n
+ * @param index: the index to digits to calculate
+ * @param prevsum: the prevsum so far
+ * @param haslimit: whether this digit has a limit, if it has limit, the range is [0, digits[index]], otherwise, [0,9]
+ * @param dp  dp[i][j][limit] is the sum at i = index, j = sum, limit = 0/1
+ * @return
+ */
+int find(int[] digits, int index, int prevsum, boolean haslimit, int[][][] dp) {
+    if(index == digits.length) { // this means the end of recursion, we've finished all digits
+        return prevsum;
+    }
+
+    int limitIndex = haslimit ? 0 : 1;
+    if(dp[index][prevsum][limitIndex] != -1 ) {
+        return dp[index][prevsum][limitIndex];
+    }
+
+    int ret = 0;
+    int k = haslimit ? digits[index] : 9;
+    for(int i = 0; i &lt;= k; ++i) { // for each digit, it can be [0,k], where k is 9 or digits[index] depending on haslimit
+        // if previous one has limit and current digit is equal to i, then next has limit
+        boolean nextLimit = haslimit &amp;&amp; digits[index] == i;
+
+        ret += find(digits, index+1, prevsum + i, nextLimit, dp);
+    }
+    dp[index][prevsum][limitIndex] = ret;
+
+    return ret;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lgN), N是整数数的大小， 这里的lg是以10为底的对数</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN), N是整数数的大小， 这里的lg是以10为底的对数</p> 
+<h2><a href="#测试代码" id="测试代码">测试代码</a></h2> 
+<p>由于没有找到这个题目的OJ， 所以自己写了一下测试代码</p> 
+<pre><code>public void run() {
+    for(int n = 1; n &lt;= 10000; ++n) {
+        int ds = digitSum(n);
+        int bds = bruteforceDigitSum(n);
+        System.out.println("n=" + n + ", ds=" + ds + ", bds=" + bds);
+
+        if(bds != ds) {
+            throw new RuntimeException("error");
+        }
+
+    }
+}
+
+public int bruteforceDigitSum(int n) {
+    int total = 0;
+    for(int i = 1; i &lt;= n; ++i) {
+        total += getOneSum(i);
+    }
+    return total;
+}
+
+public int getOneSum(int v) {
+    int sum = 0;
+    while(v &gt; 0) {
+        sum += v%10;
+        v /= 10;
+    }
+    return sum;
+}
+</code></pre> 
+<h2><a href="#测试结果" id="测试结果">测试结果</a></h2> 
+<p>下面是前面30个数的测试结果</p> 
+<pre><code>n=1, ds=1, bds=1
+n=2, ds=3, bds=3
+n=3, ds=6, bds=6
+n=4, ds=10, bds=10
+n=5, ds=15, bds=15
+n=6, ds=21, bds=21
+n=7, ds=28, bds=28
+n=8, ds=36, bds=36
+n=9, ds=45, bds=45
+n=10, ds=46, bds=46
+n=11, ds=48, bds=48
+n=12, ds=51, bds=51
+n=13, ds=55, bds=55
+n=14, ds=60, bds=60
+n=15, ds=66, bds=66
+n=16, ds=73, bds=73
+n=17, ds=81, bds=81
+n=18, ds=90, bds=90
+n=19, ds=100, bds=100
+n=20, ds=102, bds=102
+n=21, ds=105, bds=105
+n=22, ds=109, bds=109
+n=23, ds=114, bds=114
+n=24, ds=120, bds=120
+n=25, ds=127, bds=127
+n=26, ds=135, bds=135
+n=27, ds=144, bds=144
+n=28, ds=154, bds=154
+n=29, ds=165, bds=165
+n=30, ds=168, bds=168
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
