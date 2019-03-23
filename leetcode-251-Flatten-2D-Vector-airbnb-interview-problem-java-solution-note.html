@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Airbnb面试题目 leetcode 251 Flatten 2D Vector解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Airbnb面试题目 leetcode 251 Flatten 2D Vector解题笔记</h1>
+			</div>
+
+			<p><em>23 March 2019</em></p>
+
+			<p><h2><a href="#airbnb面试题目-leetcode-251-flatten-2d-vector" id="airbnb面试题目-leetcode-251-flatten-2d-vector">Airbnb面试题目 leetcode 251 Flatten 2D Vector</a></h2> 
+<p>输入一个二维数组， 实现一个iterator访问这个二维数组</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>注： 这个题目的输入发生了变化，以前的构造函数是传入一个List&lt;List
+  <integer>
+   &gt;
+  </integer></li> 
+</ol> 
+<pre><code>public Vector2D(List&lt;List&lt;Integer&gt;&gt; vec2d)
+</code></pre> 
+<p>现在的构造函数是一个二维数组</p> 
+<pre><code>public Vector2D(int[][] v)
+</code></pre> 
+<ol> 
+ <li>最新的oj会在hasNext()之前直接调用next(). 所以在next()的时候，也要保证index合法的设置好， 简单的办法就是在next()里面调用hasNext(); 然后把跳到下一个合法的index的操作都放到hasNext里面。<br> 实际上， 看了下jdk的api，确实也是这样实现的，虽然我们平时写代码的时候一定是这样操作，但是jdk并没有要求一定要这样调用， 直接一路next过去也是可以返回正确的值。</li> 
+</ol> 
+<pre><code>while(pos.hasNext()) {
+  int v = pos.next();
+}
+</code></pre> 
+<ol> 
+ <li>如果用iterator实现的话，记得hasNext()要检查当前iterator是否合法， 如果是合法的，那就直接返回. 只有不合法的情况下才向后滚动iterator。<br> 同样， 如果是保存index的话，也是一样的，只有不合法的情况下才改动index</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<p>下面是完全用Iterator实现的代码</p> 
+<pre><code>class Vector2D {
+    private Iterator&lt;Iterator&lt;Integer&gt;&gt; listpos;
+    private Iterator&lt;Integer&gt; cur;
+    public Vector2D(int[][] v) {
+        List&lt;Iterator&lt;Integer&gt;&gt; list = new ArrayList&lt;&gt;();
+        for(int[] arr: v) {
+            list.add(Arrays.stream(arr).iterator());
+        }
+        this.listpos = list.iterator();
+    }
+    
+    public int next()  throws java.util.NoSuchElementException {
+        if(hasNext()) {
+            return cur.next();
+        }
+        throw new java.util.NoSuchElementException();
+    }
+    
+    public boolean hasNext() {
+        if(null != cur &amp;&amp; cur.hasNext()) {
+            return true;
+        }
+        while(listpos.hasNext() &amp;&amp; (null == cur || !cur.hasNext())) {
+            cur = listpos.next();
+            if(cur.hasNext()) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+/**
+ * Your Vector2D object will be instantiated and called as such:
+ * Vector2D obj = new Vector2D(v);
+ * int param_1 = obj.next();
+ * boolean param_2 = obj.hasNext();
+ */
+
+</code></pre> 
+<p>下面是保存完整数组的代码</p> 
+<pre><code>class Vector2D {
+    private int[][] v;
+    private int i;
+    private int j;
+    public Vector2D(int[][] v) {
+        this.v = v;
+        this.i = 0;
+        this.j = 0;
+    }
+    
+    public int next() {
+        hasNext();
+        return v[i][j++];    
+    }
+    
+    public boolean hasNext() {
+        while(i &lt; v.length) {
+            if(j &lt; v[i].length) {
+                return true;
+            }
+            i++;
+            j = 0;
+        }
+        return false;
+    }
+}
+
+</code></pre> 
+<p>当然， 严格按照Iterator的语义的话，我觉得把next()方法抛出异常更好。</p> 
+<pre><code>class Vector2D {
+    private int[][] v;
+    private int i;
+    private int j;
+    public Vector2D(int[][] v) {
+        this.v = v;
+        this.i = 0;
+        this.j = 0;
+    }
+    
+    public int next()  throws java.util.NoSuchElementException {
+        if(hasNext()) {
+            return v[i][j++];    
+        }
+        throw new java.util.NoSuchElementException();
+    }
+    
+    public boolean hasNext() {
+        while(i &lt; v.length) {
+            if(j &lt; v[i].length) {
+                return true;
+            }
+            i++;
+            j = 0;
+        }
+        return false;
+    }
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#之前的一些代码" id="之前的一些代码">之前的一些代码</a></h2> 
+<p>之前的题目的构造函数是这样的， 下面是之前的一些代码<br> public Vector2D(List&lt;List
+ <integer>
+  &gt; vec2d) {
+ </integer></p> 
+<ol> 
+ <li>用iterator的代码</li> 
+</ol> 
+<pre><code>class Vector2D implements Iterator&lt;Integer&gt; {
+     private Iterator&lt;List&lt;Integer&gt;&gt; pos;
+     private Iterator&lt;Integer&gt; col;
+    public Vector2D(List&lt;List&lt;Integer&gt;&gt; vec2d) {
+        this.pos = vec2d.iterator();
+    }
+
+    @Override
+    public Integer next() {
+        if(hasNext()) {
+          return col.next();  
+        }
+        return null;
+    }
+
+    @Override
+    public boolean hasNext() {
+        if(null != col &amp;&amp; col.hasNext()) {
+            return true;
+        }
+
+        while(pos.hasNext() &amp;&amp; (col == null || !col.hasNext())) {
+            col = pos.next().iterator();
+            if(col.hasNext()) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+}
+</code></pre> 
+<ol> 
+ <li>用iteraor但是在hasnext的时候没有在当前col的时候直接返回的错误代码<br> 对于下面这个输入就只能返回1， 后面就结束了</li> 
+</ol> 
+<pre><code>List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+allList.add(Arrays.asList(1,2,3));
+allList.add(Arrays.asList(4));
+allList.add(Arrays.asList());
+allList.add(Arrays.asList(5,6,7));
+
+Vector2D vector2D = new Vector2D(allList);
+while(vector2D.hasNext()) {
+    System.out.println(vector2D.next());
+}
+
+
+</code></pre> 
+<pre><code>class Vector2D implements Iterator&lt;Integer&gt; {
+     private Iterator&lt;List&lt;Integer&gt;&gt; pos;
+     private Iterator&lt;Integer&gt; col;
+    public Vector2D(List&lt;List&lt;Integer&gt;&gt; vec2d) {
+        this.pos = vec2d.iterator();
+    }
+
+    @Override
+    public Integer next() {
+        if(hasNext()) {
+          return col.next();  
+        }
+        return null;
+    }
+
+    @Override
+    public boolean hasNext() {
+        while(pos.hasNext() &amp;&amp; (col == null || !col.hasNext())) {
+            col = pos.next().iterator();
+            if(col.hasNext()) {
+                return true;
+            }
+        }
+        return false;
+
+    }
+}
+
+
+</code></pre> 
+<ol> 
+ <li>完整保存数组的代码</li> 
+</ol> 
+<pre><code>public class Vector2D implements Iterator&lt;Integer&gt; {
+    private List&lt;List&lt;Integer&gt;&gt; allList;
+    private int row, col;
+    public Vector2D(List&lt;List&lt;Integer&gt;&gt; vec2d) {
+        this.allList = vec2d;
+        this.row = this.col = 0;
+    }
+
+    @Override
+    public Integer next() {
+        if(!hasNext()) {
+          return null;
+        }
+        
+        List&lt;Integer&gt; list = allList.get(row);
+        int v = list.get(col);
+        
+        col++;
+        if(col == list.size()) {
+            row++;
+            col = 0;
+        }
+        
+        return v;
+    }
+
+    @Override
+    public boolean hasNext() {
+        while(row &lt; allList.size()) {
+            List&lt;Integer&gt; list = allList.get(row);
+            if(col &lt; list.size()) {
+                return true;
+            }
+            col = 0;
+            row++;
+        }
+        return false;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
