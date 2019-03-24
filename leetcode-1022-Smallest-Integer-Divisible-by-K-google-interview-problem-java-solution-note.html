@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Google面试题目 leetcode 1022 Smallest Integer Divisible by K解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Google面试题目 leetcode 1022 Smallest Integer Divisible by K解题笔记</h1>
+			</div>
+
+			<p><em>24 March 2019</em></p>
+
+			<p><h2><a href="#google面试题目-leetcode-1022-smallest-integer-divisible-by-k" id="google面试题目-leetcode-1022-smallest-integer-divisible-by-k">Google面试题目 leetcode 1022 Smallest Integer Divisible by K</a></h2> 
+<ol> 
+ <li>输入一个整数K， 要求返回全部由数字1组成的数里面，可以被K整除的最小的数。<br> 如果不存在， 那么返回-1</li> 
+</ol> 
+<pre><code>Input: 2
+Output: -1
+Explanation: There is no such positive integer N divisible by 2.
+
+Input: 3
+Output: 3
+Explanation: The smallest answer is N = 111, which has length 3.
+
+</code></pre> 
+<p>其中， 1 &lt;= K &lt;= 10^5</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>如果从K开始操作， 那么就是K, K<em>2, K</em>3, ….., 然后判断结果是否有全部都是1的， 但是这很难确定上界， 然后循环次数也比较多。<br> 比如K=3, 从例子可以看到111是最小的结果。</li> 
+ <li>另外一个角度就是从1，11，111，1111, ….. 这样操作， 然后看这些数里面有没有能够被K整除的。<br> 这里有两个问题， 一个是上界如何确定？ 另外一个是如何高效的判断能否取余， 因为K比较大的时候，要判断一个长度达到10万的整数计算量会很大。</li> 
+ <li>先考虑如何取余，<br> 对于任意一个由1组成的t, 假设t=x<em>K + r<br> next = t * 10 + 1 = (x</em>K + r ) * 10 + 1 = x * K * 10 + r * 10 + 1<br> 所以， next%K = (x * K * 10 + r * 10 + 1)%K = 0 + r * 10%K + 1%K = (r * 10 + 1)%K<br> 所以， 对于这样的循环取余操作来说， 可以直接把余数拿出来进行操作</li> 
+ <li>上界，这里有两个猜想， 一个是K^2, 显然从3就可以看到是不对的。 另外一个猜想就是有K位1的整数。 比赛的时候没有想到严格证明的思路， 其实是这样， 从1,11,111,…., 到有个K个1， 总共有K个数。 既然取余操作是有固定模版的， 那么对于K个数， 余数一定能够遍历到[1,K-1]之间所有的数。 如果有重复的话，那么一定会循环了。<br> 所以， 有K个1一定是足够的， 上界就确定了。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int smallestRepunitDivByK(int K) {
+    int value = 1;
+    int len = 1;
+    while(len &lt;= K) {
+        if(value%K == 0) {
+            return len;
+        }
+        value = (value * 10 + 1)%K;
+        len++;
+    }
+    return -1;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lgK)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#超时的代码" id="超时的代码">超时的代码</a></h2> 
+<p>下面是原来写的超时的代码， 对于取余的操作技巧掌握的还不够。 这个迭代计算取余数的操作， 等价于直接取余数进行迭代计算的操作在不少题目中都有应用。<br> 同样掌握了这个技巧以后， 可以严格证明有上界。 本来这里对上界只是猜想。</p> 
+<pre><code>import java.math.BigInteger;
+class Solution {
+    public int smallestRepunitDivByK(int K) {
+        if(K%2 == 0 || K%5 == 0) return -1;
+        int lenk = String.valueOf(K).length();
+        
+        BigInteger bk = new BigInteger(String.valueOf(K));
+        StringBuilder sb = new StringBuilder();
+        for(int len = 1; len &lt;= K; ++len) {
+            sb.append("1");
+            if(sb.length() &lt; lenk) continue;
+            BigInteger v = new BigInteger(sb.toString());
+            BigInteger[] ret = v.divideAndRemainder(bk);
+            if(ret[1].equals(BigInteger.ZERO)) {
+                return len;
+            }
+        }
+        return -1;
+    }
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
