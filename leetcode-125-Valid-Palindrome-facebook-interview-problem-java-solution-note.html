@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Facebook面试题 leetcode 125 Valid Palindrome解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Facebook面试题 leetcode 125 Valid Palindrome解题笔记</h1>
+			</div>
+
+			<p><em>24 March 2019</em></p>
+
+			<p><h2><a href="#facebook面试题-leetcode-125-valid-palindrome" id="facebook面试题-leetcode-125-valid-palindrome">Facebook面试题 leetcode 125 Valid Palindrome</a></h2> 
+<ol> 
+ <li>输入一个字符串， 要求返回这个字符串是否是回文</li> 
+ <li>其中， 只考虑"alphanumeric characters", 同时忽略大小写</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>常规回文的判断， 有首尾双指针的判断方式， 也有根据长度计算匹配index的方式， 但是到这里要忽略其他字符， 根据长度计算index的方式就不能用了， 统一用双指针的方式比较合理。</li> 
+ <li>跳过非法字符， 有直接在一个循环里面判断的方式， 也有里面加一层循环跳过当前遇到的所有非法字符的方式。 两种方式比较了一下， 还是在里面加一层循环跳过当前遇到的所有非法字符的方式比较合理，不容易出错。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>
+public boolean isPalindrome(String s) {
+    if(null == s) {
+        return true;
+    }
+    int i = 0, j = s.length()-1;
+    while(i &lt; j ) {
+        while(i &lt; j &amp;&amp; !Character.isLetterOrDigit(s.charAt(i))) {
+            i++;
+        }
+        while(i &lt; j &amp;&amp; !Character.isLetterOrDigit(s.charAt(j))) {
+            j--;
+        }
+        if(i &gt;= j) {
+            break;
+        }
+        if(Character.toLowerCase(s.charAt(i)) != Character.toLowerCase(s.charAt(j))) {
+            return false;
+        }
+        i++;
+        j--;            
+    }
+    return true;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#最早写的两个版本" id="最早写的两个版本">最早写的两个版本</a></h2> 
+<ol> 
+ <li>没有注意到Character直接有一个函数isLetterOrDigit</li> 
+ <li>没有注意到Character.toLowerCase可以直接调用， 如果是不是英文字符的话相当于不起作用</li> 
+</ol> 
+<pre><code>public boolean isPalindrome(String s) {
+    if(null == s) {
+        return true;
+    }
+    int i = 0, j = s.length()-1;
+    while(i &lt; j ) {
+        while(i &lt; j &amp;&amp; !Character.isLetter(s.charAt(i)) &amp;&amp; !Character.isDigit(s.charAt(i))) {
+            i++;
+        }
+        while(i &lt; j &amp;&amp; !Character.isLetter(s.charAt(j)) &amp;&amp; !Character.isDigit(s.charAt(j))) {
+            j--;
+        }
+        if(i &gt;= j) {
+            break;
+        }
+        char a = s.charAt(i);
+        char b = s.charAt(j);
+        if(Character.isLetter(a)) {
+            a = Character.toLowerCase(a);
+        }
+        if(Character.isLetter(b)) {
+            b = Character.toLowerCase(b);
+        }
+        if(a != b) {
+            return false;
+        }            
+        i++;
+        j--;            
+    }
+    return true;
+}
+
+
+</code></pre> 
+<p>感觉这个用continue来跳过当前非法字符的方式不是太好，容易搞错， 直接遇到非法字符里面再搞一层循环跳过比较直接，不容易出错</p> 
+<pre><code>public boolean isPalindrome(String s) {
+    if(null == s || 0 == s.length()) {
+        return true;
+    }
+    int i = 0, j = s.length()-1;
+    while(i &lt; j ) {
+        char a = s.charAt(i);
+        if(!(Character.isLetter(a) || Character.isDigit(a))) {
+            i++;
+            continue;
+        }
+        char b = s.charAt(j);
+        if(!(Character.isLetter(b) || Character.isDigit(b))) {
+            j--;
+            continue;
+        }
+        if(Character.isLetter(a)) {
+            a = Character.toLowerCase(a);
+        }
+        if(Character.isLetter(b)) {
+            b = Character.toLowerCase(b);
+        }
+        if(a != b) {
+            return false;
+        }
+        i++;
+        j--;            
+    }
+    return true;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
