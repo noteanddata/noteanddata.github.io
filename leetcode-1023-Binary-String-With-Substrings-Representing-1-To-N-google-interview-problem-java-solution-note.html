@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Google面试题 leetcode 1023 Binary String With Substrings Representing 1 To N解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Google面试题 leetcode 1023 Binary String With Substrings Representing 1 To N解题笔记</h1>
+			</div>
+
+			<p><em>24 March 2019</em></p>
+
+			<p><h2><a href="#google面试题-leetcode-1023-binary-string-with-substrings-representing-1-to-n" id="google面试题-leetcode-1023-binary-string-with-substrings-representing-1-to-n">Google面试题 leetcode 1023 Binary String With Substrings Representing 1 To N</a></h2> 
+<ol> 
+ <li>输入一个字符串S和一个整数N， 问从[1,N]的所有整数的二进制表示， 是不是都是字符串S的substring</li> 
+</ol> 
+<pre><code>Example 1:
+
+Input: S = "0110", N = 3
+Output: true
+
+Example 2:
+
+Input: S = "0110", N = 4
+Output: false
+
+</code></pre> 
+<ol> 
+ <li>其中， 1 &lt;= S.length &lt;= 1000， 1 &lt;= N &lt;= 10^9</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>感觉直接遍历N肯定不可行（没想到其实是可以的，因为跳出循环很快， 然后看S， S总共就只有1000位， 那么S的子字符串最多也就1000<em>1000, 而实际上， 因为整数最多只有32位二进制， 那么对于每一个index=i， 直接看len=[1,32]， 那么， S的子字符串最多也就1000</em>32种可能， 所以如果N &gt; s.length() * 32, 就可以直接return false</li> 
+ <li>然后对每一个index求所有可能的子字符串， 然后放到一个set里面， 然后最后判断这个set是否包含了[1,N]的所有数就好</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<ol> 
+ <li>这里我第一次知道原来32位的二进制的0和1， 不能被全部解析到整数， 比如"10010010011001011010101100110110", 这我就有点晕了, 为什么会出现这样的情况呢？</li> 
+ <li>Integer.parseInt(s, base), 字符串不需要补齐到32位</li> 
+ <li>后来看了下其他人很多是采用直接数字操作转化到十进制的， 这个后面再学习一下</li> 
+</ol> 
+<pre><code>public boolean queryString(String S, int N) {
+    if(N &gt; S.length() * 32) return false;
+    Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+    for(int i = 0; i &lt; S.length(); ++i) {
+        for(int len = 1; len &lt;= 32; ++len) {
+            if(i+len &lt;= S.length()) {
+                String sub = S.substring(i, i+len);    
+                try {
+                    int value = Integer.parseInt(sub, 2);
+                    set.add(value);
+                }
+                catch(Exception e) {
+                }
+            }
+        }
+    }
+    for(int i = 1; i &lt;= N; ++i) {
+        if(!set.contains(i)) {
+            return false;
+        }
+    }
+    return true;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(32*M), 其中M是S的长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#brute-force也可以过" id="brute-force也可以过">brute force也可以过</a></h2> 
+<p>比较惊讶的是输入数据N是比较大大，可是brute force也可以过。。。可能主要是跳出循环比较快<br> 1. 后来看了下， 直接brute force循环N从大到小也可以过</p> 
+<pre><code>public boolean queryString(String S, int N) {
+    for(int n = N; n &gt;= 1; n--) {
+        String s = Integer.toBinaryString(n);
+        if(S.indexOf(s) &lt; 0) {
+            return false;
+        }
+    }
+    return true;
+}
+</code></pre> 
+<ol> 
+ <li>没想到， 从小到大循环也可以过</li> 
+</ol> 
+<pre><code>public boolean queryString(String S, int N) {
+    for(int n = 1; n &lt;= N; n++) {
+        String s = Integer.toBinaryString(n);
+        if(S.indexOf(s) &lt; 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
