@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Airbnb面试题目 leetcode 336 Palindrome Pairs解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Airbnb面试题目 leetcode 336 Palindrome Pairs解题笔记</h1>
+			</div>
+
+			<p><em>25 March 2019</em></p>
+
+			<p><h2><a href="#airbnb面试题目-leetcode-336-palindrome-pairs" id="airbnb面试题目-leetcode-336-palindrome-pairs">Airbnb面试题目 leetcode 336 Palindrome Pairs</a></h2> 
+<ol> 
+ <li>输入一个字符串数组， 里面的每一个字符串都不一样， 问， 那些[i,j]可以使得strings[i]+strings[j]组成一个回文字符串？</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目brute force的解法肯定面试是不能用的，有一个正统的trie的解法, 这个后面再学习。</li> 
+ <li>这个写一个朴素的hashmap的解法, 两个字符串组成回文有几种情况<br> –第一个字符串是回文， 第二个字符串是空字符串， 比如 s1=“aba”, s2=""<br> –第二个字符串和第二个字符是反过来的， 比如s1=“abcd”, s2=“dcba”<br> –第一个个字符串的左边部分本身已经是回文， 然后右边部分和第二个字符串是回文， s1=“abagf”, s2=“fg”<br> –第一个个字符串的右边部分本身已经是回文， 然后左边部分和第二个字符串是回文, s1=“gfaba”, s2=“fg”</li> 
+ <li>情况分析清楚以后，针对每个情况逐个判断， 然后提前建好hashmap以后判断就好。<br> 细节部分是不要忘记空字符串的情况， 然后针对整个字符串反过来的情况，不要有重复。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public List&lt;List&lt;Integer&gt;&gt; palindromePairs(String[] words) {
+        List&lt;List&lt;Integer&gt;&gt; list = new ArrayList&lt;&gt;();
+        Map&lt;String, Integer&gt; reverseIndexMap = new HashMap&lt;&gt;();
+        List&lt;Integer&gt; emptyList = new ArrayList&lt;&gt;();
+        for(int i = 0; i &lt; words.length; ++i) {
+            reverseIndexMap.put(new StringBuilder(words[i]).reverse().toString(), i);
+            if(words[i].length() == 0) {
+                emptyList.add(i);
+            }
+        }
+        for(int i = 0; i &lt; words.length; ++i) {
+            // 0. check the word itself is valid    aba
+            if(valid(words[i])) {
+                if(words[i].length() &gt; 0) {
+                    for(int j : emptyList) {
+                        list.add(Arrays.asList(i, j));
+                        list.add(Arrays.asList(j, i));
+                    }
+                }
+            }
+            
+            // 1. check full word reverse       abc   cba
+            int j = reverseIndexMap.getOrDefault(words[i], -1);
+            if(j &gt;= 0 &amp;&amp; j != i) {
+                list.add(Arrays.asList(i, j));
+                //list.add(Arrays.asList(j, i));
+            }
+            
+            // 2. check part word          
+            // bdbab  ba
+            // abbdb  ba
+            for(int k = 1; k &lt; words[i].length(); ++k) {
+                String part1 = words[i].substring(0,k);
+                String part2 = words[i].substring(k);
+                
+                if(valid(part1)) {
+                    j = reverseIndexMap.getOrDefault(part2, -1);
+                    if(j &gt;= 0 &amp;&amp; j != i) {
+                        list.add(Arrays.asList(j, i));
+                    }
+                }
+                if(valid(part2)) {
+                    j = reverseIndexMap.getOrDefault(part1, -1);
+                    if(j &gt;= 0 &amp;&amp; j != i) {
+                        list.add(Arrays.asList(i, j));
+                    }
+                }
+            }
+        }
+        return list;
+    }
+    boolean valid(String part) {
+        int left = 0, right = part.length()-1;
+        while(left &lt; right) {
+            if(part.charAt(left++) != part.charAt(right--)) return false;
+        }
+        return true;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*K^2), N是数组的长度， K是数组字符串的平均长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#很久以前写的一个版本" id="很久以前写的一个版本">很久以前写的一个版本</a></h2> 
+<p>也可以通过， 代码上看起来更简洁一点， 但是逻辑我认为更加tricky一点，把几种情况放在一起处理了， 包括如何去重等；<br> 现在觉得这样写容易反而容易出错， 还是分几种情况处理比较平铺直叙一点， 不容易出错。</p> 
+<pre><code>class Solution {
+      public List&lt;List&lt;Integer&gt;&gt; palindromePairs(String[] words) {
+        List&lt;List&lt;Integer&gt;&gt; ret = new ArrayList&lt;&gt;(); 
+        if (words == null || words.length &lt; 2) return ret;
+        Map&lt;String, Integer&gt; map = new HashMap&lt;String, Integer&gt;();
+        for (int i=0; i&lt;words.length; i++) {
+            map.put(words[i], i);
+        }
+        for (int i=0; i&lt;words.length; i++) {
+            for (int j=0; j&lt;= words[i].length(); j++) { // notice it should be "j &lt;= words[i].length()"
+                String str1 = words[i].substring(0, j);
+                String str2 = words[i].substring(j);
+                if (isPalindrome(str1)) {
+                    String str2rvs = new StringBuilder(str2).reverse().toString();
+                    if (map.containsKey(str2rvs) &amp;&amp; map.get(str2rvs) != i) {
+                        List&lt;Integer&gt; list = Arrays.asList(map.get(str2rvs), i);
+                        ret.add(list);
+                    }
+                }
+                if (isPalindrome(str2)) {
+                    String str1rvs = new StringBuilder(str1).reverse().toString();
+                    if (map.containsKey(str1rvs) &amp;&amp; map.get(str1rvs) != i &amp;&amp; str2.length()!=0) { 
+                    // if (map.containsKey(str1rvs) &amp;&amp; map.get(str1rvs) != i) { 
+                        List&lt;Integer&gt; list = Arrays.asList(i, map.get(str1rvs));
+                        ret.add(list);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+
+    private boolean isPalindrome(String str) {
+        int left = 0;
+        int right = str.length() - 1;
+        while (left &lt;= right) {
+            if (str.charAt(left++) !=  str.charAt(right--)) return false;
+        }
+        return true;
+    }
+
+}
+
+</code></pre> 
+<h2><a href="#写错的一个版本1" id="写错的一个版本1">写错的一个版本1</a></h2> 
+<p>没有考虑到空字符串的情况</p> 
+<pre><code>
+Input: ["a",""]
+Output: []
+Expected: [[0,1],[1,0]]
+</code></pre> 
+<p>代码</p> 
+<pre><code>class Solution {
+    public List&lt;List&lt;Integer&gt;&gt; palindromePairs(String[] words) {
+        List&lt;List&lt;Integer&gt;&gt; list = new ArrayList&lt;&gt;();
+        Map&lt;String, Integer&gt; reverseIndexMap = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; words.length; ++i) {
+            reverseIndexMap.put(new StringBuilder(words[i]).reverse().toString(), i);
+        }
+        for(int i = 0; i &lt; words.length; ++i) {
+            // 1. check full word reverse       abc   cba
+            
+            int j = reverseIndexMap.getOrDefault(words[i], -1);
+            if(j &gt;= 0 &amp;&amp; j != i) {
+                list.add(Arrays.asList(i, j));
+                //list.add(Arrays.asList(j, i));
+            }
+            
+            // 2. check part word          
+            // bdbab  ba
+            // abbdb  ba
+            for(int k = 1; k &lt; words[i].length(); ++k) {
+                String part1 = words[i].substring(0,k);
+                String part2 = words[i].substring(k);
+                
+                if(valid(part1)) {
+                    j = reverseIndexMap.getOrDefault(part2, -1);
+                    if(j &gt;= 0 &amp;&amp; j != i) {
+                        list.add(Arrays.asList(j, i));
+                    }
+                }
+                if(valid(part2)) {
+                    j = reverseIndexMap.getOrDefault(part1, -1);
+                    if(j &gt;= 0 &amp;&amp; j != i) {
+                        list.add(Arrays.asList(i, j));
+                    }
+                }
+            }
+        }
+        return list;
+    }
+    boolean valid(String part) {
+        int left = 0, right = part.length()-1;
+        while(left &lt; right) {
+            if(part.charAt(left++) != part.charAt(right--)) return false;
+        }
+        return true;
+    }
+}
+
+</code></pre> 
+<h2><a href="#写错的版本2" id="写错的版本2">写错的版本2</a></h2> 
+<pre><code>Input: ["abcd","dcba","lls","s","sssll"]
+Output: [[0,1],[1,0],[1,0],[0,1],[3,2],[2,4]]
+Expected: [[0,1],[1,0],[3,2],[2,4]]
+</code></pre> 
+<p>这里， 针对两个字符串互为reverse的情况， 不需要每次都把两个index都放一遍， 因为这样会遇到两次， 每次放两遍，就重复了。</p> 
+<pre><code>class Solution {
+    public List&lt;List&lt;Integer&gt;&gt; palindromePairs(String[] words) {
+        List&lt;List&lt;Integer&gt;&gt; list = new ArrayList&lt;&gt;();
+        Map&lt;String, Integer&gt; reverseIndexMap = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; words.length; ++i) {
+            reverseIndexMap.put(new StringBuilder(words[i]).reverse().toString(), i);
+        }
+        for(int i = 0; i &lt; words.length; ++i) {
+            // 1. check full word reverse       abc   cba
+            
+            int j = reverseIndexMap.getOrDefault(words[i], -1);
+            if(j &gt;= 0 &amp;&amp; j != i) {
+                list.add(Arrays.asList(i, j));
+                list.add(Arrays.asList(j, i));
+            }
+            
+            // 2. check part word          
+            // bdbab  ba
+            // abbdb  ba
+            for(int k = 1; k &lt; words[i].length(); ++k) {
+                String part1 = words[i].substring(0,k);
+                String part2 = words[i].substring(k);
+                
+                if(valid(part1)) {
+                    j = reverseIndexMap.getOrDefault(part2, -1);
+                    if(j &gt;= 0 &amp;&amp; j != i) {
+                        list.add(Arrays.asList(j, i));
+                    }
+                }
+                if(valid(part2)) {
+                    j = reverseIndexMap.getOrDefault(part1, -1);
+                    if(j &gt;= 0 &amp;&amp; j != i) {
+                        list.add(Arrays.asList(i, j));
+                    }
+                }
+            }
+        }
+        return list;
+    }
+    boolean valid(String part) {
+        int left = 0, right = part.length()-1;
+        while(left &lt; right) {
+            if(part.charAt(left++) != part.charAt(right--)) return false;
+        }
+        return true;
+    }
+}
+
+</code></pre> 
+<h2><a href="#brute-force的代码" id="brute-force的代码">brute force的代码</a></h2> 
+<p>下面是O(N^2*k)的代码， 可以通过oj，当然肯定不能通过面试</p> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; palindromePairs(String[] words) {
+    List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+    for(int i = 0; i &lt; words.length; ++i) {
+        for(int j = 0; j &lt; words.length; ++j) {
+            if(i == j) continue;
+            if(valid(words, i, j)) {
+                allList.add(Arrays.asList(i, j));
+            }    
+        }
+    }
+    return allList;
+}
+
+boolean valid(String[] words, int i, int j) {
+    String w1 = words[i];
+    String w2 = words[j];
+    int begin = 0;
+    int end = w1.length() + w2.length()-1;
+    while(begin &lt; end) {
+        if(getChar(w1, w2, begin) != getChar(w1, w2, end)) {
+            return false;
+        }
+        begin++;
+        end--;
+    }
+    return true;
+}
+
+char getChar(String w1, String w2, int index) {
+    if(index &lt; w1.length()) {
+        return w1.charAt(index);
+    }
+    else {
+        return w2.charAt(index-w1.length());
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
