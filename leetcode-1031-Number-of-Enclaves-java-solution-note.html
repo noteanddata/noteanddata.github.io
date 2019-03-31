@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1031 Number of Enclaves解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1031 Number of Enclaves解题笔记</h1>
+			</div>
+
+			<p><em>30 March 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1031-number-of-enclaves" id="题目-leetcode-1031-number-of-enclaves">题目 leetcode 1031 Number of Enclaves</a></h2> 
+<p>这个题目描述不太清晰， 比赛的时候看了好几分钟才理解了意思。</p> 
+<ol> 
+ <li>输入一个矩阵， 0表示海水， 1表示陆地</li> 
+ <li>对于每一个陆地来说， 一个合法的move就是上下左右的移动， 并且陆地只能移动到陆地， 或者移动到矩阵外面</li> 
+ <li>问， 总共有多少个陆地是最终不能移出到矩阵外面的？</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<p>已经好久没有在比赛中做出4题了， 今天终于遇上leetcode contest 130的4个题目都相对简单一点， 终于花了1小时略多一点做了4题， 也算鼓励了一下自己。<br> 有几个题目其实也不是特别简单，略有tricky，有个自己开始还想错了， 跑了测试数据才发现有问题， 水平还是不够扎实。</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目的最终意思就是， 有多少个陆地， 是被海水包围的， 也就是没有相连的陆地可以连到四条边的。</li> 
+ <li>标准的dfs可以解， 对于每一个陆地， 进行dfs， 然后用visited[][]辅助去重， 每个dfs返回陆地的数量。</li> 
+ <li>同时， 这里要求判断相连的陆地最终能不能连到边， 这个可以用一个canreach变量， 每次在主循环的时候设置成false， 然后遍历的时候如果遍历到四条边的话， 设置成true， 最后在主循环里面根据这个变量判断是否需要加上这个count。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    private boolean canreach = false;
+    public int numEnclaves(int[][] A) {
+        int total = 0;
+        boolean[][] visited = new boolean[A.length][A[0].length];
+        
+        for(int i = 0; i &lt; A.length; ++i) {
+            for(int j = 0; j &lt; A[i].length; ++j) {
+                canreach = false;
+                int count = dfs(A, i, j, visited);
+                if(!canreach) {
+                    total += count;
+                }
+            }
+        }
+        return total;
+    }
+    
+    private int[][] dirs = {{-1,0}, {1,0}, {0,1}, {0,-1}};
+    int dfs(int[][] A, int x, int y, boolean[][] visited) {
+        if(x &lt; 0 || x &gt;= A.length || y &lt; 0 || y &gt;= A[0].length) return 0;
+        if(visited[x][y] || A[x][y] == 0) return 0;
+        
+        int count = 1;
+        visited[x][y] = true;
+        if(x == 0 || y == 0 || x == A.length-1 || y == A[0].length-1) {
+            canreach = true;
+        }
+        for(int i = 0; i &lt; dirs.length; ++i) {
+            count += dfs(A, x+dirs[i][0], y + dirs[i][1], visited);
+        }
+        return count;
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(M*N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M*N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
