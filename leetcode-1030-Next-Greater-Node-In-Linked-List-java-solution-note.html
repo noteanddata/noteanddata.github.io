@@ -100,7 +100,39 @@ var _hmt = _hmt || [];
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
 <p>O(N)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>O(N)</p></p>
+<p>O(N)</p> 
+<h2><a href="#开始写的一个错误的代码" id="开始写的一个错误的代码">开始写的一个错误的代码</a></h2> 
+<p>开始分析的时候，以为直接保存值就可以了。 这个显然是不对的。<br> 另外前面还写了一个版本是直接保存当前最大值， 但是那样也是不对的， 代码当时没有保存。</p> 
+<pre><code>Input: [2,7,4,3,5]
+Output: [7,5,5,0,0]
+Expected: [7,0,5,5,0]
+
+</code></pre> 
+<pre><code>public int[] nextLargerNodes(ListNode head) {
+  List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+  ListNode node = head;
+  Stack&lt;Integer&gt; stack = new Stack&lt;&gt;();
+  while(node != null) {
+      while(!stack.isEmpty() &amp;&amp; node.val &gt; stack.top()) {
+          list.add(node.val);
+          stack.pop();
+      }
+      stack.push(node.val);
+      node = node.next;
+  }
+
+  while(!stack.isEmpty()) {
+      list.add(0);
+      stack.pop();
+  }
+
+  int[] ret = new int[list.size()];
+  for(int i = 0; i &lt; list.size(); ++i) {
+      ret[i] = list.get(i);
+  }
+  return ret;  
+}
+</code></pre></p>
 	</div>		
 
 <div class="col-sm-4">
