@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>TuSimple(图森科技)面试题--Ordered Faction解题报告</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>TuSimple(图森科技)面试题--Ordered Faction解题报告</h1>
+			</div>
+
+			<p><em>31 March 2019</em></p>
+
+			<p><h2><a href="#tusimple图森科技面试题ordered-fraction" id="tusimple图森科技面试题ordered-fraction">TuSimple(图森科技)面试题–Ordered Fraction</a></h2> 
+<p>输入一个整数N， 要求从小到大返回分母&lt;=N的所有分数</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>首先第一个数肯定数1/N， 然后第二个数有两种可能， 2/N, 或者1/(N-1),</li> 
+ <li>同时，每次选择一个数以后， 后面可能要考虑的数都可以数(a+1)/b, 或者是a(b-1)</li> 
+ <li>比如数字8， 表格大概如下</li> 
+</ol> 
+<pre><code>8 --&gt; 1/8 2/8 3/8 4/8 5/8 6/8 7/8
+      1/7 2/7 3/7 4/7 5/7 6/7
+      1/6 2/6 3/6 4/6 5/6
+      1/5 2/5 3/5 4/5
+      1/4 2/4 3/4
+      1/3 2/3
+      1/2
+</code></pre> 
+<ol> 
+ <li>把所有的数都生成出来排序那样当然效率太低了， 而这个移动过程，都是向右或者向下移动， 所以每次把右边和下面的数都放到一个PriorityQueue里面肯定也可以。<br> 这时候有一个问题，能不能不需要PriorityQueue, 每次只考虑有限的几个数， 得到顺序输出的结果？<br> 这个我认为应该是不可行的， 反证如下， 假设N=100, 那么， 50/100和1/2才相等， 也就是说，第一行有大量的数比第一列的很多个数字要小，同样也比第二列的很多数要小， 那么， 就会存在某一些时刻，当前最小的数是会在很多个不同的列之间来回跳跃的， 这个列数会随着N的变大要变的越来越大。 所以每次需要考虑很多个列上的数才可以找到最小的一个。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>
+import java.util.ArrayList;
+import java.util.List;
+import java.util.PriorityQueue;
+
+public class GetFraction {
+    static class Fraction implements Comparable&lt;Fraction&gt; {
+        private int numerator;
+        private int denominator;
+        public Fraction(int numerator, int denominator) {
+            this.numerator = numerator;
+            this.denominator = denominator;
+        }
+
+        @Override
+        public int compareTo(Fraction o) {
+            double diff = (1.0 * numerator / denominator - 1.0 * o.numerator/ o.denominator);
+            return diff &gt;= 0 ? 1 : -1;
+        }
+
+        public String toString() {
+            return String.valueOf(numerator) + "/" + String.valueOf(denominator);
+        }
+    }
+
+    public List&lt;String&gt; getFractionList(int n) {
+        List&lt;String&gt; list = new ArrayList&lt;&gt;();
+        if(n == 1) {
+            return list;
+        }
+
+
+        PriorityQueue&lt;Fraction&gt; pq = new PriorityQueue&lt;&gt;();
+        pq.add(new Fraction(1, n));
+
+        while(!pq.isEmpty()) {
+            Fraction fraction = pq.poll();
+            list.add(fraction.toString());
+
+            if(fraction.numerator + 1 &lt; fraction.denominator) {
+                pq.add(new Fraction(fraction.numerator+1, fraction.denominator));
+            }
+            if(fraction.numerator &lt; fraction.denominator-1 &amp;&amp; fraction.denominator-1 &gt; 1 ) {
+                pq.add(new Fraction(fraction.numerator, fraction.denominator-1));
+            }
+        }
+
+
+        return list;
+    }
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N<em>N</em>lgN)? 总共的数的个数是N*N/2, 然后PQ数的上限是N个数？？</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)?? PQ最大会是N个？</p> 
+<h2><a href="#测试代码" id="测试代码">测试代码</a></h2> 
+<ol> 
+ <li>这个题目没有找到OJ， 所以自己写了一下测试代码验证一下正确性。</li> 
+ <li>如果去掉验证的部分， 从i=2跑到20， 在我机器上测试花了550ms</li> 
+</ol> 
+<pre><code>@Test
+public void testValidation() throws Exception {
+    GetFraction getFraction = new GetFraction();
+
+    for(int i = 2; i &lt;= 20; ++i) {
+        List&lt;String&gt; fractionList = getFraction.getFractionList(i);
+        for(int j = 1; j &lt; fractionList.size(); ++j) {
+            String prev = fractionList.get(j-1);
+            String cur = fractionList.get(j);
+
+            double dprev = parse(prev);
+            double dcur = parse(cur);
+
+
+            Assert.assertTrue(dprev &lt;= dcur);
+        }
+    }
+
+}
+</code></pre> 
+<h2><a href="#错误版本1当分母减1以后-没有比较和分子的大小" id="错误版本1当分母减1以后-没有比较和分子的大小">错误版本1–当分母减1以后， 没有比较和分子的大小</a></h2> 
+<p>针对n=3， 测试挂了</p> 
+<pre><code>Expected :[1/3, 1/2, 2/3]
+Actual   :[1/3, 2/3, 1/2, 2/2]
+
+</code></pre> 
+<pre><code>import java.util.ArrayList;
+import java.util.List;
+import java.util.PriorityQueue;
+
+public class GetFraction {
+    static class Fraction implements Comparable&lt;Fraction&gt; {
+        private int numerator;
+        private int denominator;
+        public Fraction(int numerator, int denominator) {
+            this.numerator = numerator;
+            this.denominator = denominator;
+        }
+
+        @Override
+        public int compareTo(Fraction o) {
+            return (int)(1.0 * numerator / denominator - 1.0 * o.numerator/ o.denominator);
+        }
+
+        public String toString() {
+            return String.valueOf(numerator) + "/" + String.valueOf(denominator);
+        }
+    }
+
+    public List&lt;String&gt; getFractionList(int n) {
+        List&lt;String&gt; list = new ArrayList&lt;&gt;();
+        if(n == 1) {
+            return list;
+        }
+
+
+        PriorityQueue&lt;Fraction&gt; pq = new PriorityQueue&lt;&gt;();
+        pq.add(new Fraction(1, n));
+
+        while(!pq.isEmpty()) {
+            Fraction fraction = pq.poll();
+            list.add(fraction.toString());
+
+            if(fraction.numerator + 1 &lt; fraction.denominator) {
+                pq.add(new Fraction(fraction.numerator+1, fraction.denominator));
+            }
+            if(fraction.denominator-1 &gt; 1) {
+                pq.add(new Fraction(fraction.numerator, fraction.denominator-1));
+            }
+        }
+
+
+        return list;
+    }
+}
+</code></pre> 
+<h2><a href="#错误版本2比较的时候直接double转化成int就丢失信息了" id="错误版本2比较的时候直接double转化成int就丢失信息了">错误版本2–比较的时候直接double转化成int就丢失信息了</a></h2> 
+<p>针对n=3, 失败的test case如下。 中间两行是System.out.</p> 
+<pre><code>0.5
+1/2, 2/3, diff=0
+
+java.lang.AssertionError: 
+Expected :[1/3, 1/2, 2/3]
+Actual   :[1/3, 2/3, 1/2]
+</code></pre> 
+<pre><code>static class Fraction implements Comparable&lt;Fraction&gt; {
+        private int numerator;
+        private int denominator;
+        public Fraction(int numerator, int denominator) {
+            this.numerator = numerator;
+            this.denominator = denominator;
+        }
+
+        @Override
+        public int compareTo(Fraction o) {
+            int diff =  (int)(1.0 * numerator / denominator - 1.0 * o.numerator/ o.denominator);
+            System.out.println(1.0 * numerator / denominator);
+            System.out.println(this + ", " + o + ", diff=" + diff);
+            return diff;
+        }
+
+        public String toString() {
+            return String.valueOf(numerator) + "/" + String.valueOf(denominator);
+        }
+    }
+
+    public List&lt;String&gt; getFractionList(int n) {
+        List&lt;String&gt; list = new ArrayList&lt;&gt;();
+        if(n == 1) {
+            return list;
+        }
+
+
+        PriorityQueue&lt;Fraction&gt; pq = new PriorityQueue&lt;&gt;();
+        pq.add(new Fraction(1, n));
+
+        while(!pq.isEmpty()) {
+            Fraction fraction = pq.poll();
+            list.add(fraction.toString());
+
+            if(fraction.numerator + 1 &lt; fraction.denominator) {
+                pq.add(new Fraction(fraction.numerator+1, fraction.denominator));
+            }
+            if(fraction.numerator &lt; fraction.denominator-1 &amp;&amp; fraction.denominator-1 &gt; 1 ) {
+                pq.add(new Fraction(fraction.numerator, fraction.denominator-1));
+            }
+        }
+
+
+        return list;
+    }
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
