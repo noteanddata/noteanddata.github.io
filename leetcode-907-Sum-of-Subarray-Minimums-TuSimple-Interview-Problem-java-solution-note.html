@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>TuSimple面试题 Leetcode 907 Sum of Subarray Minimums解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>TuSimple面试题 Leetcode 907 Sum of Subarray Minimums解题笔记</h1>
+			</div>
+
+			<p><em>31 March 2019</em></p>
+
+			<p><h2><a href="#题目-tusimple面试题-leetcode-907-sum-of-subarray-minimums" id="题目-tusimple面试题-leetcode-907-sum-of-subarray-minimums">题目： TuSimple面试题 Leetcode 907 Sum of Subarray Minimums</a></h2> 
+<ol> 
+ <li>输入一个数组， 要求找每个子数组的最小值， 然后把这些最小值加起来求和。 另外，结果对10^9 + 7取余，</li> 
+</ol> 
+<pre><code>Input: [3,1,2,4]
+Output: 17
+Explanation: Subarrays are [3], [1], [2], [4], [3,1], [1,2], [2,4], [3,1,2], [1,2,4], [3,1,2,4]. 
+Minimums are 3, 1, 2, 4, 1, 1, 2, 1, 1, 1.  Sum is 17.
+</code></pre> 
+<ol> 
+ <li>其中:<br> 1 &lt;= A.length &lt;= 30000<br> 1 &lt;= A[i] &lt;= 30000</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这个单调栈(monotone stack)的技巧， 在很多题目中都有很多应用<br> <a href="http://www.noteanddata.com/leetcode-496-Next-Greater-Element-I-java-solution-note.html">http://www.noteanddata.com/leetcode-496-Next-Greater-Element-I-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-1030-Next-Greater-Node-In-Linked-List-java-solution-note.html">http://www.noteanddata.com/leetcode-1030-Next-Greater-Node-In-Linked-List-java-solution-note.html</a></li> 
+ <li>今天看到两个刷leetcode的猛人，<br> <a href="https://leetcode.com/yuxiong/">https://leetcode.com/yuxiong/</a>, 这哥们过去一年提交了8721次，数量惊人，平均每天提交23次， 平均数看起来好像不是很吓人是不是，一天23次很多人也可以做到， 但是毕竟人总有忙的时候，所以数值不是平均的。看记录，这哥们曾经有两次都做到了一天提交133次， 这个就很可怕了。 我放假的时候也有做过全力刷题，但是最多的一天也就提交了45次。 这一天提交133次就非常厉害了。 当然也许有人是习惯不测试，每次都提交， 这可能数量会多一点。<br> 然后这位更恐怖， <a href="https://leetcode.com/huanghao10089/">https://leetcode.com/huanghao10089/</a> 去年8月29号到现在（3月31号）提交了15335次， 一天提交100多次就是家常便饭，最高一天做到了提交176次， 真的是如评论所说very encouraging!</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>如果brute force做O(N^2)的做法，那肯定不符合要求。 考虑是否有O(N)的解， 对于每一个子数组， 最小值可能是其中的每一个， 但是我们从另外一个角度来看， 如果对每一个数，考虑这个数覆盖的前后范围。<br> 对于a[i], 如果找到k&lt;=i&lt;=j, 使得a[i]是a[k]到a[j]中最小的数， 那么， 对于所有开始节点在[k,i], 结束节点是[i,j]的子数组，都会选择a[i]是最小值， 那么就有sum += A[i] * (i-k+1) * (j-i+1)</li> 
+ <li>对于每一个i，要找k和j，就需要用一个单调堆栈， 从左到右和从右到左分别遍历，记录对应到index</li> 
+ <li>这个题目还有一个细节，就是因为计算了两个方向，所以对于数组里面有相同元素的情况下，需要特别考虑一下。 不能重复计算， 也不能漏掉， 具体就是一个方向的时候用&lt;=, 另外一个方向的时候用&lt;。 这个在做的时候也bug了。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int sumSubarrayMins(int[] A) {
+        // for each A[i], find k &lt;= i &lt;= j, so that A[i] is the min from [k,j]
+        // sum += A[i] * (i-k+1) * (j-i+1)
+        // so we need to find the next min to the right and to the left 
+        // 
+        
+        int[] right = new int[A.length]; // next smaller element index to the right 
+        int[] left = new int[A.length];  // next smaller element index to the left
+        
+        Stack&lt;Integer&gt; stack = new Stack&lt;&gt;();
+        for(int i = 0; i &lt; A.length; ++i) {
+            while(!stack.isEmpty() &amp;&amp; A[i] &lt;= A[stack.peek()]) {
+                right[stack.pop()] = i-1;
+            }
+            stack.push(i);
+        }
+        while(!stack.isEmpty()) {
+            right[stack.pop()] = A.length-1;
+        }
+        
+        stack = new Stack();
+        for(int i = A.length-1; i &gt;= 0; --i) {
+            while(!stack.isEmpty() &amp;&amp; A[i] &lt; A[stack.peek()]) {
+                left[stack.pop()] = i+1;
+            }
+            stack.push(i);
+        }
+        while(!stack.isEmpty()) {
+            left[stack.pop()] = 0;
+        }
+                
+        int sum = 0;
+        for(int i = 0; i &lt; A.length; ++i) {
+            int leftsize = i-left[i]+1;
+            int rightsize = right[i] - i + 1;
+            sum = (sum + A[i] * leftsize * rightsize) % 1_000_000_007;
+        }
+        return sum;
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#没有考虑到相同元素的bug代码1" id="没有考虑到相同元素的bug代码1">没有考虑到相同元素的bug代码1</a></h2> 
+<p>比如这里就重复计算了</p> 
+<pre><code>Input: [71,55,82,55]
+Output: 703
+Expected: 593
+</code></pre> 
+<pre><code>class Solution {
+    public int sumSubarrayMins(int[] A) {
+        // for each A[i], find k &lt;= i &lt;= j, so that A[i] is the min from [k,j]
+        // sum += A[i] * (i-k+1) * (j-i+1)
+        // so we need to find the next min to the right and to the left 
+        // 
+        
+        int[] right = new int[A.length]; // next smaller element index to the right 
+        int[] left = new int[A.length];  // next smaller element index to the left
+        
+        Stack&lt;Integer&gt; stack = new Stack&lt;&gt;();
+        for(int i = 0; i &lt; A.length; ++i) {
+            while(!stack.isEmpty() &amp;&amp; A[i] &lt; A[stack.peek()]) {
+                right[stack.pop()] = i-1;
+            }
+            stack.push(i);
+        }
+        while(!stack.isEmpty()) {
+            right[stack.pop()] = A.length-1;
+        }
+        
+        stack = new Stack();
+        for(int i = A.length-1; i &gt;= 0; --i) {
+            while(!stack.isEmpty() &amp;&amp; A[i] &lt; A[stack.peek()]) {
+                left[stack.pop()] = i+1;
+            }
+            stack.push(i);
+        }
+        while(!stack.isEmpty()) {
+            left[stack.pop()] = 0;
+        }
+        
+        int sum = 0;
+        for(int i = 0; i &lt; A.length; ++i) {
+            int leftsize = i-left[i]+1;
+            int rightsize = right[i] - i + 1;
+            sum = (sum + A[i] * leftsize * rightsize) % 1_000_000_007;
+        }
+        return sum;
+    }
+}
+
+</code></pre> 
+<h2><a href="#相同元素处理有bug的代码2" id="相同元素处理有bug的代码2">相同元素处理有bug的代码2</a></h2> 
+<p>如果改成两个都是&lt;=也是不对的</p> 
+<pre><code>Input: [71,55,82,55]
+Output: 483
+Expected: 593
+
+</code></pre> 
+<pre><code>class Solution {
+    public int sumSubarrayMins(int[] A) {
+        // for each A[i], find k &lt;= i &lt;= j, so that A[i] is the min from [k,j]
+        // sum += A[i] * (i-k+1) * (j-i+1)
+        // so we need to find the next min to the right and to the left 
+        // 
+        
+        int[] right = new int[A.length]; // next smaller element index to the right 
+        int[] left = new int[A.length];  // next smaller element index to the left
+        
+        Stack&lt;Integer&gt; stack = new Stack&lt;&gt;();
+        for(int i = 0; i &lt; A.length; ++i) {
+            while(!stack.isEmpty() &amp;&amp; A[i] &lt;= A[stack.peek()]) {
+                right[stack.pop()] = i-1;
+            }
+            stack.push(i);
+        }
+        while(!stack.isEmpty()) {
+            right[stack.pop()] = A.length-1;
+        }
+        
+        stack = new Stack();
+        for(int i = A.length-1; i &gt;= 0; --i) {
+            while(!stack.isEmpty() &amp;&amp; A[i] &lt;= A[stack.peek()]) {
+                left[stack.pop()] = i+1;
+            }
+            stack.push(i);
+        }
+        while(!stack.isEmpty()) {
+            left[stack.pop()] = 0;
+        }
+        
+        // print(left);
+        // print(right);
+        
+        int sum = 0;
+        for(int i = 0; i &lt; A.length; ++i) {
+            int leftsize = i-left[i]+1;
+            int rightsize = right[i] - i + 1;
+            sum = (sum + A[i] * leftsize * rightsize) % 1_000_000_007;
+        }
+        return sum;
+    }
+    void print(int[] arr) {
+        for(int i = 0; i &lt; arr.length; ++i) {
+            System.out.print(arr[i] + " ");
+        }
+        System.out.println();
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
