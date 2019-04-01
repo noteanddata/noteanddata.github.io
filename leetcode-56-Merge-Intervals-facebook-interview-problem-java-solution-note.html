@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>facebook面试题 leetcode 56 Merge Intervals解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>facebook面试题 leetcode 56 Merge Intervals解题笔记</h1>
+			</div>
+
+			<p><em>31 March 2019</em></p>
+
+			<p><h2><a href="#facebook面试题-leetcode-56-merge-intervals" id="facebook面试题-leetcode-56-merge-intervals">facebook面试题 leetcode 56 Merge Intervals</a></h2> 
+<ol> 
+ <li>定义interval=[start, end]</li> 
+ <li>输入interval列表， 然后把互相overlap的interval合并在一起</li> 
+ <li>返回最后的合并好的interval的列表</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本分析过程就是按start排序， 然后就可以把相邻的有overlap的interval合并， 取end最大的就是新的end</li> 
+ <li>但是我看了花神的视频，发现这个过程有一个通用的算法名称解一类问题，叫做扫描线算法, 下次还得专门学习一下这个专题<a href="https://www.youtube.com/watch?v=6tLHjei-f0I">https://www.youtube.com/watch?v=6tLHjei-f0I</a></li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<ol> 
+ <li>下面是我的代码， 我用了一个start/end表示当前的interval， 然后遇到一个新的时候生成一个interval对象</li> 
+ <li>这个记得循环结束的时候</li> 
+</ol> 
+<pre><code>/**
+ * Definition for an interval.
+ * public class Interval {
+ *     int start;
+ *     int end;
+ *     Interval() { start = 0; end = 0; }
+ *     Interval(int s, int e) { start = s; end = e; }
+ * }
+ */
+class Solution {
+     public List&lt;Interval&gt; merge(List&lt;Interval&gt; intervals) {
+        if(intervals.size() &lt;= 1) {
+            return intervals;
+        }
+        intervals.sort((Interval interval1, Interval interval2)-&gt; interval1.start - interval2.start);
+
+        List&lt;Interval&gt; resultList = new ArrayList&lt;&gt;();
+        int start = intervals.get(0).start;
+        int end = intervals.get(0).end;
+        for(int i = 1; i &lt; intervals.size(); ++i) {
+            Interval interval = intervals.get(i);
+            if(end &gt;= interval.start) {
+                end = Math.max(end, interval.end);
+            }
+            else {
+                Interval item = new Interval(start, end);
+                resultList.add(item);
+
+                start = interval.start;
+                end = interval.end;
+            }
+
+        }
+        resultList.add(new Interval(start, end));
+
+        return resultList;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
