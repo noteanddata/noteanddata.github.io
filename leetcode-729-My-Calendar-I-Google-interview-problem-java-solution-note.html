@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Google面试题 Leetcode 729 My Calendar I解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Google面试题 Leetcode 729 My Calendar I解题笔记</h1>
+			</div>
+
+			<p><em>01 April 2019</em></p>
+
+			<p><h2><a href="#题目-google面试题-leetcode-729-my-calendar-i" id="题目-google面试题-leetcode-729-my-calendar-i">题目 Google面试题 Leetcode 729 My Calendar I</a></h2> 
+<ol> 
+ <li>设计一个MyCalendar类， 提供一个函数， 表示对在自己的calendar上某一个时间段预定时间<br> public boolean book(int start, int end)</li> 
+ <li>每次预定成功， 表示start &lt;= x &lt; end的时间被预定了。<br> 同时， 要求时间是不能overlap的。 如果新输入的时间段和之前的时间段有冲突的话，就返回false</li> 
+</ol> 
+<pre><code>MyCalendar();
+MyCalendar.book(10, 20); // returns true
+MyCalendar.book(15, 25); // returns false
+MyCalendar.book(20, 30); // returns true
+Explanation: 
+The first event can be booked.  The second can't because time 15 is already booked by another event.
+The third event can be booked, as the first event takes every time less than 20, but not including 20
+
+</code></pre> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>假设所有的interval已经按照start排序， 那么冲突有两种情况<br> a. 对于新的[start, end), 如果前面一个interval.end &gt; start, 那么就是有冲突<br> b. 对于新的[start, end), 如果后面一个interval.start &lt; end, 那么就是有冲突</li> 
+ <li>所以，可以用TreeMap, 然后用floor和ceiling两个API，就可以找到对应的冲突</li> 
+ <li>因为题目只需要start/end两个信息， 所以不需要单独定义一个类，只要TreeMap&lt;Integer, Integer&gt;就可以了</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class MyCalendar {
+    private TreeMap&lt;Integer, Integer&gt; map;
+    public MyCalendar() {
+        map = new TreeMap&lt;&gt;();
+    }
+    
+    public boolean book(int start, int end) {
+        Map.Entry&lt;Integer, Integer&gt; floorEntry = map.floorEntry(start);
+        if(null != floorEntry &amp;&amp; floorEntry.getValue() &gt; start) { // if floor.end &gt; start
+            return false;
+        }
+        Map.Entry&lt;Integer, Integer&gt; ceilingEntry = map.ceilingEntry(start);
+        if(null != ceilingEntry &amp;&amp; ceilingEntry.getKey() &lt; end) { // if ceiling.start &lt; end
+            return false;
+        }
+        map.put(start, end);
+        return true;
+    }
+}
+
+/**
+ * Your MyCalendar object will be instantiated and called as such:
+ * MyCalendar obj = new MyCalendar();
+ * boolean param_1 = obj.book(start,end);
+ */
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#binary-search的代码" id="binary-search的代码">binary search的代码</a></h2> 
+<p>下面是原来写的binary search的代码， 时间复杂度也是O(lgN)<br> 1. 但是代码非常不简洁, 有太多的if语句判断各种边界情况，<br> 2. 单独定义了Interval类， 如果用treemap的话就没有必要</p> 
+<pre><code>class MyCalendar {
+    
+    static class Interval implements Comparable&lt;Interval&gt;{
+        private int start;
+        private int end;
+        public Interval(int start, int end) {
+            this.start = start;
+            this.end = end;
+        }
+        public int compareTo(Interval other) {
+            int diff = start-other.start;
+            if(diff != 0) {
+                return diff;
+            }
+            return end-other.end;
+        }
+    }
+    
+    private List&lt;Interval&gt; list;
+
+    public MyCalendar() {
+        list = new ArrayList&lt;&gt;();
+    }
+    
+    public boolean book(int start, int end) {    
+        
+        
+        Interval item = new Interval(start, end);
+        if(list.size() == 0) {
+            list.add(item);
+            return true;
+        }
+        int index = Collections.binarySearch(list, item);
+        if(index &gt;= 0) {
+            return false;
+        }
+        index = -index-1;
+        
+        if(index == 0) {
+            if(conflict(item, list.get(0))) {
+                return false;
+            }
+            list.add(0, item);
+            return true;
+        }
+        else {
+            
+            if(conflict(item, list.get(index-1)) ) {
+                return false;
+            }    
+            if(index &lt; list.size() &amp;&amp; conflict(item, list.get(index))) {
+                return false;
+            }
+            
+            list.add(index, item);
+            return true;
+        }
+
+    }
+    
+    boolean conflict(Interval a, Interval b) {
+        if(a.start &gt;= b.end || b.start &gt;= a.end) {
+            return false;
+        }
+        return true;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
