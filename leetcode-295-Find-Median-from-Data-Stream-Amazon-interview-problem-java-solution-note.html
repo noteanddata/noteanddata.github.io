@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Amazon面试题 leetcode 295 Find Median from Data Stream解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Amazon面试题 leetcode 295 Find Median from Data Stream解题笔记</h1>
+			</div>
+
+			<p><em>02 April 2019</em></p>
+
+			<p><h2><a href="#amazon面试题-leetcode-295-find-median-from-data-stream" id="amazon面试题-leetcode-295-find-median-from-data-stream">Amazon面试题 leetcode 295 Find Median from Data Stream</a></h2> 
+<ol> 
+ <li>输入一个数据流， 求这个数据流的中位数median</li> 
+ <li>中位数的意思就是对数据进行排序，如果总数是奇数个，那么就是最中间的数，如果是偶数个，那么就是中间两个数的平均值</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>中位数，就是要想办法把数据分成个数相等的两份（如果是奇数的话就左边的多一个），左边的都比右边的小，<br> 同时，如果左边的是从大到小排序，右边的是从小到大排序，那么偶数情况下中位数就是左边右边各取一个， 奇数情况下就取左边的。</li> 
+ <li>也就是需要两个可以一直插入的排序的数据结果，就可以用堆来完成(PriorityQueue)</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class MedianFinder {
+
+    /** initialize your data structure here. */
+    public MedianFinder() {
+        
+    }
+    PriorityQueue&lt;Integer&gt; min = new PriorityQueue&lt;&gt;();
+    PriorityQueue&lt;Integer&gt; max = new PriorityQueue&lt;Integer&gt;(Collections.reverseOrder());
+
+    public void addNum(int n) {
+        min.add(n);
+        max.add(min.poll());
+        if(min.size() &lt; max.size()) {
+            min.add(max.poll());
+        }
+    }
+
+    public double findMedian() {
+        if(min.size() == max.size()) {
+            return (min.peek() + max.peek())/2.0;
+        }
+        else {
+            return min.peek();
+        }
+    }
+}
+
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder obj = new MedianFinder();
+ * obj.addNum(num);
+ * double param_2 = obj.findMedian();
+ */
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>addNum: O(lgN)<br> findMedian: O(lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#其他思考" id="其他思考">其他思考</a></h2> 
+<ol> 
+ <li>这个题目还有一个用binary search tree的做法， 不过写起来有点繁琐，就没有写了</li> 
+ <li>follow up需要下次再学习</li> 
+ <li>印象中好像有一个题目是数据流里面求某一个值有O(1)解法的？不过想不起来具体是怎么样的题目了</li> 
+</ol></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
