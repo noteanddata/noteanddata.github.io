@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Facebook面试题目 leetcode 23 Merge k Sorted Lists解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Facebook面试题目 leetcode 23 Merge k Sorted Lists解题笔记</h1>
+			</div>
+
+			<p><em>01 April 2019</em></p>
+
+			<p><h2><a href="#facebook面试题目-leetcode-23-merge-k-sorted-lists" id="facebook面试题目-leetcode-23-merge-k-sorted-lists">Facebook面试题目 leetcode 23 Merge k Sorted Lists</a></h2> 
+<p>输入k个已经排序的linked list, 要求合并成一个排序的linked list</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>每个linked list都是已经排序的， 那么，可以从k个list都取第一个，然后在这k个元素里面取最小的， 就是合并后的最小值。<br> 然后取完最小值以后，把这个list里面下一个取出来，仍然在这k个里面取最小的，不断循环。</li> 
+ <li>所以，需要一个不断排序的数据结构，用一个heap(堆)的数据结构，也就是java里面的PriorityQueue就可以</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public ListNode mergeKLists(ListNode[] lists) {
+        PriorityQueue&lt;ListNode&gt; pq = new PriorityQueue&lt;&gt;(new Comparator&lt;ListNode&gt;() {
+            public int compare(ListNode a, ListNode b) {
+                return a.val-b.val;
+            }
+        });
+        ListNode ret = null, cur = null;
+        for(ListNode node: lists) {
+            if(null != node) {
+                pq.add(node);    
+            }
+        }
+        while(!pq.isEmpty()) {
+            ListNode node = pq.poll();
+            if(null == ret) {
+                ret = cur = node;
+            }
+            else {
+                cur = cur.next = node;
+            }
+            if(null != node.next) {
+                pq.add(node.next);    
+            }
+        }
+        return ret;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lgM*N), 其中M是list的个数， N是每个list的平均长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M) M是list的个数</p> 
+<h2><a href="#递归版本的代码" id="递归版本的代码">递归版本的代码</a></h2> 
+<p>下面是以前写的递归版本的代码， 每次把两个list合并。 这个写法效率理论上应该低一些， 但是实际在leetcode上跑反而更快:)</p> 
+<pre><code>/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+     public ListNode mergeKLists(ListNode[] lists) {
+        if(null == lists || 0 == lists.length) {
+            return null;
+        }
+        List&lt;ListNode&gt; listList = new ArrayList&lt;&gt;();
+        for(int i = 0; i &lt; lists.length; ++i) {
+            listList.add(lists[i]);
+        }
+
+        while(listList.size() &gt; 1) {
+            List&lt;ListNode&gt; nList = new ArrayList&lt;&gt;();
+            for(int i = 0; i &lt; listList.size()-1; i += 2) {
+                nList.add(merge2Lists(listList.get(i), listList.get(i+1)));
+            }
+            if(listList.size()%2 == 1) {
+                nList.add(listList.get(listList.size() - 1));
+            }
+            listList = nList;
+        }
+
+
+        return listList.get(0);
+    }
+    
+    public ListNode merge2Lists(ListNode a, ListNode b) {
+        if(a == null) return b;
+        if(b == null) return a;
+        if(a.val &lt;= b.val) {
+            a.next = merge2Lists(a.next, b);
+            return a;
+        }
+        else {
+            b.next = merge2Lists(a, b.next);
+            return b;
+        }
+    }
+
+//     public ListNode merge2Lists(ListNode a, ListNode b) {
+//         ListNode dummy = new ListNode(0);
+//         ListNode node = dummy;
+//         while(a != null &amp;&amp; b != null) {
+//             if(a.val &lt; b.val) {
+//                 node = node.next = a;
+//                 a = a.next;
+//             }
+//             else {
+//                 node = node.next = b;
+//                 b = b.next;
+//             }
+//         }
+//         if(a != null) {
+//             node.next = a;
+//         }
+//         if(b != null) {
+//             node.next = b;
+//         }
+
+//         return dummy.next;
+//     }
+
+  
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
