@@ -247,7 +247,27 @@ public class UnGraphUtilTest {
 }
 
 
-</code></pre></p>
+</code></pre> 
+<h2><a href="#开始写的几个bug" id="开始写的几个bug">开始写的几个bug</a></h2> 
+<ol> 
+ <li>没有初始化edges， 因为java里面不允许创建范型List的数组<br> <a href="https://docs.oracle.com/javase/tutorial/java/generics/restrictions.html#createArrays">https://docs.oracle.com/javase/tutorial/java/generics/restrictions.html#createArrays</a><br> 所以这里用List&lt;List
+  <integer>
+   &gt; 来表示边， 但是这里必须线初始化， 否则后面处理边的时候这个edges就没有初始化
+  </integer></li> 
+</ol> 
+<pre><code>+++ b/src/main/java/classic/graph/undirected/UndirectedGraph.java
+@@ -21,6 +21,9 @@ public class UndirectedGraph {
+         this.vertexCount = vertexCount;
+         this.edgeCount = 0;
+         this.edges = new ArrayList&lt;&gt;();
++        for(int i = 0; i &lt; vertexCount; ++i) {
++            this.edges.add(new LinkedList&lt;&gt;());
++        }
+     }
+</code></pre> 
+<ol> 
+ <li></li> 
+</ol></p>
 	</div>		
 
 <div class="col-sm-4">
