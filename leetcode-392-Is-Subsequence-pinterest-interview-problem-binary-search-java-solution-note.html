@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Pinterest面试题 leetcode 392 Is Subsequence二分搜索解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Pinterest面试题 leetcode 392 Is Subsequence二分搜索解题笔记</h1>
+			</div>
+
+			<p><em>07 April 2019</em></p>
+
+			<p><h2><a href="#pinterest面试题目-leetcode-392-is-subsequence" id="pinterest面试题目-leetcode-392-is-subsequence">Pinterest面试题目 leetcode 392 Is Subsequence</a></h2> 
+<p>题目解析和brute force（其实是贪心的思路）解法在这里<a href="http://www.noteanddata.com/leetcode-392-Is-Subsequence-java-solution-note.html">http://www.noteanddata.com/leetcode-392-Is-Subsequence-java-solution-note.html</a></p> 
+<h2><a href="#二分搜索的解题思路分析" id="二分搜索的解题思路分析">二分搜索的解题思路分析</a></h2> 
+<ol> 
+ <li>二分搜索的主要目的一是降低时间复杂度，但是实际上单次跑的话会更慢，二是为了follow up，就是针对同一个t要查询很多个s</li> 
+ <li>基本思路是对t做预处理，把每个字符的index先存储起来，然后针对s里面的每个字符，从第一个开始，找到index以后，下次找对应的字符是要从前面找到的index+1开始搜索， 就是必须找后面是否还有这个char</li> 
+ <li>下面是一个具体的例子</li> 
+</ol> 
+<pre><code>s="acb"
+t="ahbgdc"
+
+map={a=[0], b=[2], c=[5], d=[4], g=[3], h=[1]}
+ch=a, j=0, prev=0
+ch=c, j=0, prev=1
+ch=b, j=1, prev=6
+
+</code></pre> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public boolean isSubsequence(String s, String t) {
+    Map&lt;Character, List&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;();
+    for(int i = 0; i &lt; t.length(); ++i) {
+        char ch = t.charAt(i);
+        List&lt;Integer&gt; list = map.get(ch);
+        if(null == list) {
+            list = new ArrayList&lt;&gt;();
+            map.put(ch, list);
+        }
+        list.add(i);
+    }
+    
+    int prev = 0;
+    for(int i = 0; i &lt; s.length(); ++i) {
+        char ch = s.charAt(i);
+        List&lt;Integer&gt; list = map.get(ch);
+        if(null == list) {
+            return false;
+        }
+        int j = Collections.binarySearch(list, prev);
+        if(j &lt; 0) {
+            j = -j-1;
+        }
+        if(j == list.size()) {
+            return false;
+        }
+        prev = list.get(j)+1;
+    }
+    return true;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*lgM) N是s的长度， M是t的长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M) 建立一个M大小的map</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
