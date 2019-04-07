@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1021 Remove Outermost Parentheses解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1021 Remove Outermost Parentheses解题笔记</h1>
+			</div>
+
+			<p><em>06 April 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1021-remove-outermost-parentheses" id="题目-leetcode-1021-remove-outermost-parentheses">题目 leetcode 1021 Remove Outermost Parentheses</a></h2> 
+<ol> 
+ <li>这个题目考虑的字符串里面只有左括号"(“和右括号”)"</li> 
+ <li>定义一个字符串是valid的情况有三种<br> a. 空字符串是valid的<br> b. (s), 如果s是valid的<br> c. a+b, 如果a和b是valid的</li> 
+ <li>定义一个字符串是primitive的意思是这个字符串不能被分成a+b</li> 
+ <li>输入一个字符串S，把这个字符串分解成S = P_1 + P_2 + … + P_k, 其中每个字符串P_i都是一个primitive的， 然后把每个P_i的最外层的左括号和右括号去掉， 然后求处理后的字符串</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>一个字符串如果可以被分成a+b, 那么， a和b都是valid的， 那么， a就是自闭合的</li> 
+ <li>如果P_i是primitive的， 那么， P_i就是自闭合的最小的完整字符串，所以，只要从左到右扫描，找到最小的完整的匹配的字符串，就是一个primitive</li> 
+ <li>所以，每次计数一下当前没有被匹配的括号，遇到0的时候就处理一下就好</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public String removeOuterParentheses(String S) {
+        int count = 0;
+        int last = 0;
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i &lt; S.length(); ++i) {
+            if(S.charAt(i) == '(') {
+                count++;
+            }
+            else {
+                count--;
+                if(count == 0) {
+                    sb.append(S.substring(last+1, i));
+                    last = i + 1;
+                }
+            }
+        }
+        return sb.toString();
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
