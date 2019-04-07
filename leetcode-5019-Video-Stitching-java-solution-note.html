@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 5019 Video Stitching解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 5019 Video Stitching解题笔记</h1>
+			</div>
+
+			<p><em>06 April 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-5019-video-stitching" id="题目-leetcode-5019-video-stitching">题目 leetcode 5019 Video Stitching</a></h2> 
+<ol> 
+ <li>输入一个二维数组clips, clips[i][0]表示一个视频片段的开始时间（以秒计算)，<br> clips[i][1]表示一个视频片段的结束时间（以秒计算)，<br> 然后输入一个时间T， 问最少需要多少个片段可以把所有从0到T的所有时间都拼接起来？ 假设对每个片段可以任意剪辑</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>首先可以对clips按照开始时间排序， 然后对于第一个，一定需要找一个开始时间是0的，否则就不能符合要求；<br> 然后，对于开始时间都是0的，一定是需要找end最大的才最划算；</li> 
+ <li>找到一个curend以后， 那么就在所有start&lt;= curend里面找， 这时候同样也可以用贪心的思想，在这些里面选择end最大的最划算；</li> 
+ <li>循环直到找到curend&gt;=T</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>
+class Solution {
+      public int videoStitching(int[][] clips, int T) {
+          Arrays.sort(clips, new Comparator&lt;int[]&gt;() {
+              public int compare(int[] a, int[] b) {
+                  return a[0]-b[0];
+              }
+          });    
+          int count = 0;
+          int curend = 0;
+          int laststart = -1;
+          
+          for(int i = 0; i &lt; clips.length; ) {
+              if(clips[i][0] &gt; curend) {
+                  return -1;
+              }
+              int maxend = curend;
+              while(i &lt; clips.length &amp;&amp; clips[i][0] &lt;= curend) { // while one clip's start is before or equal to current end
+                  maxend = Math.max(maxend, clips[i][1]); // find out the one with the max possible end
+                  i++;
+              }
+              count++;
+              curend = maxend;
+              if(curend &gt;= T) {
+                  return count;    
+              }
+          }
+          return -1;        
+      }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>主要是排序 O(N*lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#开始写的一个bug版本的代码" id="开始写的一个bug版本的代码">开始写的一个bug版本的代码</a></h2> 
+<p>没有在循环中对不能到达的节点做判断，导致不能到达的节点会死循环</p> 
+<pre><code>class Solution {
+    public int videoStitching(int[][] clips, int T) {
+        
+        Arrays.sort(clips, new Comparator&lt;int[]&gt;() {
+            public int compare(int[] a, int[] b) {
+                if(a[0] != b[0]) {
+                    return a[0]-b[0];
+                }    
+                return b[1]-a[1];
+            }
+        });    
+        int count = 0;
+        int curend = 0;
+        int laststart = -1;
+        
+        for(int i = 0; i &lt; clips.length; ) {
+            int maxend = curend;
+            while(i &lt; clips.length &amp;&amp; clips[i][0] &lt;= curend) { // while one clip's start is before or equal to current end
+                maxend = Math.max(maxend, clips[i][1]); // find out the one with the max possible end
+                i++;
+            }
+            count++;
+            curend = maxend;
+            if(curend &gt;= T) {
+                return count;    
+            }
+        }
+        return -1;        
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>

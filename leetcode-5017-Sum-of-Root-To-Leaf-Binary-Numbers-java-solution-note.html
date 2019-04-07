@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 5017 Sum of Root To Leaf Binary Numbers解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 5017 Sum of Root To Leaf Binary Numbers解题笔记</h1>
+			</div>
+
+			<p><em>06 April 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-5017-sum-of-root-to-leaf-binary-numbers" id="题目-leetcode-5017-sum-of-root-to-leaf-binary-numbers">题目 leetcode 5017 Sum of Root To Leaf Binary Numbers</a></h2> 
+<ol> 
+ <li>输入一个二叉树, 每个节点的值是0或者1， 每条从根节点到叶节点的路径代表一个二进制数</li> 
+ <li>求所有根节点到叶节点的数的和， 并对1_000_000_007取余</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>直接dfs可以求解，从根节点向下把值传过去，然后每次都把值乘以2就好</li> 
+ <li>可惜这个题目我写的第一个版本还是错了， 主要是对叶节点的处理不对， 在叶节点的时候就应该直接返回当前值<br> 另外，如果一个节点只有一个子节点，也只能计算这个子节点方向上的值，另外的方向上由于他自己不是叶节点，不能算值。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public int sumRootToLeaf(TreeNode root) {
+        return dfs(0, root);
+    }
+    private int mod = 1_000_000_007;
+    public int dfs(int parent, TreeNode node) {
+        if(null == node) {
+            return parent%mod;
+        }
+        int value = (parent * 2 + node.val)%mod;
+        if(node.left == null &amp;&amp; node.right == null) {
+            return value%mod;
+        }
+        int sum = 0;
+        if(null != node.left) {
+            sum += dfs(value, node.left);
+        }
+        if(null != node.right) {
+            sum += dfs(value, node.right);
+        }
+        return sum%mod;
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>所有节点都只遍历一次 O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#前面写的一个错误的代码" id="前面写的一个错误的代码">前面写的一个错误的代码</a></h2> 
+<p>这样到叶节点时候，每个值被计算了两次</p> 
+<pre><code>public int sumRootToLeaf(TreeNode root) {
+    return dfs(0, root);
+}
+private int mod = 1_000_000_007;
+public int dfs(int parent, TreeNode node) {
+    if(null == node) {
+        return parent%mod;
+    }
+    int value = (parent * 2 + node.val)%mod;
+    return (dfs(value, node.left) + dfs(value, node.right))%mod;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>

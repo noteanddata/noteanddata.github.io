@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 5018 Camelcase Matching解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 5018 Camelcase Matching解题笔记</h1>
+			</div>
+
+			<p><em>06 April 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-5018-camelcase-matching" id="题目-leetcode-5018-camelcase-matching">题目 leetcode 5018 Camelcase Matching</a></h2> 
+<ol> 
+ <li>输入一组查询字符串和一个pattern， 对于每一个查询字符串，其中的小写字母可以忽略，问忽略以后和pattern是否能够匹配？</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>经典的动态规划， 对于中间的字符<br> dp[i+1][j+1] = true有两种情况<br> – query.charAt(i) == pattern.charAt(j) &amp;&amp; dp[i][j]<br> 这个就是说两个字符相等，并且前面的也可以匹配</li> 
+</ol> 
+<p>– Character.isLowerCase(query.charAt(i)) &amp;&amp; dp[i][j+1]<br> 这个就是说query的字符是小写字母，那就跳过; 只要query的前面一位和当前位可以匹配</p> 
+<ol> 
+ <li>边界条件（这里我第一次写的时候也写漏了，实在不应该)<br> – dp[0][0] = true<br> – dp[i+1][0] = Character.isLowerCase(query.charAt(i)) &amp;&amp; dp[i][0]<br> 就是说如果当前字符是小写字母，并且前面的也匹配上的话，那么也是匹配上的，相当于忽略query前面所有的小写字母</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public List&lt;Boolean&gt; camelMatch(String[] queries, String pattern) {
+        List&lt;Boolean&gt; list = new ArrayList&lt;&gt;();
+        for(String query: queries) {
+            list.add(match(query, pattern));
+        }
+        return list;
+    }
+    boolean match(String query, String pattern) {
+        boolean[][] dp = new boolean[query.length()+1][pattern.length()+1];
+        dp[0][0] = true;
+        for(int i = 0; i &lt; query.length(); ++i) {
+            if(Character.isLowerCase(query.charAt(i)) &amp;&amp; dp[i][0]) {
+               dp[i+1][0] = true;
+            }
+               
+            for(int j = 0; j &lt; pattern.length(); ++j) {
+                if(query.charAt(i) == pattern.charAt(j) &amp;&amp; dp[i][j]) {
+                    dp[i+1][j+1] = true;
+                }
+                else if(Character.isLowerCase(query.charAt(i)) &amp;&amp; dp[i][j+1]) {
+                    dp[i+1][j+1] = true;
+                }
+            }
+        }
+        return dp[query.length()][pattern.length()];
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N<em>M</em>k), 其中N是queries的长度， M是pattern的长度， k是queries里面每个字符串的平均长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M*k)</p> 
+<h2><a href="#前面写的一个错误版本" id="前面写的一个错误版本">前面写的一个错误版本</a></h2> 
+<p>针对query的第一个字符是小写字母的边界条件没有判断，导致后序dp的时候不能处理到</p> 
+<pre><code>class Solution {
+    public List&lt;Boolean&gt; camelMatch(String[] queries, String pattern) {
+        List&lt;Boolean&gt; list = new ArrayList&lt;&gt;();
+        for(String query: queries) {
+            list.add(match(query, pattern));
+        }
+        return list;
+    }
+    boolean match(String query, String pattern) {
+        boolean[][] dp = new boolean[query.length()+1][pattern.length()+1];
+        dp[0][0] = true;
+        for(int i = 0; i &lt; query.length(); ++i) {
+            for(int j = 0; j &lt; pattern.length(); ++j) {
+                if(query.charAt(i) == pattern.charAt(j) &amp;&amp; dp[i][j]) {
+                    dp[i+1][j+1] = true;
+                }
+                else if(Character.isLowerCase(query.charAt(i)) &amp;&amp; dp[i][j+1]) {
+                    dp[i+1][j+1] = true;
+                }
+            }
+        }
+        return dp[query.length()][pattern.length()];
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
