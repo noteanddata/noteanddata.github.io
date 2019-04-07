@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Amazon面试题目leetcode 90 Subsets II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Amazon面试题目leetcode 90 Subsets II解题笔记</h1>
+			</div>
+
+			<p><em>07 April 2019</em></p>
+
+			<p><h2><a href="#amazon面试题目leetcode-90-subsets-ii" id="amazon面试题目leetcode-90-subsets-ii">Amazon面试题目leetcode 90 Subsets II</a></h2> 
+<ol> 
+ <li>输入一个数字数组，里面有可能有重复的, 问总共有那些subset</li> 
+ <li>前面leetcode 78求subset是输入没有重复<br> <a href="http://www.noteanddata.com/leetcode-78-Subsets-facebook-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-78-Subsets-facebook-interview-problem-java-solution-note.html</a></li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>基本功还是很不扎实， 这个题目写错了好多个版本，调试了很久</li> 
+ <li>这里写的做法其实不是最好的，对于组合问题，看了下感觉一直以来用的模版还是不太合理，下次换一个模版</li> 
+ <li>另外这里去重的做法也比较暴力，直接用了一个set来去重，其实不太合理</li> 
+ <li>总之这个组合题还是要多练习， 然后还可以练习非递归版本的写法</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>主要过程仍然是在n个数里面选k个数的组合模版， 然后对k从0到n进行循环</li> 
+ <li>组合的循环模版是如下， 然后在递归的地方判断list的个数是否到k就加入<br> 这里需要注意的是组合的话，每次加入的都是nums[i], 下次也是从i+1开始递归</li> 
+</ol> 
+<pre><code>for(int i = from; i &lt; nums.length; ++i) {
+    list.add(nums[i]);
+    backtrack(nums, i+1, count, list, allList);
+    list.remove(list.size()-1);
+}
+
+</code></pre> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; subsetsWithDup(int[] nums) {
+    Arrays.sort(nums);
+    Set&lt;List&lt;Integer&gt;&gt; allList = new HashSet&lt;&gt;();
+    for(int i = 0; i &lt;= nums.length; ++i) {
+        backtrack(nums, 0, i, new ArrayList&lt;&gt;(), allList);    
+    }
+    
+    return new ArrayList&lt;&gt;(allList);
+}
+
+public void backtrack(int[] nums, int from, int count, List&lt;Integer&gt; list, Set&lt;List&lt;Integer&gt;&gt; allList) {
+    if(list.size() == count) {
+        allList.add(new ArrayList&lt;&gt;(list));
+        return;
+    }
+    for(int i = from; i &lt; nums.length; ++i) {
+        list.add(nums[i]);
+        backtrack(nums, i+1, count, list, allList);
+        list.remove(list.size()-1);
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<ol> 
+ <li>下面是错误的一个版本， 和正确的版本相比， 没有在开头对数组进行排序，</li> 
+ <li>这个是fail的test case</li> 
+ <li>主要问题在于， 这里求的是subset， 所以对于[4,4,4,1,4]这个输入来说, [4,1,4]和[4,4,1]是一样的，不需要选两次。</li> 
+</ol> 
+<pre><code>Input: [4,4,4,1,4]
+Output: [[1],[4,4,1],[],[4,4],[4],[4,4,4],[1,4],[4,1,4],[4,4,4,1,4],[4,4,1,4],[4,4,4,4],[4,4,4,1],[4,1]]
+Expected: [[],[1],[1,4],[1,4,4],[1,4,4,4],[1,4,4,4,4],[4],[4,4],[4,4,4],[4,4,4,4]]
+
+</code></pre> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; subsetsWithDup(int[] nums) {
+    Set&lt;List&lt;Integer&gt;&gt; allList = new HashSet&lt;&gt;();
+    for(int i = 0; i &lt;= nums.length; ++i) {
+        backtrack(nums, 0, i, new ArrayList&lt;&gt;(), allList);    
+    }
+    
+    return new ArrayList&lt;&gt;(allList);
+}
+
+public void backtrack(int[] nums, int from, int count, List&lt;Integer&gt; list, Set&lt;List&lt;Integer&gt;&gt; allList) {
+    if(list.size() == count) {
+        allList.add(new ArrayList&lt;&gt;(list));
+        return;
+    }
+    for(int i = from; i &lt; nums.length; ++i) {
+        list.add(nums[i]);
+        backtrack(nums, i+1, count, list, allList);
+        list.remove(list.size()-1);
+    }
+}
+
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>这里的错误是在于递归的时候，没有从i+1开始递归，而是从from+1开始递归</p> 
+<pre><code>
+Input: [1,2,2]
+Output: [[1],[1,2,2],[],[2],[2,2],[2,2,2],[1,2]]
+Expected: [[],[1],[1,2],[1,2,2],[2],[2,2]]
+
+
+</code></pre> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; subsetsWithDup(int[] nums) {
+    Set&lt;List&lt;Integer&gt;&gt; allList = new HashSet&lt;&gt;();
+    for(int i = 0; i &lt;= nums.length; ++i) {
+        backtrack(nums, 0, i, new ArrayList&lt;&gt;(), allList);    
+    }
+    
+    return new ArrayList&lt;&gt;(allList);
+}
+
+public void backtrack(int[] nums, int from, int count, List&lt;Integer&gt; list, Set&lt;List&lt;Integer&gt;&gt; allList) {
+    if(list.size() == count) {
+        allList.add(new ArrayList&lt;&gt;(list));
+        return;
+    }
+    for(int i = from; i &lt; nums.length; ++i) {
+        list.add(nums[i]);
+        backtrack(nums, from+1, count, list, allList);
+        list.remove(list.size()-1);
+    }
+}
+
+
+</code></pre> 
+<h2><a href="#错误代码3" id="错误代码3">错误代码3</a></h2> 
+<p>这个就完全写错了，添加的元素也是不对的，递归的入口也是不对的。。。。各种错。。。</p> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; subsetsWithDup(int[] nums) {
+    Set&lt;List&lt;Integer&gt;&gt; allList = new HashSet&lt;&gt;();
+    backtrack(nums, 0, new ArrayList&lt;&gt;(), allList);
+    return new ArrayList&lt;&gt;(allList);
+}
+
+public void backtrack(int[] nums, int from, List&lt;Integer&gt; list, Set&lt;List&lt;Integer&gt;&gt; allList) {
+    if(from == nums.length) {
+        allList.add(new ArrayList&lt;&gt;(list));
+        return;
+    }
+    for(int i = from; i &lt; nums.length; ++i) {
+        list.add(nums[from]);
+        backtrack(nums, from+1, list, allList);
+        list.remove(list.size()-1);
+        backtrack(nums, from+1, list, allList);
+    }
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
