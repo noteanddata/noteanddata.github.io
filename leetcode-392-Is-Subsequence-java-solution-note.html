@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Pinterest面试题 leetcode 392 Is Subsequence解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Pinterest面试题 leetcode 392 Is Subsequence解题笔记</h1>
+			</div>
+
+			<p><em>07 April 2019</em></p>
+
+			<p><h2><a href="#pinterest面试题-leetcode-392-is-subsequence" id="pinterest面试题-leetcode-392-is-subsequence">Pinterest面试题 leetcode 392 Is Subsequence</a></h2> 
+<p>输入两个字符串s和t，判断字符串s是否是t的Subsequence;</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目可以brute force过， 但是清晰正确的理解这个brute force也是非常重要！<br> 假如 s = “abc”, t = “kahbgdc”<br> a. 用两个指针i和j分别指向s和t的开头，如果对应的字符一样的话，那么两个指针就可以向前移动一步，因为问题就转化成<br> s.substring(i+1)是否是t.substring(j+1)的subsequence了。<br> 因为如果s的指针不移动，那么问题就是s是否是t.substring(j+1)的subsequence了， 而这个时候如果成立的话， 那么s.substring(i+1)是否是t.substring(j+1)的subsequence也一定成立. 所以， 在这一步做贪心的选择一定是最优的。<br> b. 如果对应字符不一样，那么肯定需要移动j</li> 
+</ol> 
+<h2><a href="#java题解报告" id="java题解报告">java题解报告</a></h2> 
+<pre><code>public boolean isSubsequence(String s, String t) {
+    if(s.length() == 0) return true;
+    for(int i = 0, j = 0; j &lt; t.length();) {
+        if(s.charAt(i) == t.charAt(j)) {
+            i++;
+            j++;
+            if(i == s.length()) {
+                return true;
+            }
+        }
+        else {
+            j++;
+        }
+    }
+    return false;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(M+N) 相对于最多需要遍历两个字符串的长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#其他感想" id="其他感想">其他感想</a></h2> 
+<ol> 
+ <li>这个题目还有dp的做法， binary search的做法，</li> 
+ <li>还有followup， 就是固定t， 但是会有大量的s需要查询是否是t的subsequence, 如何能够提高速度？</li> 
+ <li>我看到有人说如果是subsequence的话，大部分情况下可以用贪心？而substring的话，则很多时候需要dp？<br> 这个逻辑，一时还没有想清楚。 但是有一点，什么时候用贪心，什么时候用dp，为什么必须要dp，是应该好好总结搞清楚的，这样才可以应对大部分题目和新题。<br> 另外，还有一些情况下可以用二分，也是要好好理解的。</li> 
+</ol></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
