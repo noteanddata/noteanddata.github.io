@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>TuSimple(图森科技)面试题--Minimal Move解题报告</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>TuSimple(图森科技)面试题--Minimal Move解题报告</h1>
+			</div>
+
+			<p><em>08 April 2019</em></p>
+
+			<p><h2><a href="#tusimple图森科技面试题minimal-move" id="tusimple图森科技面试题minimal-move">TuSimple(图森科技)面试题–Minimal Move</a></h2> 
+<ol> 
+ <li>输入一个4*4的矩阵，里面有’X’, ‘Y’, ‘O’,</li> 
+ <li>定义最终状态是在一行，一列，或者一个对角线上全部都是’X’或者’Y’，就是最终状态</li> 
+ <li>每一步’X’和’Y’可以移动到相邻的’O’</li> 
+ <li>问，最少通过多少个步骤可以到最终状态</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>在这个图的遍历中，只能通过BFS来遍历。 如果DFS遍历的话，那么会陷入巨大的深度中， 而且去重也不好做， BFS可以走到最小的步骤</li> 
+ <li>我这个实现是假设每次随便X或者Y都可以走的， 如果每次必须要轮流来， 那还得考虑上一个步骤是谁走的</li> 
+ <li>这里实现的去重是把棋盘状态序列化成一个字符串了， 然后每次生成新的矩阵也是拷贝了一份二维数组，整体上效率不是很高；<br> 后面可以考虑再优化一下</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>package com.noteanddata.interviewproblem.tusimple;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Set;
+
+public class MinimalMoveToWin {
+
+
+    /**
+     * board[i][j]
+     * if 'O':  empty
+     * if 'X':
+     * if 'Y':
+     * if there is a row or col or diagonal has all 'X' or all 'Y', then it's a win
+     *
+     * a move is moving 'X' or 'Y' from current position to 'O'
+     *
+     * @param board: it's a 4*4 board
+     * @return
+     */
+    public int minimalMoveToWin(char[][] board) {
+        if(valid(board)) {
+            return 0;
+        }
+
+        Queue&lt;char[][]&gt; queue = new LinkedList&lt;&gt;();
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        String key = buildKey(board);
+        queue.add(board);
+
+        int[][] dirs = {{-1,0}, {1,0}, {0,1}, {0,-1}};
+
+        visited.add(key);
+        int steps = 0;
+        while(!queue.isEmpty()) {
+            Queue&lt;char[][]&gt; nextQueue = new LinkedList&lt;&gt;();
+
+            while(!queue.isEmpty()) {
+                char[][] cur = queue.poll();
+                if (valid(cur)) {
+                    return steps;
+                }
+                for (int i = 0; i &lt; cur.length; ++i) {
+                    for (int j = 0; j &lt; cur[i].length; ++j) {
+                        if (cur[i][j] == 'X' || cur[i][j] == 'Y') {
+                            for (int k = 0; k &lt; dirs.length; ++k) {
+                                int nextx = i + dirs[k][0];
+                                int nexty = j + dirs[k][1];
+                                if (nextx &lt; 0 || nextx &gt;= cur.length || nexty &lt; 0 || nexty &gt;= cur[i].length) {
+                                    continue;
+                                }
+                                if (cur[nextx][nexty] != 'O') {
+                                    continue;
+                                }
+                                char[][] next = swapcopy(cur, i, j, nextx, nexty);
+                                String nextkey = buildKey(next);
+                                if (!visited.contains(nextkey)) {
+                                    nextQueue.offer(next);
+                                    visited.add(nextkey);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            steps++;
+            queue = nextQueue;
+        }
+
+        return -1; // temp
+
+    }
+
+    char[][] swapcopy(char[][] board, int x1, int y1, int x2, int y2) {
+        char[][] copy = new char[board.length][board[0].length];
+        for(int i = 0; i &lt; copy.length; ++i) {
+            copy[i] = Arrays.copyOf(board[i], board[0].length);
+        }
+        copy[x1][y1] = board[x2][y2];
+        copy[x2][y2] = board[x1][y1];
+        return copy;
+    }
+
+    private int[][] dirs = {{-1, 0}, {1,0}, {0, 1}, {0, -1}};
+
+    void swap(char[][] board, int x1, int y1, int x2, int y2) {
+        char t = board[x1][y1];
+        board[x1][y1] = board[x2][y2];
+        board[x2][y2] = t;
+    }
+
+    boolean valid(char[][] board) {
+        // since it's 4 * 4, so check row and col together
+        // 1. check row
+        // 2. check col
+        for(int i = 0; i &lt; board.length; ++i) {
+            char rowfirst = board[i][0];
+            char colfirst = board[0][i];
+            boolean rowvalid = rowfirst == 'X' || rowfirst == 'Y';
+            boolean colvalid = colfirst == 'X' || colfirst == 'Y';
+            for(int j = 1; j &lt; board[i].length; ++j) {
+                if(board[i][j] != rowfirst) {
+                    rowvalid = false;
+                }
+                if(board[j][i] != colfirst) {
+                    colvalid = false;
+                }
+            }
+            if(rowvalid || colvalid) {
+                return true;
+            }
+        }
+
+
+        // 3. check diagonal
+        char leftup = board[0][0];
+        boolean valid = leftup == 'X' || leftup == 'Y';
+        for(int i = 1; i &lt; board.length; ++i) {
+            if(board[i][i] != leftup) {
+                valid = false;
+                break;
+            }
+        }
+        if(valid) return true;
+        char rightup = board[0][board[0].length-1];
+        valid = rightup == 'X' || rightup == 'Y';
+        for(int i = 1; i &lt; board.length; ++i) {
+            if(board[i][board.length-1-i] != rightup) {
+                valid = false;
+                break;
+            }
+        }
+        return valid;
+    }
+
+    String buildKey(char[][] board) {
+        StringBuilder sb = new StringBuilder();
+        for(char[] row : board) {
+            sb.append(new String(row));
+        }
+        return sb.toString();
+    }
+
+    void printKey(String key) {
+        int last = 0;
+        for(int i = 4; i &lt;= key.length(); i+=4) {
+            System.out.println(key.substring(last, i));
+            last = i;
+        }
+        System.out.println();
+    }
+}
+
+
+</code></pre> 
+<h2><a href="#java测试代码" id="java测试代码">java测试代码</a></h2> 
+<p>下面是我自己写的一些测试数据，并不是很多，但是感觉上代码应该是已经可以了</p> 
+<pre><code>package com.noteanddata.interviewproblem.tusimple;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class MinimalMoveToWinTest {
+
+    static class TestCase {
+        char[][] board;
+        int minMove;
+        public TestCase(char[][] board, int minMove) {
+            this.board = board;
+            this.minMove = minMove;
+        }
+    }
+
+    public List&lt;TestCase&gt; createTestCases() {
+        List&lt;TestCase&gt; list = new ArrayList&lt;&gt;();
+        {
+            char[][] board = {
+                    {'X','X','X','X'},
+                    {'X','X','X','X'},
+                    {'X','X','X','X'},
+                    {'X','X','X','X'}
+            };
+            list.add(new TestCase(board, 0));
+        }
+        {
+            char[][] board = {
+                    {'X','X','X','X'},
+                    {'O','O','O','O'},
+                    {'O','O','O','O'},
+                    {'O','O','O','O'},
+            };
+            list.add(new TestCase(board, 0));
+        }
+        {
+            char[][] board = {
+                    {'Y','Y','Y','Y'},
+                    {'O','O','O','O'},
+                    {'O','O','O','O'},
+                    {'O','O','O','O'},
+            };
+            list.add(new TestCase(board, 0));
+        }
+
+        {
+            char[][] board = {
+                    {'X','O','O','O'},
+                    {'X','O','O','O'},
+                    {'X','O','O','O'},
+                    {'X','O','O','O'},
+            };
+            list.add(new TestCase(board, 0));
+        }
+
+        {
+            char[][] board = {
+                    {'O','O','O','Y'},
+                    {'X','O','O','Y'},
+                    {'X','O','O','Y'},
+                    {'X','O','O','Y'},
+            };
+            list.add(new TestCase(board, 0));
+        }
+        {
+            char[][] board = {
+                    {'Y','O','O','Y'},
+                    {'X','Y','O','Y'},
+                    {'X','O','Y','O'},
+                    {'X','O','O','Y'},
+            };
+            list.add(new TestCase(board, 0));
+        }
+
+        {
+            char[][] board = {
+                    {'Y','O','O','X'},
+                    {'X','Y','X','Y'},
+                    {'X','X','O','O'},
+                    {'X','O','O','Y'},
+            };
+            list.add(new TestCase(board, 0));
+        }
+        {
+            char[][] board = {
+                    {'X','X','O','X'},
+                    {'O','O','X','O'},
+                    {'O','O','O','O'},
+                    {'O','O','O','O'},
+            };
+            list.add(new TestCase(board, 1));
+        }
+
+
+        {
+            char[][] board = {
+                    {'Y','O','X','X'},
+                    {'X','Y','O','Y'},
+                    {'X','X','O','O'},
+                    {'X','O','O','Y'},
+            };
+            list.add(new TestCase(board, 1));
+        }
+
+        {
+            char[][] board = {
+                    {'X','O','O','X'},
+                    {'O','X','X','O'},
+                    {'O','O','O','O'},
+                    {'O','O','O','O'},
+            };
+            list.add(new TestCase(board, 2));
+        }
+
+        {
+            char[][] board = {
+                    {'X','O','O','X'},
+                    {'O','X','O','O'},
+                    {'O','O','X','O'},
+                    {'O','O','O','O'},
+            };
+            list.add(new TestCase(board, 3));
+        }
+
+        {
+            char[][] board = {
+                    {'X','X','O','X'},
+                    {'O','X','O','O'},
+                    {'O','O','O','O'},
+                    {'O','O','O','O'},
+            };
+            list.add(new TestCase(board, 2));
+        }
+
+        {
+            char[][] board = {
+                    {'X','X','O','X'},
+                    {'O','O','O','O'},
+                    {'O','O','O','O'},
+                    {'O','X','O','O'},
+            };
+            list.add(new TestCase(board, 4));
+        }
+
+        {
+            char[][] board = {
+                    {'X','X','O','O'},
+                    {'O','O','O','O'},
+                    {'O','O','O','O'},
+                    {'O','X','O','X'},
+            };
+            list.add(new TestCase(board, 3));
+        }
+
+        {
+            char[][] board = {
+                    {'X','X','O','O'},
+                    {'Y','O','Y','Y'},
+                    {'O','Y','O','O'},
+                    {'O','X','O','X'},
+            };
+            list.add(new TestCase(board, 1));
+        }
+        {
+            char[][] board = {
+                    {'X','X','Y','O'},
+                    {'Y','O','Y','O'},
+                    {'O','Y','O','O'},
+                    {'O','X','O','X'},
+            };
+            list.add(new TestCase(board, 3));
+        }
+
+        return list;
+    }
+
+    @Test
+    public void testminimalMoveToWin() throws Exception {
+        MinimalMoveToWin minimalMoveToWin = new MinimalMoveToWin();
+
+        List&lt;TestCase&gt; testCaseList = createTestCases();
+        for(TestCase testCase: testCaseList) {
+            Assert.assertEquals(testCase.minMove, minimalMoveToWin.minimalMoveToWin(testCase.board));
+        }
+
+    }
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
