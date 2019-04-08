@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 90 Subsets II解题笔记3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 90 Subsets II解题笔记3</h1>
+			</div>
+
+			<p><em>07 April 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-90-subsets-ii" id="题目-leetcode-90-subsets-ii">题目 leetcode 90 Subsets II</a></h2> 
+<ol> 
+ <li>之前的题目解读和解题笔记在这里<a href="http://www.noteanddata.com/leetcode-90-Subsets-II-amazon-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-90-Subsets-II-amazon-interview-problem-java-solution-note.html</a>, <a href="http://www.noteanddata.com/leetcode-78-subsets-and-90-subsets-ii-summary-note.html">http://www.noteanddata.com/leetcode-78-subsets-and-90-subsets-ii-summary-note.html</a></li> 
+ <li>之前的做法里面，对于去重这个问题都是直接搞一个set去重的，当然不是很好，这里主要记录下提前去重的过程</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>重复的原因是在某一个递归深度的时候，后面有一些重复的元素，分别做了选择， 比如前面已经选了{1,2,3}, 后面选4的时候，在不同位置上的4都被选择出来了， 那么，递归的时候就会有重复</li> 
+ <li>那么，在递归的过程中，只要在某一个递归深度的时候保证每次新加入的元素不会有重复，那就可以去重，所以在这个递归深度的函数的循环外面，用一个set来找一个去重后的数字，就可以达到整体去重的效果.</li> 
+ <li>当然，最开始的排序还是必要的，因为这个无法解决[4,1,4]和[1,4,4]的重复问题</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; subsetsWithDup(int[] nums) {
+    Arrays.sort(nums);
+    List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+    backtrack(nums, 0, new ArrayList&lt;&gt;(), allList);    
+    return allList;
+}
+
+public void backtrack(int[] nums, int from, List&lt;Integer&gt; list, List&lt;List&lt;Integer&gt;&gt; allList) {
+    allList.add(new ArrayList&lt;&gt;(list));
+    Set&lt;Integer&gt; visited = new HashSet&lt;&gt;();
+    for(int i = from; i &lt; nums.length; ++i) {
+        if(visited.add(nums[i])) {
+            list.add(nums[i]);
+            backtrack(nums, i+1, list, allList);
+            list.remove(list.size()-1);                
+        }
+    }
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
