@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>经典算法--quick select算法（快速选择)学习笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>经典算法--quick select算法（快速选择)学习笔记</h1>
+			</div>
+
+			<p><em>08 April 2019</em></p>
+
+			<p><h2><a href="#经典算法quick-select算法快速选择" id="经典算法quick-select算法快速选择">经典算法–quick select算法（快速选择）</a></h2> 
+<p>quick select算法的主要目的是在一个没有排序的数组里面，找到第k小的元素。<br> quick select算法和quick sort算法都是由Tony Hoare（图灵奖获得者）发明的。 基本思路也是非常类似的，都是通过分治的思想，把整个大问题转化成小问题来求解。</p> 
+<h2><a href="#思路分析" id="思路分析">思路分析</a></h2> 
+<ol> 
+ <li>基本思路和快速排序类似 <a href="http://www.noteanddata.com/classic-algorithm-quick-sort.html">http://www.noteanddata.com/classic-algorithm-quick-sort.html</a>， 也是一个不断partition的过程</li> 
+ <li>主要的区别是，每次partition完以后，只需要在pivot的一边继续递归就可以了，另外一边不需要处理可以直接扔掉。</li> 
+ <li>这里写的partition实现和原来的一样，都是嵌套循环，把i和j移动都符合条件的index</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>package com.noteanddata.classic.sort.quicksort;
+
+public class QuickSelector {
+
+    /**
+     * select the kth smallest element in arr
+     *  0 &lt;= k &lt; arr.length
+     * @param arr
+     * @param k
+     * @return
+     */
+    public int select(int[] arr, int k) {
+        return quickselect(arr, 0, arr.length-1, k);
+    }
+
+    int quickselect(int[] arr, int from, int to, int k) {
+        int index = partition(arr, from, to);
+        if(index-from == k) {
+            return arr[index];
+        }
+        else if(index-from &gt; k) {
+            return quickselect(arr, from, index-1, k);
+        }
+        else {
+            return quickselect(arr, index+1, to, k-(index-from+1));
+        }
+    }
+
+    int partition(int[] arr, int from, int to) {
+        int pivot = arr[from];
+        int i = from+1, j = to;
+        while(i &lt;= j) {
+            while(i &lt;= j &amp;&amp; arr[i] &lt;= pivot) {
+                i++;
+            }
+            while(i &lt;= j &amp;&amp; arr[j] &gt;= pivot) {
+                j--;
+            }
+            if(i &lt;= j) {
+                swap(arr, i, j);
+            }
+        }
+        swap(arr, from, j);
+        return j;
+    }
+
+    void swap(int[] arr, int i, int j) {
+        int t = arr[i];
+        arr[i] = arr[j];
+        arr[j] = t;
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N) 这里是因为平均来说每次都扔掉一半, 所以原来的lgN部分就没有了</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#测试代码" id="测试代码">测试代码</a></h2> 
+<p>下面是测试代码，生成一个30大小的数组，每次进行洗牌，然后每次看看能不能取到第i个数</p> 
+<pre><code>package com.noteanddata.classic.sort;
+
+import classic.sort.quicksort.QuickSelector;
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
+public class QuickSelectorTest {
+
+    @Test
+    public void testQuickSelect() throws Exception {
+        int[] arr = new int[30];
+        for(int i = 0; i &lt; arr.length; ++i) {
+            arr[i] = i;
+        }
+
+
+        QuickSelector quickSelector = new QuickSelector();
+        for(int i = 0; i &lt; arr.length; ++i) {
+            shuffleArray(arr);
+
+            System.out.println(Arrays.toString(arr));
+
+            int v = quickSelector.select(arr, i);
+            Assert.assertEquals(i, v);
+        }
+
+    }
+
+
+    static void shuffleArray(int[] ar)
+    {
+        // If running on Java 6 or older, use `new Random()` on RHS here
+        Random rnd = ThreadLocalRandom.current();
+        for (int i = ar.length - 1; i &gt; 0; i--)
+        {
+            int index = rnd.nextInt(i + 1);
+            // Simple swap
+            int a = ar[index];
+            ar[index] = ar[i];
+            ar[i] = a;
+        }
+    }
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
