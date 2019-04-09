@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Airbnb面试题目 leetcode 773 Sliding Puzzle解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Airbnb面试题目 leetcode 773 Sliding Puzzle解题笔记</h1>
+			</div>
+
+			<p><em>09 April 2019</em></p>
+
+			<p><h2><a href="#airbnb面试题目-leetcode-773-sliding-puzzle" id="airbnb面试题目-leetcode-773-sliding-puzzle">Airbnb面试题目 leetcode 773 Sliding Puzzle</a></h2> 
+<ol> 
+ <li>类似于中国的华容道游戏，输入一个2*3的矩阵，里面有数组0，1，2，3，4，5， 每次可以把</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这里求最短的移动方式，肯定需要bfs， 那么逻辑上就比较简单，就是每次把0移动到邻居位置就好，然后bfs记得要去重</li> 
+ <li>当然实现上，直接用原始的矩阵做也可以，就是略繁琐，需要一些拷贝的处理， 这里把矩阵转化成字符串，然后把对应的邻居关系找到，那代码就会比较简洁</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int slidingPuzzle(int[][] board) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i &lt; board.length; ++i) {
+            for(int j = 0; j &lt; board[i].length; ++j) {
+                sb.append(board[i][j]);
+            }
+        }
+        
+        String init = sb.toString();
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(init);
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        visited.add(init);
+        /*
+        index map
+        [0,1,2],
+        [3,4,5]
+        */
+        int[][] dirs = {
+            {1,3},  // 0 can to 1 and 3
+            {0,2,4},
+            {1,5},
+            {0,4},
+            {1,3,5},
+            {2,4}
+        };
+        
+        int steps = 0;
+        while(!queue.isEmpty()) {
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(!queue.isEmpty()) {
+                String cur = queue.poll();
+                if("123450".equals(cur)) {
+                    return steps;
+                }
+                int zeroIndex = cur.indexOf('0');
+                for(int nextIndex: dirs[zeroIndex]) {
+                    char[] arr = cur.toCharArray();
+                    arr[zeroIndex] = arr[nextIndex];
+                    arr[nextIndex] = '0';
+                    String next = new String(arr);
+                    if(!visited.contains(next)) {
+                        nextQueue.add(next);
+                        visited.add(next);
+                    }
+                }
+            }
+            queue = nextQueue;
+            steps++;
+        }
+        return -1;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>因为只要把0在每一个位置都遍历过了，就相当于结束了？? O(M*N)?</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>因为queue里面最多不会超过所有的元素，O(M*N), M是行数， N是列数</p> 
+<h2><a href="#过程中写错的几个版本" id="过程中写错的几个版本">过程中写错的几个版本</a></h2> 
+<p>BFS虽然写过很多次，但是还是会有写错的时候, 比如这个版本两层循环数组越界了</p> 
+<pre><code>class Solution {
+    public int slidingPuzzle(int[][] board) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i &lt; board.length; ++i) {
+            for(int j = 0; j &lt; board[i].length; ++i) {
+                sb.append(board[i][j]);
+            }
+        }
+        
+        String init = sb.toString();
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(init);
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        visited.add(init);
+        /*
+        index map
+        [0,1,2],
+        [3,4,5]
+        */
+        int[][] dirs = {
+            {1,3},  // 0 can to 1 and 3
+            {0,2,4},
+            {1,5},
+            {0,4},
+            {1,3,5},
+            {2,4}
+        };
+        
+        int steps = 0;
+        while(!queue.isEmpty()) {
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(!queue.isEmpty()) {
+                String cur = queue.poll();
+                if("123450".equals(cur)) {
+                    return steps;
+                }
+                int zeroIndex = cur.indexOf('0');
+                for(int nextIndex: dirs[zeroIndex]) {
+                    char[] arr = cur.toCharArray();
+                    arr[zeroIndex] = arr[nextIndex];
+                    arr[nextIndex] = '0';
+                    String next = new String(arr);
+                    if(!visited.contains(next)) {
+                        queue.add(next);
+                        visited.add(next);
+                    }
+                }
+            }
+            queue = nextQueue;
+            steps++;
+        }
+        return -1;
+    }
+}
+
+</code></pre> 
+<p>把上面循环的j改了以后， bfs的queue和nextqueue的关系也写错了</p> 
+<pre><code>class Solution {
+    public int slidingPuzzle(int[][] board) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i &lt; board.length; ++i) {
+            for(int j = 0; j &lt; board[i].length; ++j) {
+                sb.append(board[i][j]);
+            }
+        }
+        
+        String init = sb.toString();
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(init);
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        visited.add(init);
+        /*
+        index map
+        [0,1,2],
+        [3,4,5]
+        */
+        int[][] dirs = {
+            {1,3},  // 0 can to 1 and 3
+            {0,2,4},
+            {1,5},
+            {0,4},
+            {1,3,5},
+            {2,4}
+        };
+        
+        int steps = 0;
+        while(!queue.isEmpty()) {
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(!queue.isEmpty()) {
+                String cur = queue.poll();
+                if("123450".equals(cur)) {
+                    return steps;
+                }
+                int zeroIndex = cur.indexOf('0');
+                for(int nextIndex: dirs[zeroIndex]) {
+                    char[] arr = cur.toCharArray();
+                    arr[zeroIndex] = arr[nextIndex];
+                    arr[nextIndex] = '0';
+                    String next = new String(arr);
+                    if(!visited.contains(next)) {
+                        queue.add(next);
+                        visited.add(next);
+                    }
+                }
+            }
+            queue = nextQueue;
+            steps++;
+        }
+        return -1;
+    }
+}
+
+</code></pre> 
+<p>原始的矩阵版本</p> 
+<pre><code>class Solution {
+    public int slidingPuzzle(int[][] board) {
+        // 1. bfs--remember to de-dup
+        Queue&lt;int[][]&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(board);
+        int steps = 0;
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        visited.add(convert(board));
+        int[][] dirs = {{-1,0}, {1,0}, {0,1}, {0,-1}};
+        
+        while(!queue.isEmpty()) {
+            Queue&lt;int[][]&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(!queue.isEmpty()) {
+                int[][] cur = queue.poll();
+                if(valid(cur)) {
+                    return steps;
+                }
+                
+                int zeroi = -1, zeroj = -1;
+                for(int i = 0; i &lt; cur.length; ++i) {
+                    for(int j = 0;j &lt; cur[i].length; ++j) {
+                        if(cur[i][j] == 0) {
+                            zeroi = i;
+                            zeroj = j;
+                            break;
+                        }
+                    }
+                }
+                
+                for(int i = 0; i &lt; dirs.length; ++i) {
+                    int swapi = zeroi + dirs[i][0];
+                    int swapj = zeroj + dirs[i][1];
+                    if(swapi &gt;= 0 &amp;&amp; swapi &lt; 2 &amp;&amp; swapj &gt;= 0 &amp;&amp; swapj &lt; 3) {
+                        int[][] next = copy(cur);
+                        next[zeroi][zeroj] = cur[swapi][swapj];
+                        next[swapi][swapj] = 0;
+                        String key = convert(next);
+                        if(!visited.contains(key)) {
+                            nextQueue.add(next);
+                            visited.add(key);
+                        }
+                    }
+                }
+            }
+            queue = nextQueue;
+            steps++;
+        }
+        return -1;
+    }
+    
+    public int[][] copy(int[][] cur) {
+        int[][] next = new int[cur.length][cur[0].length];
+        for(int i = 0; i &lt; cur.length; ++i) {
+            next[i] = Arrays.copyOf(cur[i], cur[i].length);
+        }
+        return next;
+    }
+    
+    boolean valid(int[][] board) {
+        int c = 1;
+        for(int i = 0; i &lt; board.length; ++i) {
+            for(int j = 0; j &lt; board[i].length; ++j) {
+                if(i == 1 &amp;&amp; j == 2) {
+                    return board[i][j] == 0;
+                }
+                if(board[i][j] == c) {
+                    c++;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    String convert(int[][] board) {
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i &lt; board.length; ++i) {
+            for(int j = 0; j &lt; board[i].length; ++j) {
+                sb.append(board[i][j]);
+            }
+        }
+        return sb.toString();
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
