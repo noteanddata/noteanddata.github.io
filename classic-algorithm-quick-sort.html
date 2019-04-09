@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>经典算法代码实现-union find算法1-quick find方法的一些错误代码</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>经典算法代码实现-union find算法1-quick find方法的一些错误代码</h1>
+			</div>
+
+			<p><em>20 November 2018</em></p>
+
+			<p><h2><a href="#经典算法快速排序学习笔记" id="经典算法快速排序学习笔记">经典算法–快速排序学习笔记</a></h2> 
+<p>快速排序，是非常经典的算法，几乎所有的算法课上都会讲到这个。但是又非常容易写错，而且一段时间不写又会bug。<br> 这里再重新学习写一下。而且这个版本，又写错了好多地方。</p> 
+<h2><a href="#思路分析" id="思路分析">思路分析</a></h2> 
+<ol> 
+ <li>快速排序本身思想非常一致，就是分治的思想。找一个pivot数，然后把比这个数小的放左边，比这个数大的放右边，pivot放在中间的某一个地方。这样，再对左边和右边分别进行递归排序，就完成了整体的排序。</li> 
+ <li>但是具体的写法有很多种，比如这里有比较代表性的几种，<a href="https://segmentfault.com/a/1190000004410119">https://segmentfault.com/a/1190000004410119</a>, 每个方法其实都容易写错， 这里看了一下各种不同的实现，还是回到常规的做法。</li> 
+ <li>实现要点:<br> a. partition返回一个index, 然后对[from,index-1], [index+1, to]进行递归调用<br> b. 如果pivot选择arr[from], 那么循环从i=from+1, j=to开始<br> c. 循环的主体可以直接是while(i &lt;= j) 如果两者交叉，那就不需要返回<br> d. 循环内部，先把左边的i移动到第一个比pivot大的数</li> 
+</ol> 
+<pre><code>while(i &lt; j &amp;&amp; arr[i] &lt; pivot) i++;
+</code></pre> 
+<p>e. 同理，把右边的j移动到第一个比pivot小的数</p> 
+<pre><code>while(i &lt;= j  &amp;&amp; arr[j] &gt; pivot) {
+    j--;
+}
+</code></pre> 
+<p>f. 如果i&gt;j，那就break<br> g. 否则， 就交换arr[i]和arr[j]<br> h. 最后，把arr[from]和arr[j]再交换一次， 相当于把pivot移动到最左边， 因为j&lt;i, 而所有i左边的数都比pivot小<br> 当然，最后要返回j作为index</p> 
+<h2><a href="#java实现代码" id="java实现代码">java实现代码</a></h2> 
+<pre><code>public void sort(int[] arr) {
+    quicksort(arr, 0, arr.length-1);
+}
+
+void quicksort(int[] arr, int from, int to) {
+    if(from &gt;= to) return;
+
+    int index = partition(arr, from, to);
+    quicksort(arr, from, index-1);
+    quicksort(arr, index+1, to);
+}
+
+int partition(int[] arr, int from, int to) {
+    int pivot = arr[from];
+    int i = from+1, j = to;
+    while(i &lt;= j) {
+        while(i &lt;= j &amp;&amp; arr[i] &lt;= pivot) {
+            i++;
+        }
+        while(i &lt;= j  &amp;&amp; arr[j] &gt; pivot) {
+            j--;
+        }
+        if(i &gt; j) {
+            break;
+        }
+        swap(arr, i, j);
+    }
+    swap(arr, from, j);
+    return j;
+}
+void swap(int[] arr, int i, int j) {
+    int t = arr[i];
+    arr[i] = arr[j];
+    arr[j] = t;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h2><a href="#写错的几个版本" id="写错的几个版本">写错的几个版本</a></h2> 
+<p>前面写了很多个版本partition都是错的</p> 
+<pre><code>int partition(int[] arr, int from, int to) {
+    int pivot = arr[from];
+    int i = from+1, j = to;
+    while(i &lt; j) {
+        while(i &lt; to &amp;&amp; arr[i] &lt;= pivot) {
+            i++;
+        }
+        while(j &gt; from &amp;&amp; arr[j] &gt; pivot) {
+            j--;
+        }
+        if(i &gt;= j) {
+            break;
+        }
+        swap(arr, i, j);
+        i++;
+        j--;
+    }
+    swap(arr, from, j);
+    return i;
+}
+</code></pre> 
+<pre><code>int partition(int[] arr, int from, int to) {
+    int pivot = arr[from];
+    int i = from+1, j = to;
+    while(i &lt; j) {
+        while(i &lt; j &amp;&amp; arr[i] &lt;= pivot) {
+            i++;
+        }
+        while(i &lt; j &amp;&amp; arr[j] &gt; pivot) {
+            j--;
+        }
+        if(i &gt;= j) {
+            break;
+        }
+        swap(arr, i, j);
+        i++;
+        j--;
+    }
+    swap(arr, from, j);
+    return i;
+}
+
+
+</code></pre> 
+<p>这个版本错的离谱，内层循环直接就会抛异常</p> 
+<pre><code>int partition(int[] arr, int from, int to) {
+    if(from == to) {
+        return from;
+    }
+    int pivot = arr[from];
+    int i = from+1, j = to;
+    while(i &lt; j) {
+        while(arr[i] &lt;= pivot) {
+
+            i++;
+        }
+        while(arr[j] &gt; pivot) {
+            j--;
+        }
+        if(i &gt;= j) {
+            swap(arr, from, i);
+            break;
+        }
+        swap(arr, i, j);
+        i++;
+        j--;
+    }
+    return i;
+}
+</code></pre> 
+<p>这个版本也同样会抛异常，上面的修改是无效的</p> 
+<pre><code>int partition(int[] arr, int from, int to) {
+    int pivot = arr[from];
+    int i = from+1, j = to;
+    while(i &lt; j) {
+        while(arr[i] &lt;= pivot) {
+            
+            i++;
+        }
+        while(arr[j] &gt; pivot) {
+            j--;
+        }
+        if(i &gt;= j) {
+            swap(arr, from, i);
+            break;
+        }
+        swap(arr, i, j);
+        i++;
+        j--;
+    }
+    return i;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
