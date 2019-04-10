@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Amazon面试题目 leetcode 207 Course Schedule解题笔记2-DFS判断有向图是否有环</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Amazon面试题目 leetcode 207 Course Schedule解题笔记2-DFS判断有向图是否有环</h1>
+			</div>
+
+			<p><em>10 April 2019</em></p>
+
+			<p><h2><a href="#aamzon面试题目-leetcode-207-course-schedule" id="aamzon面试题目-leetcode-207-course-schedule">Aamzon面试题目 leetcode 207 Course Schedule</a></h2> 
+<ol> 
+ <li>题目的本质就是输入有向图，判断里面是否有环</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>BFS做拓扑排序的笔记在这里 <a href="http://www.noteanddata.com/leetcode-207-Course-Schedule-Amazon-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-207-Course-Schedule-Amazon-interview-problem-java-solution-note.html</a></li> 
+ <li>这里记录一下DFS的做法：<br> a. 建立图， 用Map&lt;Integer, Set
+  <integer>
+   &gt; graph表示一个图， 其实里面可以用list
+   <br> b. 然后对每个节点进行深度优先遍历， 然后遍历的时候要记录和更新状态
+  </integer></li> 
+ <li>要判断一个有向图是否有环， 状态可以定义成三个<br> a. 没有访问过： 所有没有访问过的节点都需要进行一次DFS<br> b. 正在访问： 表示从某一个节点开始DFS的时候，经过某一个节点的时候，设置这个节点为正在访问<br> c. 已经访问过了: 表示某一个节点已经访问完成， 实际在代码里面就是这个节点指向的后序节点都已经访问过了， 这时候就可以把当前节点标记成已经访问过了。</li> 
+ <li>那么，判断环就比较直接。 如果在访问某一个节点的时候, 如果一个节点正在访问，后序在这个遍历的过程中有回到这个正在访问的节点，那么一定是因为出现了环。 因为正常无环的有向图， 在DFS遍历的时候是不会访问到一个节点两次的。 整个遍历过程应该都是单向的.</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public boolean canFinish(int numCourses, int[][] prerequisites) {
+    Map&lt;Integer, Set&lt;Integer&gt;&gt; graph = new HashMap&lt;&gt;();
+    for(int[] item: prerequisites) {
+        // item[1]--&gt; item[0]
+        Set&lt;Integer&gt; nextSet = graph.get(item[1]);
+        if(null == nextSet) {
+            nextSet = new HashSet&lt;&gt;();
+            graph.put(item[1], nextSet);
+        }
+        nextSet.add(item[0]);
+    }
+    
+    
+    int[] flag = new int[numCourses]; // 0: not visited;  1: visiting; 2: visited
+    for(int i = 0; i &lt; numCourses; ++i) {
+        dfs(i, flag, graph);
+    }
+    for(int i = 0; i &lt; numCourses; ++i) {
+        if(!dfs(i, flag, graph)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+boolean dfs(int i, int[] flag, Map&lt;Integer, Set&lt;Integer&gt;&gt; graph) {
+    if(flag[i] == 1) return false;
+    flag[i] = 1;
+    
+    Set&lt;Integer&gt; nextSet = graph.get(i);
+    if(null != nextSet) {
+        for(int next: nextSet) {
+            if(!dfs(next, flag, graph)) {
+                return false;
+            }
+        }
+    }
+    flag[i] = 2; // after dfs, mark current node as visited
+    return true;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(V+E)?</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(V+E)?</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
