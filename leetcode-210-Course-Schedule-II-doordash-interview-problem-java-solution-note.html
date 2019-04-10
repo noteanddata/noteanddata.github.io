@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>doordash面试题目 leetcode 210 Course Schedule II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>doordash面试题目 leetcode 210 Course Schedule II解题笔记</h1>
+			</div>
+
+			<p><em>10 April 2019</em></p>
+
+			<p><h2><a href="#doordash面试题目-leetcode-210-course-schedule-ii" id="doordash面试题目-leetcode-210-course-schedule-ii">doordash面试题目 leetcode 210 Course Schedule II</a></h2> 
+<ol> 
+ <li>输入一个有向图的边（就是节点的关系）， 要求返回一个拓扑序列； 如果不存在的话，就返回一个空数组</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这里还是用dfs来做， DFS做拓扑排序的基本框架在leetcode 207里面有做<a href="http://www.noteanddata.com/leetcode-207-Course-Schedule-Amazon-interview-problem-dfs-java-solution-note.html">http://www.noteanddata.com/leetcode-207-Course-Schedule-Amazon-interview-problem-dfs-java-solution-note.html</a></li> 
+ <li>基本思路还是对所有节点做dfs遍历， 然后更新状态的时候，分三个状态： 没有访问，正在访问，已经访问；</li> 
+ <li>判断是否有环就是在遍历的过程中会不会遇到一个“正在访问”的节点</li> 
+ <li>这里除了要判断是否有环以外，还需要生成顺序。 这里直接用了一个LinkedList, 然后每次一个节点遍历完成以后，要把状态更新成“已经访问”以后，就把这个节点放到LinkedList的第一个，这样就模拟了dfs遍历的顺序。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int[] findOrder(int numCourses, int[][] prerequisites) {        
+    Map&lt;Integer, List&lt;Integer&gt;&gt; graph = new HashMap&lt;&gt;();
+    for(int[] item: prerequisites) {
+        // item[1] -&gt; item[0]
+        List&lt;Integer&gt; list = graph.computeIfAbsent(item[1], k-&gt;new ArrayList&lt;&gt;());
+        list.add(item[0]);
+    }
+    
+    int[] flag = new int[numCourses]; // 0: not visited; 1: visiting; 2: visited
+    LinkedList&lt;Integer&gt; list = new LinkedList&lt;&gt;();
+    for(int i = 0; i &lt; numCourses; ++i) {
+        if(!dfs(i, flag, list, graph)) {
+            return new int[]{};
+        }
+    }
+    return list.stream().mapToInt(i-&gt;i).toArray();
+}
+
+boolean dfs(int i, int[] flag, LinkedList&lt;Integer&gt; list, Map&lt;Integer, List&lt;Integer&gt;&gt; graph) {
+    if(flag[i] == 2) return true;
+    if(flag[i] == 1) return false;
+    flag[i] = 1;
+    List&lt;Integer&gt; nextList = graph.get(i);
+    if(null != nextList) {
+        for(int next: nextList) {
+            if(!dfs(next, flag, list, graph)) {
+                return false;
+            }
+        }
+    }
+    flag[i] = 2;
+    list.addFirst(i); // add this node to the head of the linked list, so that it will simulate the visiting order; 
+    return true;    
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>?</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>?</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
