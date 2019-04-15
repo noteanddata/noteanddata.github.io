@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Google面试题leetcode 1027 Longest Arithmetic Sequence解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Google面试题leetcode 1027 Longest Arithmetic Sequence解题笔记</h1>
+			</div>
+
+			<p><em>13 April 2019</em></p>
+
+			<p><h2><a href="#google面试题leetcode-1027-longest-arithmetic-sequence" id="google面试题leetcode-1027-longest-arithmetic-sequence">Google面试题leetcode 1027 Longest Arithmetic Sequence</a></h2> 
+<ol> 
+ <li>输入一个整数数组，问子序列里面，最长的等差数列的长度是多少？</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>整体还是动态规划的思路，对于每一个新的数a[i], 需要和前面的任意一个a[j]做比较， 这时候会有一个差diff=a[i]-a[j]<br> 这时候， 需要找在结束位置在a[j]的差也是diff的等差数列的长度是多少，如果存在的话就把长度加1，记录在a[i]的等差数列信息里面</li> 
+ <li>这里对于每个index都需要存一个diff-&gt;length的map， 因为新来一个数的时候，需要和前面的每个数做差，然后这个对结果的影响是不一样的。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int longestArithSeqLength(int[] A) {
+    List&lt;Map&lt;Integer, Integer&gt;&gt; table = new ArrayList&lt;&gt;();
+    table.add(new HashMap&lt;&gt;());
+
+    int max = 0;
+    for(int i = 1; i &lt; A.length; ++i) {
+        Map&lt;Integer, Integer&gt; cur = new HashMap&lt;&gt;();
+        for(int j = 0; j &lt; i; ++j) {
+            int diff = A[i]-A[j];
+            Map&lt;Integer, Integer&gt; mapj = table.get(j);
+            int curmax = mapj.getOrDefault(diff, 1) + 1;
+            cur.put(diff, curmax);
+            max = Math.max(max, curmax);
+        }
+        table.add(cur);
+    }
+    return max;
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N^2)</p> 
+<h2><a href="#超时的代码" id="超时的代码">超时的代码</a></h2> 
+<p>开始写的超时的代码，这里保存了所有的diff-&gt;length, 而且没有去重，实际上最里面的for循环只有diff==item[0]的时候才需要更新，所以直接对每个diff只需要一个len就可以</p> 
+<pre><code>public int longestArithSeqLength(int[] A) {
+    List&lt;List&lt;int[]&gt;&gt; table = new ArrayList&lt;&gt;();
+    table.add(new ArrayList&lt;&gt;());
+    
+    int max = 0;
+    for(int i = 1; i &lt; A.length; ++i) {
+        List&lt;int[]&gt; cur = new ArrayList&lt;&gt;();
+        for(int j = 1; j &lt; i; ++j) {
+            int diff = A[i]-A[j];
+            List&lt;int[]&gt; list = table.get(j);
+            boolean added = false;
+            int curmax = 2;
+            for(int[] item: list) {
+                if(diff == item[0]) {
+                    curmax = Math.max(curmax, item[1]+1);
+                }                    
+            }
+            cur.add(new int[]{diff, curmax});
+            max = Math.max(max, curmax);
+        }
+        cur.add(new int[]{A[i]-A[0], 2});
+        max = Math.max(max, 2);
+        table.add(cur);
+    }
+    return max;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
