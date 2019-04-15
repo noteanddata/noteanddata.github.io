@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Amazon面试题目 leetcode 1028 Recover a Tree From Preorder Traversal解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Amazon面试题目 leetcode 1028 Recover a Tree From Preorder Traversal解题笔记</h1>
+			</div>
+
+			<p><em>13 April 2019</em></p>
+
+			<p><h2><a href="#amazon面试题目-leetcode-1028-recover-a-tree-from-preorder-traversal" id="amazon面试题目-leetcode-1028-recover-a-tree-from-preorder-traversal">Amazon面试题目 leetcode 1028 Recover a Tree From Preorder Traversal</a></h2> 
+<ol> 
+ <li>输入一个字符串，表示一个二叉树的preorder遍历， 其中每个节点的前面会有额外的字符，就是"-", 而且个数和节点的深度一样，其中根节点的深度是0.</li> 
+ <li>根据输入，返回一个二叉树</li> 
+ <li>如果一个节点有子节点的话，那一定是左子树</li> 
+</ol> 
+<p>Input: “1-2–3–4-5–6–7”<br> Output: [1,2,5,3,4,6,7]</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本思路是用一个堆栈，保存当前节点和level，如果新的level更高，那么就是压栈，如果遇到新的level比较低，那就需要退栈；</li> 
+ <li>每次遇到一个新的数的时候，如果做了退栈了，那么当前节点应该是父节点（就是堆栈的peek())的右子数,如果是没有退栈，那么当前节点就是父节点的左子树</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    static class Item {
+        TreeNode node;
+        int level;
+        public Item(TreeNode node, int level) {
+            this.node = node;
+            this.level = level;
+        }
+    }
+    
+    public TreeNode recoverFromPreorder(String s) {
+        Stack&lt;Item&gt; stack = new Stack&lt;&gt;();
+        TreeNode root = null;
+        for(int i = 0; i &lt; s.length(); ) {
+            int curlevel = 0;
+            boolean poped = false;
+            if(s.charAt(i) == '-') {
+                int j = i;
+                while(j &lt; s.length() &amp;&amp; s.charAt(j) == '-') {
+                    j++;
+                }
+                curlevel = j-i;
+                while(curlevel &lt;= stack.peek().level) {
+                    stack.pop();
+                    poped = true;
+                }
+                i = j;
+            }
+            
+            int j = i;
+            while(j &lt; s.length() &amp;&amp; s.charAt(j) != '-') {
+                j++;
+            }
+            int curval = Integer.valueOf(s.substring(i, j));
+            
+            TreeNode node = new TreeNode(curval);
+            if(null == root) {
+                root = node;
+            }
+            //System.out.println("val=" + curval + ", level=" + curlevel);
+            
+            Item item = new Item(node, curlevel);
+            if(!stack.isEmpty()) {
+                if(poped) {
+                    stack.peek().node.right = node;
+                }
+                else {
+                    stack.peek().node.left = node;    
+                }
+            }
+            stack.push(item);
+            i = j;
+        }
+        return root;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
