@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Google面试题目 leetcode 307 Range Sum Query - Mutable解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Google面试题目 leetcode 307 Range Sum Query - Mutable解题笔记</h1>
+			</div>
+
+			<p><em>18 April 2019</em></p>
+
+			<p><h2><a href="#google面试题目-leetcode-307-range-sum-query-mutable" id="google面试题目-leetcode-307-range-sum-query-mutable">Google面试题目 leetcode 307 Range Sum Query - Mutable</a></h2> 
+<ol> 
+ <li>输入一个整数数组，然后要求实现下面两个API<br> int sumRange(int i, int j) // 返回从[i,j]之间的数的和<br> update(int i, int val) // 更新在i这个位置的数的值到val</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li> <p>如果只需要实现sumRange(int i, int j), 那么可以对每个index=i做一个presum[i],<br> presum[j] - presum[i-1]就是结果。 但是这个需要不停的更新数据， 所以用presum做update还是O(N)的时间复杂度。<br> 这个题目需要用一个特殊的数据结构，就是线段树(Segment Tree)。</p> </li> 
+ <li> <p>线段树的基本特点如下：<br> a. 是一个平衡二叉树<br> b. 每个节点包含[start,end]， 表示这个节点覆盖的范围<br> c. 每个节点还有一个值, 这个值通常和我们要求解的问题有关，可能是sum，可以是最小值，可以是最大值。<br> d. 每个节点有左子树和右子树<br> e. 根节点的start=0, end = n-1<br> f. 如果当前节点是[start,end], 这个节点的子节点分别覆盖[start,mid], [mid+1, end]<br> 也就是每个节点的子节点左右是二分的<br> g. 叶子节点start=end=i, val=nums[i]</p> </li> 
+ <li> <p>假设这个树已经构造好了，那么查询一个范围的时候， 我们会有下面几种情况<br> a. 如果 [i,j] 和 [node.start, node.end]完全没有关系， 那么， 这个节点和所有的子节点都不需要查询了<br> b. 如果[node.start, node.end]是[i,j]的一个子集的话， 比如我们要查询的是[3,10], 当前节点是[5,7], 那么直接返回当前范围的值就可以了， 不需要继续向下查询（因为向下查询是查询当前范围中的更小部分）<br> c. 其他情况， 都需要左右两个子节点递归查询</p> </li> 
+ <li> <p>更新也是类似的递归过程<br> a. 如果是在范围之外，直接范围<br> b. 如果node.start == node.end, 并且node.start == i, 那么就直接更新当前的节点（就是叶子节点）<br> c. 如果其他情况，就分别更新左右子树，然后再根据左右子树的结果，把当前的节点也更新了。</p> </li> 
+ <li> <p>建树的过程是一个二分的过程，<br> a. 如果是范围之外就返回空节点<br> b. 如果是叶子节点就生成一个当前叶子节点的值<br> c. 否则的话就对左右子树分别建树，然后生成当前节点</p> </li> 
+ <li> <p>线段树可以理解成是一个对范围进行二分查找的过程，因为事先对范围做了二分的顺序，用树来表达，然后查询和更新都可以二分</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class NumArray {
+    private static class Node {
+        private int start, end;
+        private int sum;
+        private Node left, right;
+        public Node(int start, int end, int sum, Node left, Node right) {
+            this.start = start;
+            this.end = end;
+            this.sum = sum;
+            this.left = left;
+            this.right = right;
+        }
+    }
+    
+    private Node root;
+    public NumArray(int[] nums) {
+        root = buildTree(nums, 0, nums.length-1);
+    }
+    
+    private Node buildTree(int[] nums, int start, int end) {
+        if(start &gt; end) return null;
+        else if(start == end) {
+            return new Node(start, start, nums[start], null, null);
+        }
+        else {
+            int mid = start + (end-start)/2;
+            Node left = buildTree(nums, start, mid);
+            Node right = buildTree(nums, mid+1, end);
+            int sum = left.sum;
+            if(right != null) sum += right.sum;
+            return new Node(start, end, sum, left, right);
+        }
+    }
+    
+    public void update(int i, int val) {
+        update(root, i, val);
+    }
+    
+    private void update(Node node, int i, int val) {
+        if(node == null || i &lt; node.start || i &gt; node.end) return;
+        else if(node.start == node.end &amp;&amp; node.start == i) {
+            node.sum = val;
+        }
+        else {
+            update(node.left, i, val);
+            update(node.right, i, val);
+            int sum = 0;
+            if(null != node.left) sum += node.left.sum;
+            if(null != node.right) sum += node.right.sum;
+            node.sum = sum;
+        }
+    }
+    
+    public int sumRange(int i, int j) {
+        return sumRange(root, i, j);
+    }
+    private int sumRange(Node node, int i, int j) {
+        if(node == null || i &gt; j || i &gt; node.end || j &lt; node.start) return 0;
+        else if(i &lt;= node.start &amp;&amp; node.end &lt;= j) return node.sum;
+        else {
+            return sumRange(node.left, i, j) + sumRange(node.right, i, j);
+        }
+    }
+}
+
+/**
+ * Your NumArray object will be instantiated and called as such:
+ * NumArray obj = new NumArray(nums);
+ * obj.update(i,val);
+ * int param_2 = obj.sumRange(i,j);
+ */
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<ul> 
+ <li>建线段树是O(N)</li> 
+ <li>查询是O(lgN)</li> 
+ <li>更新也是O(lgN)</li> 
+</ul> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
