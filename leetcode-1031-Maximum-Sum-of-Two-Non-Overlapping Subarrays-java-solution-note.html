@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>题目 leetcode 1031 Maximum Sum of Two Non-Overlapping Subarrays解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>题目 leetcode 1031 Maximum Sum of Two Non-Overlapping Subarrays解题笔记</h1>
+			</div>
+
+			<p><em>20 April 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1031-maximum-sum-of-two-non-overlapping-subarrays" id="题目-leetcode-1031-maximum-sum-of-two-non-overlapping-subarrays">题目 leetcode 1031 Maximum Sum of Two Non-Overlapping Subarrays</a></h2> 
+<p>输入一个整数数组， 问其中两个长度分别是L和M的非重叠子数组的最大和是多少？</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>假设M在L的右边， 先建presum， 然后求每个a[i]开始的长度是L的和， 然后对每个位置求长度是M的和是多少，<br> 然后求a[i+L]开始的在右边的最大的长度为M的和是多少， 这样就可以对每个位置求max{maxL[i] + rightMaxM[nextright]}</li> 
+ <li>M在L的左边也一样</li> 
+ <li>下面是比赛时候的代码，里面重复的地方比较多。当时因为第一题调试浪费了一点时间，第二题又卡住，所以这个直接写了个能过的版本， 后面有空再改成简洁一点的版本</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int maxSumTwoNoOverlap(int[] A, int L, int M) {
+        int a = findMax(A, L, M);
+        int b = findMax(A, M, L);
+        return Math.max(a,b);
+    }
+    
+    int findMax(int[] A, int L, int M) {
+        int[] presum = new int[A.length+1];
+        
+        for(int i = 1; i &lt; presum.length; ++i) {
+            presum[i] = presum[i-1] + A[i-1];
+        }
+        
+        int[] maxL = new int[A.length];
+        for(int i = 0; i &lt; A.length; ++i) {
+            int next = (i-1) + L;
+            if(next &lt; A.length) {
+                maxL[i] = presum[next+1]-presum[i];
+            }
+        }
+        
+        int[] maxM = new int[A.length];
+        for(int i = 0; i &lt; A.length; ++i) {
+            int next = i+M-1;
+            if(next &lt; A.length) {
+                maxM[i] = presum[next+1] - presum[i];
+            }
+        }
+        int[] rightMaxM = new int[A.length];
+        for(int i = A.length-1; i &gt;= 0; --i) {
+            if(i == A.length-1) {
+                rightMaxM[i] = maxM[i];
+            }
+            else {
+                rightMaxM[i] = Math.max(rightMaxM[i+1], maxM[i]);
+            }
+        }
+        int max = 0;
+        for(int i = 0; i &lt; A.length; ++i) {
+            int nextright = i + L;
+            if(nextright &lt; A.length) {
+                max = Math.max(max, maxL[i] + rightMaxM[nextright]);
+            }
+        }
+        
+        // print(presum);
+        // print(maxL);
+        // print(maxM);
+        // print(rightMaxM);
+        
+        return max;        
+    }
+    
+    void print(int[] arr) {
+        for(int v : arr) {
+            System.out.print(v + " ");
+        }
+        System.out.println();
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
