@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>题目 leetcode 1032 Stream of Characters解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>题目 leetcode 1032 Stream of Characters解题笔记</h1>
+			</div>
+
+			<p><em>20 April 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1032-stream-of-characters" id="题目-leetcode-1032-stream-of-characters">题目 leetcode 1032 Stream of Characters</a></h2> 
+<ol> 
+ <li>输入一个字符串数组作为字典， 然后不断查询字符， 如果最近的k个字符构成一个完整的字典单词的话，返回true，否则返回false</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目直觉上就是字典树(Trie), 然后每个字符查询返回true的情况，一定是一个完整的单词。但是正向查询的话要保存很多上次访问到的节点，因为开始的地方可能会很多， 所以这个Trie可以反过来建， 这样每次查询的时候都可以从最后面开始查询起</li> 
+ <li>建Trie的过程是对每个单词做反向的Trie， 从最后一个字符开始到第一个字符建Trie</li> 
+ <li>查询的时候， 因为查询的次数有限， 所以把所有查询的字符保存起来， 然后从最后一个字符开始向前查询，查到一个完整的单词就返回true，否则就返回false</li> 
+ <li>Trie相关的实现可以参考之前的文章 <a href="http://www.noteanddata.com/leetcode-208-Implement-Trie-Prefix-Tree-java-solution-note.html">http://www.noteanddata.com/leetcode-208-Implement-Trie-Prefix-Tree-java-solution-note.html</a></li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class StreamChecker {
+    
+    static class Node {
+        Node[] children;
+        boolean isWordEnd;
+        public Node() {
+            this.children = new Node[26];
+            this.isWordEnd = false;
+        }
+    }
+
+    private Node root;
+    private List&lt;Character&gt; queryList;
+    
+    public StreamChecker(String[] words) {
+        this.root = new Node();
+        this.queryList = new ArrayList&lt;&gt;();
+        
+        for(String word: words) {
+            char[] arr = word.toCharArray();
+            Node cur = root;
+            for(int i = arr.length-1; i &gt;= 0; --i) {
+                char ch = arr[i];
+                int index = (int)(ch-'a');
+                
+                if(null == cur.children[index]) {
+                    cur.children[index] = new Node(); 
+                }
+                cur = cur.children[index];
+                if(i == 0) {
+                    cur.isWordEnd = true;
+                }
+            }
+        }
+    }
+    
+    public boolean query(char letter) {
+        queryList.add(letter);
+        Node cur = root;
+        for(int i = queryList.size()-1; i &gt;= 0; --i) {
+            int index = (int)(queryList.get(i)-'a');
+            if(cur.children[index] == null) {
+                return false;
+            }
+            cur = cur.children[index];
+            if(cur.isWordEnd) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+/**
+ * Your StreamChecker object will be instantiated and called as such:
+ * StreamChecker obj = new StreamChecker(words);
+ * boolean param_1 = obj.query(letter);
+ */
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(L), L是单词的最大长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N*L+Q) N个单词， 每个单词平均长度L, 总共查询Q个字符</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
