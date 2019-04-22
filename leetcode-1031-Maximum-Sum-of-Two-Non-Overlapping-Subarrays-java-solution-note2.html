@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>题目 leetcode 1031 Maximum Sum of Two Non-Overlapping Subarrays解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>题目 leetcode 1031 Maximum Sum of Two Non-Overlapping Subarrays解题笔记</h1>
+			</div>
+
+			<p><em>21 April 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1031-maximum-sum-of-two-non-overlapping-subarrays" id="题目-leetcode-1031-maximum-sum-of-two-non-overlapping-subarrays">题目 leetcode 1031 Maximum Sum of Two Non-Overlapping Subarrays</a></h2> 
+<p>输入一个整数数组， 问其中两个长度分别是L和M的非重叠子数组的最大和是多少？</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>之前在比赛的时候写了一个版本<a href="http://www.noteanddata.com/leetcode-1031-Maximum-Sum-of-Two-Non-Overlapping%20Subarrays-java-solution-note.html">http://www.noteanddata.com/leetcode-1031-Maximum-Sum-of-Two-Non-Overlapping%20Subarrays-java-solution-note.html</a>可以ac，但是代码比较冗余, 这里重新学习总结了一下， 写了一个更简洁的版本。 这里仍然使用O(N)空间复杂度的版本， 虽然有大神写了O(1)空间复杂度的代码，但是感觉那个版本距离我太远，我还是先写好普通版本的。 实际上今天试图写成简洁版本的，还是花了不少时间才最终整理成现在这个版本，中间出了好多bug，最终觉得这样写不容易出错</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本思路首先第一步还是建presum</li> 
+ <li>然后针对长度是L和M的非重叠连续子数组做处理的时候，原来的思路是对于某一个index=i, 取了L长度的子数组以后，在右边取M长度的子数组，因为要取到右边的所有可能，所以有一个从右到左的循环，得到index=i右边所有长度是M的数组的最大值。但是那样最少要先遍历两次，然后再遍历一次最后求一个最大值。<br> 但是简化一点，可以考虑对于任意一个index=i, 假设已经有L+M的子数组了，那么M子数组是以i结尾的话， 那么只要求出i-M前面长度是L的子数组的和了。</li> 
+ <li>对于任意一个index=i,左边长度为L的的最大子数组的和，可以一次遍历得到。<br> dp_max_l[i] = Math.max(dp_max_l[i-1], presum[i]-presum[i-L])<br> 所以，可以在一次遍历的过程中求到先L再M的结果， 然后再遍历一次求先M再L的结果</li> 
+ <li>一些小技巧， presum的写法有很多种，有开数组大小是N+1的， 这样建presum的时候比较容易，但是求presum的时候比较容易出错，因为a[i]会对应到presum[i+1]。 但是长度开成N，取的时候又会需要对0做特殊处理。</li> 
+</ol> 
+<p>今天反复写了几个不同的版本， 决定写成下面这样，不容易出错。<br> a. 建presum大小为N，这样a[i]和presum[i]一一对应，不需要去多一个1，搞错index</p> 
+<pre><code>int[] presum = new int[A.length];
+int sum = 0;
+for(int i = 0; i &lt; A.length; ++i) {
+  sum += A[i];
+  presum[i] = sum;
+}
+
+</code></pre> 
+<p>b. 取presum, 因为长度一样了， 那么需要对index=0做特殊处理</p> 
+<pre><code>int getPresum(int[] presum, int i) {
+  if(i == -1) return 0;
+  return presum[i];
+}
+</code></pre> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int maxSumTwoNoOverlap(int[] A, int L, int M) {
+        int[] presum = new int[A.length];  // a[i] ---&gt; presum[i]
+        int sum = 0;
+        for(int i = 0; i &lt; A.length; ++i) {
+            sum += A[i];
+            presum[i] = sum;
+        }
+
+        int max1 = getMax(presum, A, L, M);
+        int max2 = getMax(presum, A, M, L);
+        return Math.max(max1, max2);
+    }
+    
+    int getMax(int[] presum, int[] A, int L, int M) {
+        int maxL = 0;
+        int max = 0;
+        for(int i = L+M-1; i &lt; A.length; ++i) {
+            maxL = Math.max(maxL, getPreSum(presum, i-M) - getPreSum(presum, i-M-L));
+            max = Math.max(max, maxL + getPreSum(presum, i) - getPreSum(presum, i-M));
+        }
+        return max;
+    }
+    
+    int getPreSum(int[] presum, int i) {
+        if(i == -1) return 0;
+        return presum[i];
+    }
+    
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
