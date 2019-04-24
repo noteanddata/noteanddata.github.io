@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>经典数据结构Binary Index Tree(Fennwick Tree)学习笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>经典数据结构Binary Index Tree(Fennwick Tree)学习笔记</h1>
+			</div>
+
+			<p><em>22 April 2019</em></p>
+
+			<p><h2><a href="#经典数据结构binary-index-treefennwick-tree学习笔记" id="经典数据结构binary-index-treefennwick-tree学习笔记">经典数据结构Binary Index Tree(Fennwick Tree)学习笔记</a></h2> 
+<p>最近学习了一下binary index tree(Fennwick Tree), 这个数据结构非常强大，如果彻底搞明白了以后可以用非常简洁高效的代码解决一些问题， 但是理解起来确实不太好理解， 看懂了代码每一行在做什么也不是很明白为什么是要这么做。</p> 
+<h2><a href="#主要问题" id="主要问题">主要问题</a></h2> 
+<p>这个主要解决的问题是对一个数组实现下面两个API， 可以多次任意调用<br> int rangeSum(int from, int to);<br> void update(int index, int val);</p> 
+<h2><a href="#思路的一些背景" id="思路的一些背景">思路的一些背景</a></h2> 
+<ol> 
+ <li>如果是直接brute force的做法，<br> 那么rangeSum的操作需要遍历从from到to， 时间复杂度为O(N)<br> update操作的时间复杂度是O(1)</li> 
+ <li>如果只需要求rangeSum, 那么可以用O(N)的空间先建立好一个presum表， 然后可以在O(1)的时间内完成rangeSum<br> 但是这个方法只能用在数组不变的情况上， 如果数组变化， 那么每次update的时候，最多也可以需要O(N)的时间复杂度更新后面所有受影响的值</li> 
+ <li>另外还有一个数据结构是线段树(segment tree), 可以用O(N)的空间复杂度先建立好一个关于range的二分搜索树， 在每个节点上存储{from,to, sum}, 然后每个节点的子节点对[from,to]做二分，这样的话， 查询和更新的时候都每次只需要对受影响的一半做操作就可以， 所以可以达到都是O(lgN)的时间复杂度。<br> 线段树的概念相对会好理解一点，当然代码实现上会略多一点。</li> 
+ <li>这里要写的Binary Index Tree同样是用O(N)的空间复杂度， 在O(lgN)的时间复杂度内完成查询和更新。但是这个Binary Index Tree的特点是代码十分简洁，核心就是10行左右。 想出这个算法的Fennwick真是神仙。</li> 
+</ol> 
+<h2><a href="#思路细节" id="思路细节">思路细节</a></h2> 
+<ol> 
+ <li>很多讲Binary Index Tree的资料都是从原理开始讲起， 我看了一些视频和资料以后，每次看前面的原理的时候总是不明白为什么要这么做， 所以我这里准备先从代码开始， 假设数据结构已经建立好了， 然后我们看rangeSum函数怎么使用这个数据结构， 因为这个数据结构的最终目的还是为了在有更新的情况下做快速查询。<br> a. 假设我们对于数组int[] nums， 我们已经建立好了一个经过处理的数据结构int[] tree, 那么我们求presum(i)的实现如下<br> 这里， tree的长度是N+1, 然后这里的i的参数需要是从1开始到N</li> 
+</ol> 
+<pre><code>public int preSum(int i) {
+    int sum = 0;
+    while(i &gt; 0) {
+        sum += tree[i];
+        i -= (i &amp; -i);
+    }
+    return sum;        
+}
+</code></pre> 
+<p>这里的循环逻辑是， 每次取tree[i], 然后把二进制最右边的1去掉(具体细节后面有解释)，然后取下一个tree[i], 直到变成0；<br> 如果i=7, 那么就是取0111, 0110,0100, 也就是tree[7] + tree[6] + tree[4]</p> 
+<p>b. 求二进制最右边的1的小技巧<br> 这个里面i&amp;-i就是求一个数的二进制最右边的1， 因为一个数的负数在二进制上就数取反加1，<br> 假设一个数数10101000,<br> 取反以后就是01010111,<br> 然后加一就是01011000，<br> 这时候和原来的数做按位与运算后，就会剩下最右边的1</p> 
+<p>c. 前面说了presum的查询，<br> 下面说下对每个index的数，会放到tree数组里面的什么地方， 具体的规则是， 每个数都会加上(i&amp;-i), 也就是从最右边的1开始加1；</p> 
+<pre><code>1--&gt;0001---&gt;0001,0010,0100,1000 (1,2,4,8)
+2--&gt;0010---&gt;0010,0100,1000  (2,4,8)
+3--&gt;0011---&gt;0011,0100,1000  (3,4,8)
+4--&gt;0100---&gt;0100,1000 (4,8)
+5--&gt;0101---&gt;0101,0110,1000 (5,6,8)
+6--&gt;0110---&gt;0110,1000 (6,8)
+7--&gt;0111---&gt;0111,1000 (7,8)
+8--&gt;1000---&gt;1000  (8)
+</code></pre> 
+<p>从结果看， 每个tree包含的结果就是这样</p> 
+<pre><code>tree[1] = a[1]
+tree[2] = a[1] + a[2]
+tree[3] = a[3]
+tree[4] = a[1] + a[2] + a[3] + a[4]
+tree[5] = a[5]
+tree[6] = a[5] + a[6]
+tree[7] = a[7]
+tree[8] = a[1] + a[2] + a[3] + a[4] + a[5] + a[6] + a[7] + a[8]
+</code></pre> 
+<p>这个树的初步特征有：<br> * 如果有一个数是2的指数，那么包含[1,i]所有的值<br> * 如果有一个数是奇数，那么就只包含nums[i]</p> 
+<p>所以, 更新的逻辑是和查询反过来，<br> 这里， tindex从1开始， diff表示num[i]的值变化了多少</p> 
+<pre><code>public void updateDiff(int tindex, int diff) {
+    while(tindex &lt; tree.length) {
+        tree[tindex] += diff;
+        tindex += (tindex &amp; -tindex);
+    }
+}
+</code></pre> 
+<ol> 
+ <li>树的整体构造过程<br> 关于树的整个图，我看了不少资料，觉得这个图最直观，容易理解<br> <a href="https://blog.csdn.net/u011567017/article/details/52252852">https://blog.csdn.net/u011567017/article/details/52252852</a></li> 
+</ol> 
+<p>其他有很多资料都是用填坑法， 然后每次取2的指数次数，然后分层填坑，但是我感觉那个和代码逻辑，以及更新的过程联系起来的时候，不太好理解。</p> 
+<ol> 
+ <li>完整代码</li> 
+</ol> 
+<pre><code>class NumArray {
+    
+    private int[] tree;
+    private int[] nums;
+
+    public NumArray(int[] nums) {
+        this.nums = nums;
+        this.tree = new int[nums.length+1];
+        for(int i = 1; i &lt;= nums.length; ++i) {
+            updateDiff(i, nums[i-1]);
+        }
+    }
+    
+    public void update(int i, int val) {
+        updateDiff(i+1, val-nums[i]);
+        nums[i] = val;
+    }
+    
+    public void updateDiff(int tindex, int diff) {
+        while(tindex &lt; tree.length) {
+            tree[tindex] += diff;
+            tindex += (tindex &amp; -tindex);
+        }
+    }
+    
+    public int sumRange(int i, int j) {
+        return preSum(j+1) - preSum(i);
+    }
+    
+    public int preSum(int i) {
+        int sum = 0;
+        while(i &gt; 0) {
+            sum += tree[i];
+            i -= (i &amp; -i);
+        }
+        return sum;        
+    }
+}
+
+/**
+ * Your NumArray object will be instantiated and called as such:
+ * NumArray obj = new NumArray(nums);
+ * obj.update(i,val);
+ * int param_2 = obj.sumRange(i,j);
+ */
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
