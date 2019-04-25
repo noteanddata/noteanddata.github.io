@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Facebook面试题目 leetcode 301 Remove Invalid Parentheses解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Facebook面试题目 leetcode 301 Remove Invalid Parentheses解题笔记2</h1>
+			</div>
+
+			<p><em>24 April 2019</em></p>
+
+			<p><h2><a href="#facebook面试题目-leetcode-301-remove-invalid-parentheses" id="facebook面试题目-leetcode-301-remove-invalid-parentheses">Facebook面试题目 leetcode 301 Remove Invalid Parentheses</a></h2> 
+<p>输入一个字符串， 里面有左括弧，右括弧， 还有其他字符， 但是括弧可能不匹配， 要求删除一些括弧，使得左右匹配，<br> 问最后有哪些合法的字符串？</p> 
+<pre><code>Example 1:
+
+Input: "()())()"
+Output: ["()()()", "(())()"]
+
+Example 2:
+
+Input: "(a)())()"
+Output: ["(a)()()", "(a())()"]
+
+Example 3:
+
+Input: ")("
+Output: [""]
+
+
+</code></pre> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>之前自己写过一个版本 <a href="http://www.noteanddata.com/leetcode-301-Remove-Invalid-Parentheses-java-solution-note.html">http://www.noteanddata.com/leetcode-301-Remove-Invalid-Parentheses-java-solution-note.html</a>, 但是自己写的代码太繁琐了， 虽然整体是可以过的，但是也是调试了很久的，面试的时候这样写第一几乎肯定要写错， 第二写完了估计也是差评。</li> 
+ <li>学习了一些思路， 解法太多了， 有一些还不太理解。 这里还是学习一个比较简洁的backtrack方法，虽然效率不是最好的，但是整体比较简洁，相对不容易出错。基本思路还是对每个位置进行枚举， 选择删除还是不删除， 对整体做backtrack的搜索</li> 
+ <li>第一步当然是判断需要删除多少个左括弧，需要删除多少个右括弧， 这个可以一次遍历，然后记录没有匹配的左括弧和右括弧的个数</li> 
+ <li>然后就是进行回溯搜索， 主要参数有：</li> 
+</ol> 
+<ul> 
+ <li>from: 代表当前从那个index开始</li> 
+ <li>leftRemoveCount: 需要删除的左括弧的个数</li> 
+ <li>rightRemoveCount: 需要删除的右括弧的个数</li> 
+ <li>cur: 当前生成的字符串</li> 
+ <li>opencount: 这个表示当前有多少个左括弧没有被匹配， 这个参数非常重要， 我看了一些资料自己写的时候也忘记了。这个参数的作用是判断当前的字符串是否合法，只有合法的字符串才需要继续递归，并且最后也只有合法的字符串才可以加入到结果中。</li> 
+</ul> 
+<ol> 
+ <li>回溯的边界条件<br> a. 如果 leftRemoveCount &lt; 0 或者 rightRemoveCount &lt; 0 或者 opencount &lt; 0, 那么已经进入非法字符串，就不需要递归<br> b. 如果from == s.length(), 那么已经遍历完字符串了， 这时候判断opencount==0来决定是否加入最后的结果。<br> 实际写的时候可以保险一点加上if(opencount == 0 &amp;&amp; leftRemoveCount == 0 &amp;&amp; rightRemoveCount == 0),<br> 但是如果前面已经对非法情况进行判断的话，实际上opencount == 0 的时候， 其他两个自然也是0</li> 
+ <li>递归的主要逻辑<br> 就是判断当前字符，然后对是否删除当前字符两种情况做递归</li> 
+ <li>适当的优化<br> 实际上非法的右括弧一定在左边，所以可以先把右括弧全删除了， 到rightRemoveCount == 0的时候，才考虑删除左括弧</li> 
+ <li>这里去重直接使用了set, 当然会有更好的做法直接跳过重复的， 这个后面再学习</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public List&lt;String&gt; removeInvalidParentheses(String s) {
+        int leftRemoveCount = 0, rightRemoveCount = 0;
+        for(int i = 0; i &lt; s.length(); ++i) {
+            if(s.charAt(i) == '(') {
+                leftRemoveCount++;
+            }
+            else if(s.charAt(i) == ')'){
+                if(leftRemoveCount &gt; 0) {
+                    leftRemoveCount--;
+                }
+                else {
+                    rightRemoveCount++;
+                }
+            }
+        }
+        
+        Set&lt;String&gt; set = new HashSet&lt;&gt;();
+        backtrack(s, 0, leftRemoveCount, rightRemoveCount, "", set, 0);
+        return new ArrayList&lt;&gt;(set);
+    }
+    
+    public void backtrack(String s, int from, int leftRemoveCount, int rightRemoveCount, String cur, Set&lt;String&gt; set, int opencount) {
+        
+        if(leftRemoveCount &lt; 0 || rightRemoveCount &lt; 0 || opencount &lt; 0) return ;
+        if(from == s.length() ) {
+            if(opencount == 0 &amp;&amp; leftRemoveCount == 0 &amp;&amp; rightRemoveCount == 0) {
+                set.add(cur);    
+            }
+            return;
+        }
+        char ch = s.charAt(from);
+        if(ch == '(') {
+            if(rightRemoveCount == 0) { // only remove left when rightRemoveCount == 0
+                backtrack(s, from+1, leftRemoveCount-1, rightRemoveCount, cur, set, opencount); // remove current (    
+            }
+            
+            backtrack(s, from+1, leftRemoveCount, rightRemoveCount, cur + ch, set, opencount+1); // not remove current (
+        }
+        else if(ch == ')'){
+            backtrack(s, from+1, leftRemoveCount, rightRemoveCount-1, cur, set, opencount); // remove current )
+            backtrack(s, from+1, leftRemoveCount, rightRemoveCount, cur + ch, set, opencount-1); // not remove current )            
+        }
+        else {
+            backtrack(s, from+1, leftRemoveCount, rightRemoveCount, cur + ch, set, opencount); 
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(2^N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)?</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
