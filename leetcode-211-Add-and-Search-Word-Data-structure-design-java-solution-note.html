@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 211 Add and Search Word - Data structure design解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 211 Add and Search Word - Data structure design解题笔记</h1>
+			</div>
+
+			<p><em>25 April 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-211-add-and-search-word-data-structure-design" id="题目-leetcode-211-add-and-search-word-data-structure-design">题目 leetcode 211 Add and Search Word - Data structure design</a></h2> 
+<ol> 
+ <li>要求实现一个数据结构， 支持下面两个API</li> 
+</ol> 
+<pre><code>void addWord(word)
+bool search(word)
+</code></pre> 
+<ol> 
+ <li>添加的单词只包括英文小写字母， 搜索的单词包括英文小写字母， 和通配符".", 通配符可以匹配任意字母。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目对应的基本数据结构就是Trie(Prefix Tree, 字典树或者前缀树)， 但是会多一个通配符。 实现的整体结构也是和标准的Trie差不多，只是在搜索的时候，如果遇到通配符，那么当前字符可以是任意字符，所以可以对遍历到的节点的所有子节点进行继续搜索，如果有找到的，就返回true，如果没有就返回false</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class WordDictionary {
+    static class Node {
+        private Node[] children;
+        private boolean wordEnd;
+        public Node(boolean wordEnd) {
+            this.wordEnd = wordEnd;
+            this.children = new Node[26];
+        }
+    }
+    
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public WordDictionary() {
+        this.root = new Node(false);
+    }
+    
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        Node cur = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            int index = (int)(word.charAt(i) - 'a');
+            if(null == cur.children[index]) {
+                cur.children[index] = new Node(false);
+            }
+            cur = cur.children[index];
+            if(i == word.length()-1) {
+                cur.wordEnd = true;
+            }
+        }
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    public boolean search(String word) {
+        return search(root, word, 0);
+    }
+    
+    public boolean search(Node cur, String word, int from) {
+        for(int i = from; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            if(ch == '.') {
+                for(Node child: cur.children) {
+                    if(null != child) {
+                        if(search(child, word, i+1)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            else {
+                int index = (int)(ch - 'a');
+                if(null == cur.children[index]) {
+                    return false;
+                }
+                cur = cur.children[index];
+            }
+        }
+        return cur.wordEnd;
+    }
+}
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary obj = new WordDictionary();
+ * obj.addWord(word);
+ * boolean param_2 = obj.search(word);
+ */
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>假设单词的平均长度是L,添加单词的时间复杂度是O(L),搜索单词的时间复杂度也是O(L)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>Trie的空间复杂度一时不太搞的清楚， 以后再写。<br> 大概可以认为每个节点的空间复杂度是O(L), 然后这里每个节点会有26个子节点, 相当于一个26叉树，<br> 总共的上界可以认为是(26 + 26^2 + 26^3 + …. ) * L</p> 
+<h2><a href="#一些写错的代码" id="一些写错的代码">一些写错的代码</a></h2> 
+<p>虽然Trie写过好几次了， 不过现在写还是写错了好几个版本<br> 1. 对通配符的情况，如果子节点都没有返回争取的，那就要直接返回false，不能再走原来的循环</p> 
+<p>失败的数据</p> 
+<pre><code>Input: ["WordDictionary","addWord","addWord","search","search","search","search","search","search"]
+[[],["a"],["a"],["."],["a"],["aa"],["a"],[".a"],["a."]]
+Output: [null,null,null,true,true,false,true,true,true]
+Expected: [null,null,null,true,true,false,true,false,false]
+</code></pre> 
+<p>错误的代码</p> 
+<pre><code>class WordDictionary {
+    static class Node {
+        private Node[] children;
+        private boolean wordEnd;
+        public Node(boolean wordEnd) {
+            this.wordEnd = wordEnd;
+            this.children = new Node[26];
+        }
+    }
+    
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public WordDictionary() {
+        this.root = new Node(false);
+    }
+    
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        Node cur = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            int index = (int)(word.charAt(i) - 'a');
+            if(null == cur.children[index]) {
+                cur.children[index] = new Node(false);
+            }
+            cur = cur.children[index];
+            if(i == word.length()-1) {
+                cur.wordEnd = true;
+            }
+        }
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    public boolean search(String word) {
+        return search(root, word, 0);
+    }
+    
+    public boolean search(Node cur, String word, int from) {
+        for(int i = from; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            if(ch == '.') {
+                for(Node child: cur.children) {
+                    if(null != child) {
+                        if(search(child, word, i+1)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            else {
+                int index = (int)(ch - 'a');
+                if(null == cur.children[index]) {
+                    return false;
+                }
+                cur = cur.children[index];
+            }
+        }
+        return cur.wordEnd;
+    }
+}
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary obj = new WordDictionary();
+ * obj.addWord(word);
+ * boolean param_2 = obj.search(word);
+ */
+
+</code></pre> 
+<ol> 
+ <li></li> 
+</ol> 
+<p>搜索返回值的时候，遍历完成后，直接返回true是不对的，要返回现在是否走到了单词结尾</p> 
+<pre><code>class WordDictionary {
+    static class Node {
+        private Node[] children;
+        private boolean wordEnd;
+        public Node(boolean wordEnd) {
+            this.wordEnd = wordEnd;
+            this.children = new Node[26];
+        }
+    }
+    
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public WordDictionary() {
+        this.root = new Node(false);
+    }
+    
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        Node cur = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            int index = (int)(word.charAt(i) - 'a');
+            if(null == cur.children[index]) {
+                cur.children[index] = new Node(false);
+            }
+            cur = cur.children[index];
+            if(i == word.length()-1) {
+                cur.wordEnd = true;
+            }
+        }
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    public boolean search(String word) {
+        return search(root, word, 0);
+    }
+    
+    public boolean search(Node cur, String word, int from) {
+        for(int i = from; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            if(ch == '.') {
+                for(Node child: cur.children) {
+                    if(null != child) {
+                        if(search(child, word, i+1)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            else {
+                int index = (int)(ch - 'a');
+                if(null == cur.children[index]) {
+                    return false;
+                }
+                cur = cur.children[index];
+            }
+        }
+        return true;
+    }
+}
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary obj = new WordDictionary();
+ * obj.addWord(word);
+ * boolean param_2 = obj.search(word);
+ */
+
+</code></pre> 
+<ol> 
+ <li>Node构造函数的时候，没有初始化children</li> 
+</ol> 
+<pre><code>class WordDictionary {
+    static class Node {
+        private Node[] children;
+        private boolean wordEnd;
+        public Node(boolean wordEnd) {
+            this.wordEnd = wordEnd;
+        }
+    }
+    
+    private Node root;
+
+    /** Initialize your data structure here. */
+    public WordDictionary() {
+        this.root = new Node(false);
+    }
+    
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        Node cur = root;
+        for(int i = 0; i &lt; word.length(); ++i) {
+            int index = (int)(word.charAt(i) - 'a');
+            if(null == cur.children[index]) {
+                cur.children[index] = new Node(false);
+            }
+            cur = cur.children[index];
+            if(i == word.length()-1) {
+                cur.wordEnd = true;
+            }
+        }
+    }
+    
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    public boolean search(String word) {
+        return search(root, word, 0);
+    }
+    
+    public boolean search(Node cur, String word, int from) {
+        for(int i = from; i &lt; word.length(); ++i) {
+            char ch = word.charAt(i);
+            if(ch == '.') {
+                for(Node child: cur.children) {
+                    if(null != child) {
+                        if(search(child, word, i+1)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+            else {
+                int index = (int)(ch - 'a');
+                if(null == cur.children[index]) {
+                    return false;
+                }
+                cur = cur.children[index];
+            }
+        }
+        return cur.wordEnd;
+    }
+}
+
+/**
+ * Your WordDictionary object will be instantiated and called as such:
+ * WordDictionary obj = new WordDictionary();
+ * obj.addWord(word);
+ * boolean param_2 = obj.search(word);
+ */
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
