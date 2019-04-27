@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Google面试题Leetcode 236 Lowest Common Ancestor of a Binary Tree解题报告</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Google面试题Leetcode 236 Lowest Common Ancestor of a Binary Tree解题报告</h1>
+			</div>
+
+			<p><em>26 April 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-236-lowest-common-ancestor-of-a-binary-tree" id="题目-leetcode-236-lowest-common-ancestor-of-a-binary-tree">题目 Leetcode 236 Lowest Common Ancestor of a Binary Tree</a></h2> 
+<p>判断一个普通二叉树的任意两个节点的最小公共祖先</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这个题目第一次见的时候，只会写非常暴力的写法， 后来虽然学习了一下比较简洁的递归写法， 其他一些非递归的还是写不好。<br> 而且这个简洁的做法过了一段时间再来写， 还是写的磕磕碰碰不简洁。。。。</li> 
+ <li>这个题目还可以扩展到一些RMQ等其他高级操作，这个还需要后面学习。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本思想是做post order的递归， 就是对左右子树寻找这个节点（或者公共祖先）是否存在， 如果左右都存在，就返回当前的root，如果左边或者右边不存在，那么就返回存在的那边</li> 
+ <li>递归，如果要对寻找这个节点或者是左右子树的公共祖先分别写两个函数， 那会比较麻烦。 实际上我们可以直接用lowestCommonAncestor作为递归函数， 如果root == p || root == q, 就返回root， 虽然在子树里面这样返回的不是公共祖先，但是递归退回去的时候，只要有前面的左右逻辑，还是对的。</li> 
+</ol> 
+<h2><a href="#java解题代码" id="java解题代码">java解题代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        if(null == root) return null;
+        if(root == p || root == q) return root;
+        TreeNode left = lowestCommonAncestor(root.left, p, q);
+        TreeNode right = lowestCommonAncestor(root.right, p, q);
+        if(null != left &amp;&amp; null != right) {
+            return root;
+        }
+        return (null != left) ? left : right;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N), 最差情况需要遍历整颗树</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#一个效率不高的java代码" id="一个效率不高的java代码">一个效率不高的java代码</a></h2> 
+<p>我自己之前写的一个比较朴素想法的代码，<br> 1. 首先看左边子树是否有lca， 如果有的话就直接返回<br> 2. 然后看右边子树是否有lca， 如果有的话直接返回<br> 3. 如果左边和右边都没有的话， 进一步再判断root是否都是两个树的祖先，如果是的话就返回root， 否则就返回null</p> 
+<pre><code>public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+    if(null == root) return null;
+    
+    
+    TreeNode left = lowestCommonAncestor(root.left, p, q);
+    if(null != left) {
+        return left;
+    }
+    TreeNode right = lowestCommonAncestor(root.right, p, q);
+    if(null != right) {
+        return right;
+    }
+    if(isroot(root, p) &amp;&amp; isroot(root, q)) {
+        return root;
+    }
+    else {
+        return null;
+    }
+}
+
+boolean isroot(TreeNode root, TreeNode node) {
+    if(null == root) return false;
+    if(root == node) return true;
+    return root == node || isroot(root.left ,node) || isroot(root.right,node);
+}
+
+
+</code></pre> 
+<h2><a href="#过了一段时间以后回来写的代码" id="过了一段时间以后回来写的代码">过了一段时间以后回来写的代码</a></h2> 
+<p>还是不简洁</p> 
+<pre><code>public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+    if(null == root) return null;
+    if(root == p || root == q) return root;
+    
+    if(null == root.left) return lowestCommonAncestor(root.right, p, q);
+    if(null == root.right) return lowestCommonAncestor(root.left, p, q);
+
+    
+    TreeNode leftlca = lowestCommonAncestor(root.left, p, q);
+    TreeNode rightlca = lowestCommonAncestor(root.right, p, q);
+    if(null != leftlca &amp;&amp; null != rightlca) return root;
+    if(null == leftlca &amp;&amp; null == rightlca) return null;
+    
+    return (null == leftlca) ? rightlca : leftlca;
+}
+
+</code></pre> 
+<h2><a href="#一些参考资料" id="一些参考资料">一些参考资料</a></h2> 
+<p><a href="https://www.jianshu.com/p/1daa5ed33f1c">https://www.jianshu.com/p/1daa5ed33f1c</a><br> <a href="https://www.hrwhisper.me/algorithm-lowest-common-ancestor-of-a-binary-tree/">https://www.hrwhisper.me/algorithm-lowest-common-ancestor-of-a-binary-tree/</a></p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
