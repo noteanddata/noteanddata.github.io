@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Uber面试题目 leetcode 291 Word Pattern II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Uber面试题目 leetcode 291 Word Pattern II解题笔记</h1>
+			</div>
+
+			<p><em>27 April 2019</em></p>
+
+			<p><h2><a href="#uber面试题目-leetcode-291-word-pattern-ii" id="uber面试题目-leetcode-291-word-pattern-ii">Uber面试题目 leetcode 291 Word Pattern II</a></h2> 
+<p>输入一个pattern和一个字符串，问pattern能不能完全匹配字符串， pattern里面的每一个字符都可以替换成任意一个非空字符串；</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<p>虽然这个题目思路就是常规的搜索， 但是写起来还是错了很多很多，感觉问题的分析和求解还是不够清晰</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本只能硬搜，对于pattern里面的每一个字符，尝试str里面的每一个可能的子字符串，当然pattern和str每次都需要有一个当前位置</li> 
+ <li>这个题目的要求是如果a-&gt;abc, 那么就不能有另外一个字符b–&gt;abc, 所以需要一个反向的map来去掉这个可能性</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public boolean wordPatternMatch(String pattern, String str) {
+        
+        return match(pattern, 0, new HashMap&lt;&gt;(), new HashMap&lt;&gt;(), str, 0);
+    }
+    
+    boolean match(String pattern, int pfrom, Map&lt;Character, String&gt; map, Map&lt;String, Character&gt; rmap, String str, int sfrom) {
+        if(sfrom == str.length()) {
+            return pfrom == pattern.length();
+        }
+        else {
+            if(pfrom &gt;= pattern.length()) {
+                return false;
+            }
+        }
+        
+        char ch = pattern.charAt(pfrom);
+        String mstr = map.get(ch);
+        if(null == mstr) {
+            for(int j = sfrom+1; j &lt;= str.length(); ++j) {
+                String onemstr = str.substring(sfrom, j);
+                
+                // the string is already mapped to a different ch, we should not map another character to this string
+                Character rch = rmap.get(onemstr);
+                if(null != rch &amp;&amp; rch != ch) { 
+                    continue;
+                }
+                map.put(ch, onemstr);
+                rmap.put(onemstr, ch);
+                
+                if(match(pattern, pfrom+1, map, rmap, str, j)) {
+                    return true;
+                }
+                
+                rmap.remove(onemstr);
+                map.remove(ch); 
+            }
+            return false;
+        }
+        else {
+            for(int k = 0; k &lt; mstr.length() ; ++k) {
+                if(sfrom+k &gt;= str.length() || str.charAt(sfrom+k) != mstr.charAt(k)) {
+                    return false;
+                }
+            }
+            return match(pattern, pfrom+1, map, rmap, str, sfrom+mstr.length());
+        }
+    }
+}
+
+</code></pre> 
+<h2><a href="#一些写错的代码" id="一些写错的代码">一些写错的代码</a></h2> 
+<p>各种错误太多了， 都来不及记录错误了<br> 下面是第一个版本， 相差甚远</p> 
+<pre><code>class Solution {
+    public boolean wordPatternMatch(String pattern, String str) {
+        return match(pattern, 0, new HashMap&lt;&gt;(), str, 0);
+    }
+    
+    boolean match(String pattern, int pfrom, Map&lt;Character, String&gt; map, String str, int sfrom) {
+        if(pfrom == pattern.length()-1 &amp;&amp; sfrom == str.length()) {
+            return true;
+        }
+        for(int i = pfrom; i &lt; pattern.length(); ++i) {
+            char ch = pattern.charAt(i);
+            String mstr = map.get(ch);
+            if(null == mstr) {
+                for(int j = sfrom+1; j &lt;= str.length(); ++j) {
+                    String onemstr = str.substring(sfrom, j);
+                    map.put(ch, onemstr);
+                    if(match(pattern, pfrom, map, str, j)) {
+                        return true;
+                    }
+                    // map.remove(ch); // no need to reset because next put will automatically reset it
+                }
+                return false;
+            }
+            else {
+                int matchedCount = 0;
+                int nextMatchFrom = -1;
+                for(int j = sfrom; j &lt; str.length(); j += mstr.length()) {
+                    boolean matched = true;    
+                    for(int k = 0; k &lt; mstr.length(); ++k) {
+                        if(str.charAt(j+k) != mstr.charAt(k)) {
+                            matched = false;
+                            break;
+                        }
+                    }
+                    if(matched) {
+                        matchedCount++;
+                        nextMatchFrom = j + mstr.length();
+                    }
+                    else {
+                        break;
+                    }
+                }
+                
+                if(matchedCount == 0) {
+                    return false;
+                }
+                return match(pattern, pfrom+1, map, str, nextMatchFrom);
+            }
+        }
+        return false;
+    }
+}
+
+</code></pre> 
+<pre><code>class Solution {
+    public boolean wordPatternMatch(String pattern, String str) {
+        return match(pattern, 0, new HashMap&lt;&gt;(), str, 0);
+    }
+    
+    boolean match(String pattern, int pfrom, Map&lt;Character, String&gt; map, String str, int sfrom) {
+        if(pfrom == pattern.length()-1 &amp;&amp; sfrom == str.length()) {
+            return true;
+        }
+        for(int i = pfrom; i &lt; pattern.length(); ++i) {
+            char ch = pattern.charAt(i);
+            String mstr = map.get(ch);
+            if(null == mstr) {
+                for(int j = sfrom+1; j &lt;= str.length(); ++j) {
+                    String onemstr = str.substring(sfrom, j);
+                    map.put(ch, onemstr);
+                    if(match(pattern, pfrom, map, str, j)) {
+                        return true;
+                    }
+                    // map.remove(ch); // no need to reset because next put will automatically reset it
+                }
+                return false;
+            }
+            else {
+                int matchedCount = 0;
+                int nextMatchFrom = -1;
+                for(int j = sfrom; j &lt; str.length(); j += mstr.length()) {
+                    int k = 0;
+                    for(; k &lt; mstr.length() &amp;&amp; j+k &lt; str.length(); ++k) {
+                        if(str.charAt(j+k) != mstr.charAt(k)) {
+                            break;
+                        }
+                    }
+                    if(k == mstr.length()) {
+                        matchedCount++;
+                        nextMatchFrom = j + mstr.length();
+                    }
+                    else {
+                        break;
+                    }
+                }
+                
+                if(matchedCount == 0) {
+                    return false;
+                }
+                return match(pattern, pfrom+1, map, str, nextMatchFrom);
+            }
+        }
+        return false;
+    }
+}
+
+</code></pre> 
+<p>下面是到ac之前的版本，还是有严重的逻辑错误</p> 
+<pre><code>class Solution {
+    public boolean wordPatternMatch(String pattern, String str) {
+        
+        return match(pattern, 0, new HashMap&lt;&gt;(), new HashMap&lt;&gt;(), str, 0);
+    }
+    
+    boolean match(String pattern, int pfrom, Map&lt;Character, String&gt; map, Map&lt;String, Character&gt; rmap, String str, int sfrom) {
+        if(sfrom == str.length()) {
+            return pfrom == pattern.length();
+        }
+        else {
+            if(pfrom &gt;= pattern.length()) {
+                return false;
+            }
+        }
+        
+        char ch = pattern.charAt(pfrom);
+        String mstr = map.get(ch);
+        if(null == mstr) {
+            for(int j = sfrom+1; j &lt;= str.length(); ++j) {
+                String onemstr = str.substring(sfrom, j);
+                
+                // the string is already mapped to a different ch, we should not map another character to this string
+                Character rch = rmap.get(onemstr);
+                if(null != rch &amp;&amp; rch != ch) { 
+                    continue;
+                }
+                map.put(ch, onemstr);
+                rmap.put(onemstr, ch);
+                
+                if(match(pattern, pfrom, map, rmap, str, j) || match(pattern, pfrom+1, map, rmap, str, j)) {
+                    return true;
+                }
+                
+                rmap.remove(onemstr);
+                map.remove(ch); 
+            }
+            return false;
+        }
+        else {
+            int j = sfrom;
+            
+            int k = 0;
+            for(; k &lt; mstr.length() ; ++k) {
+                if(j+k &gt;= str.length() || str.charAt(j+k) != mstr.charAt(k)) {
+                    return false;
+                }
+            }
+            return match(pattern, pfrom+1, map, rmap, str, j+k) || match(pattern, pfrom, map, rmap, str, j+k);
+        }
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
