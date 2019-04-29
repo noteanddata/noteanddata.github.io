@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Uber面试题目 leetcode 815 Bus Routes解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Uber面试题目 leetcode 815 Bus Routes解题笔记</h1>
+			</div>
+
+			<p><em>27 April 2019</em></p>
+
+			<p><h2><a href="#uber面试题目-leetcode-815-bus-routes" id="uber面试题目-leetcode-815-bus-routes">Uber面试题目 leetcode 815 Bus Routes</a></h2> 
+<ol> 
+ <li>输入一个二维数组，数组里面的每个元素表示一个公交车会停的站； 公交车不停的在这些站里面进行循环；</li> 
+ <li>问，从一个起点到终点，最少需要多少次可以到达？</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本的思路是作为一个图来做， 每一个bus作为一个节点，然后如果两个bus之间有相同的位置， 那么这两个bus之间就有一条边相连. 相当于走一步。</li> 
+ <li>对于一个起点，可能会对应到多个bus； 同样，对于一个终点，也可能会对应到多个bus；</li> 
+ <li>那么，这个题目要找的就是，从某一个起点的bus，可以经过多少个步骤，换到终点的bus； 那么，对于每一个起点到终点，就可以用一个bfs函数来判断</li> 
+ <li>具体步骤的计算，还是需要稍微仔细一点； 如果起点和终点相同，那就是0 ；如果起点和终点在同一个bus里面，那就是1；<br> 其他情况，把step初始化成1， 然后对level不断计算就好</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int numBusesToDestination(int[][] routes, int S, int T) {
+        if(S == T) return 0;
+        
+        // for each point, build the list of buses
+        Map&lt;Integer, List&lt;Integer&gt;&gt; pointToBusMap = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; routes.length; ++i) {
+            int[] bus = routes[i];
+            for(int point: bus) {
+                List&lt;Integer&gt; list = pointToBusMap.get(point);
+                if(null == list) {
+                    list = new ArrayList&lt;&gt;();
+                    pointToBusMap.put(point, list);
+                }
+                if(!list.contains(i)) {
+                    list.add(i);    
+                }
+            }
+        }
+        
+        // bus--&gt; list&lt;next buses&gt;
+        Map&lt;Integer, List&lt;Integer&gt;&gt; graph = new HashMap&lt;&gt;();
+        for(Map.Entry&lt;Integer, List&lt;Integer&gt;&gt; entry: pointToBusMap.entrySet()) {
+            List&lt;Integer&gt; connectedBuses = entry.getValue();
+            for(int i = 0; i &lt; connectedBuses.size(); ++i) {
+                for(int j = i+1; j &lt; connectedBuses.size(); ++j) {
+                    // so busi and busj are connected
+                    int busi = connectedBuses.get(i);
+                    int busj = connectedBuses.get(j);
+                    List&lt;Integer&gt; nextfori = graph.get(busi);
+                    if(null == nextfori) {
+                        nextfori = new ArrayList&lt;&gt;();
+                        graph.put(busi, nextfori);
+                    }
+                    nextfori.add(busj);
+                    
+                    List&lt;Integer&gt; nextforj = graph.get(busj);
+                    if(null == nextforj) {
+                        nextforj = new ArrayList&lt;&gt;();
+                        graph.put(busj, nextforj);
+                    }
+                    nextforj.add(busi);
+                }
+            }
+        }
+        
+        List&lt;Integer&gt; sourceBusList = pointToBusMap.get(S);
+        List&lt;Integer&gt; targetBusList = pointToBusMap.get(T);
+        if(null == targetBusList || null == targetBusList) return -1;
+        
+        Set&lt;Integer&gt; targetBusSet = new HashSet&lt;&gt;(targetBusList);
+        
+        int min = Integer.MAX_VALUE;
+        for(int sourceBus: sourceBusList) {
+            min = Math.min(min, bfs(sourceBus, targetBusSet, graph));
+        }
+        return min == Integer.MAX_VALUE ? -1: min;
+    }
+    
+    int bfs(int sourceBus, Set&lt;Integer&gt; targetBusSet, Map&lt;Integer, List&lt;Integer&gt;&gt; graph) {
+        if(targetBusSet.contains(sourceBus)) return 1;
+        
+        int steps = 1;
+        Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(sourceBus);
+        Set&lt;Integer&gt; visited = new HashSet&lt;&gt;();
+        visited.add(sourceBus);
+        
+        while(!queue.isEmpty()) {
+            Queue&lt;Integer&gt; nextQueue = new LinkedList&lt;&gt;();
+            
+            while(!queue.isEmpty()) {
+                int curBus = queue.poll();
+
+                List&lt;Integer&gt; nextBusList = graph.get(curBus);
+                if(null != nextBusList) {
+                    for(int nextBus: nextBusList) {
+                        if(targetBusSet.contains(nextBus)) {
+                            return steps+1;
+                        }
+                        if(visited.contains(nextBus)) continue;
+
+                        visited.add(nextBus);
+                        nextQueue.add(nextBus);
+                    }
+                }
+            }
+            queue = nextQueue;
+            steps++;
+        }
+        return Integer.MAX_VALUE;
+    }
+}
+
+</code></pre> 
+<h2><a href="#一些不能通过的代码" id="一些不能通过的代码">一些不能通过的代码</a></h2> 
+<p>下面的代码会内存超出</p> 
+<pre><code>class Solution {
+    public int numBusesToDestination(int[][] routes, int S, int T) {
+        if(S == T) return 0;
+        
+        // for each point, build the list of buses
+        Map&lt;Integer, List&lt;Integer&gt;&gt; pointToBusMap = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; routes.length; ++i) {
+            int[] bus = routes[i];
+            for(int point: bus) {
+                List&lt;Integer&gt; list = pointToBusMap.get(point);
+                if(null == list) {
+                    list = new ArrayList&lt;&gt;();
+                    pointToBusMap.put(point, list);
+                }
+                list.add(i);
+            }
+        }
+        
+        // bus--&gt; list&lt;next buses&gt;
+        Map&lt;Integer, List&lt;Integer&gt;&gt; graph = new HashMap&lt;&gt;();
+        for(Map.Entry&lt;Integer, List&lt;Integer&gt;&gt; entry: pointToBusMap.entrySet()) {
+            List&lt;Integer&gt; connectedBuses = entry.getValue();
+            for(int i = 0; i &lt; connectedBuses.size(); ++i) {
+                for(int j = i+1; j &lt; connectedBuses.size(); ++j) {
+                    // so busi and busj are connected
+                    int busi = connectedBuses.get(i);
+                    int busj = connectedBuses.get(j);
+                    List&lt;Integer&gt; nextfori = graph.get(busi);
+                    if(null == nextfori) {
+                        nextfori = new ArrayList&lt;&gt;();
+                        graph.put(busi, nextfori);
+                    }
+                    nextfori.add(busj);
+                    
+                    List&lt;Integer&gt; nextforj = graph.get(busj);
+                    if(null == nextforj) {
+                        nextforj = new ArrayList&lt;&gt;();
+                        graph.put(busj, nextforj);
+                    }
+                    nextforj.add(busi);
+                }
+            }
+        }
+        
+        List&lt;Integer&gt; sourceBusList = pointToBusMap.get(S);
+        List&lt;Integer&gt; targetBusList = pointToBusMap.get(T);
+        if(null == targetBusList || null == targetBusList) return -1;
+        
+        Set&lt;Integer&gt; targetBusSet = new HashSet&lt;&gt;(targetBusList);
+        
+        int min = Integer.MAX_VALUE;
+        for(int sourceBus: sourceBusList) {
+            min = Math.min(min, bfs(sourceBus, targetBusSet, graph));
+        }
+        return min == Integer.MAX_VALUE ? -1: min;
+    }
+    
+    int bfs(int sourceBus, Set&lt;Integer&gt; targetBusSet, Map&lt;Integer, List&lt;Integer&gt;&gt; graph) {
+        if(targetBusSet.contains(sourceBus)) return 1;
+        
+        int steps = 1;
+        Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(sourceBus);
+        Set&lt;Integer&gt; visited = new HashSet&lt;&gt;();
+        visited.add(sourceBus);
+        
+        while(!queue.isEmpty()) {
+            Queue&lt;Integer&gt; nextQueue = new LinkedList&lt;&gt;();
+            
+            while(!queue.isEmpty()) {
+                int curBus = queue.poll();
+
+                List&lt;Integer&gt; nextBusList = graph.get(curBus);
+                if(null != nextBusList) {
+                    for(int nextBus: nextBusList) {
+                        if(targetBusSet.contains(nextBus)) {
+                            return steps+1;
+                        }
+                        if(visited.contains(nextBus)) continue;
+
+                        visited.add(nextBus);
+                        nextQueue.add(nextBus);
+                    }
+                }
+            }
+            queue = nextQueue;
+            steps++;
+        }
+        return Integer.MAX_VALUE;
+    }
+}
+</code></pre> 
+<p>下面的代码是错的</p> 
+<p>有可能直接就报错了，因为起点对应的bus可能就没有next bus</p> 
+<pre><code>
+Runtime Error Message: Line 74: java.lang.NullPointerException
+Last executed input: [[1],[15,16,18],[10],[3,4,12,14]]
+3
+15
+
+
+</code></pre> 
+<pre><code>class Solution {
+    public int numBusesToDestination(int[][] routes, int S, int T) {
+        if(S == T) return 0;
+        
+        // for each point, build the list of buses
+        Map&lt;Integer, List&lt;Integer&gt;&gt; pointToBusMap = new HashMap&lt;&gt;();
+        for(int i = 0; i &lt; routes.length; ++i) {
+            int[] bus = routes[i];
+            for(int point: bus) {
+                List&lt;Integer&gt; list = pointToBusMap.get(point);
+                if(null == list) {
+                    list = new ArrayList&lt;&gt;();
+                    pointToBusMap.put(point, list);
+                }
+                list.add(i);
+            }
+        }
+        
+        // bus--&gt; list&lt;next buses&gt;
+        Map&lt;Integer, List&lt;Integer&gt;&gt; graph = new HashMap&lt;&gt;();
+        for(Map.Entry&lt;Integer, List&lt;Integer&gt;&gt; entry: pointToBusMap.entrySet()) {
+            List&lt;Integer&gt; connectedBuses = entry.getValue();
+            for(int i = 0; i &lt; connectedBuses.size(); ++i) {
+                for(int j = i+1; j &lt; connectedBuses.size(); ++j) {
+                    // so busi and busj are connected
+                    int busi = connectedBuses.get(i);
+                    int busj = connectedBuses.get(j);
+                    List&lt;Integer&gt; nextfori = graph.get(busi);
+                    if(null == nextfori) {
+                        nextfori = new ArrayList&lt;&gt;();
+                        graph.put(busi, nextfori);
+                    }
+                    nextfori.add(busj);
+                    
+                    List&lt;Integer&gt; nextforj = graph.get(busj);
+                    if(null == nextforj) {
+                        nextforj = new ArrayList&lt;&gt;();
+                        graph.put(busj, nextforj);
+                    }
+                    nextforj.add(busi);
+                }
+            }
+        }
+        
+        List&lt;Integer&gt; sourceBusList = pointToBusMap.get(S);
+        List&lt;Integer&gt; targetBusList = pointToBusMap.get(T);
+        if(null == targetBusList || null == targetBusList) return -1;
+        
+        Set&lt;Integer&gt; targetBusSet = new HashSet&lt;&gt;(targetBusList);
+        
+        int min = Integer.MAX_VALUE;
+        for(int sourceBus: sourceBusList) {
+            min = Math.min(min, bfs(sourceBus, targetBusSet, graph));
+        }
+        return min == Integer.MAX_VALUE ? -1: min;
+    }
+    
+    int bfs(int sourceBus, Set&lt;Integer&gt; targetBusSet, Map&lt;Integer, List&lt;Integer&gt;&gt; graph) {
+        if(targetBusSet.contains(sourceBus)) return 1;
+        
+        int steps = 1;
+        Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(sourceBus);
+        Set&lt;Integer&gt; visited = new HashSet&lt;&gt;();
+        visited.add(sourceBus);
+        
+        while(!queue.isEmpty()) {
+            Queue&lt;Integer&gt; nextQueue = new LinkedList&lt;&gt;();
+            
+            while(!queue.isEmpty()) {
+                int curBus = queue.poll();
+
+                List&lt;Integer&gt; nextBusList = graph.get(curBus);
+                for(int nextBus: nextBusList) {
+                    if(targetBusSet.contains(nextBus)) {
+                        return steps+1;
+                    }
+                    if(visited.contains(nextBus)) continue;
+                    
+                    visited.add(nextBus);
+                    nextQueue.add(nextBus);
+                }
+            }
+            queue = nextQueue;
+            steps++;
+        }
+        return Integer.MAX_VALUE;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
