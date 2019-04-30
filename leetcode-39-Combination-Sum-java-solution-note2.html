@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 39 Combination Sum解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 39 Combination Sum解题笔记2</h1>
+			</div>
+
+			<p><em>30 April 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-39-combination-sum" id="题目-leetcode-39-combination-sum">题目 leetcode 39 Combination Sum</a></h2> 
+<p>输入一个不重复的整数数组， 问有多少个组合，可以使得这些数的组合之和是一个target， 数组里面的数可以任意取多次</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目之前写过一次， 解题笔记在这里, <a href="http://www.noteanddata.com/leetcode-39-Combination-Sum-airbnb-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-39-Combination-Sum-airbnb-interview-problem-java-solution-note.html</a> 但是今天再来写，还是错了好几次， 感觉自己对搜索backtrack并不是理解很透，很多时候分析还是会出错。 而且今天写的代码，和当时的代码也很不一样，甚至看原来的代码都有点不太明白。</li> 
+ <li>现在的思路是这样：<br> a. 对于每一个位置，只有两种可能，选或者不选， 那么，只要递归这个过程， 对于每个位置做这两种判断就好。<br> b. 其中， 如果不选当前数的话，必然是直接到下一个位置<br> c. 如果要选当前数的话， 前提条件是当前数仍然没有超过target， 选了以后，递归的时候仍然从当前位置开始<br> d. 这里要注意递归的结束条件， target变成负数或者index越界了就结束</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; combinationSum(int[] candidates, int target) {
+    List&lt;List&lt;Integer&gt;&gt; ret = new ArrayList&lt;&gt;();
+    
+    backtrack(candidates, 0, target, new ArrayList&lt;&gt;(), ret);
+    return new ArrayList&lt;&gt;(ret);
+}
+
+void backtrack(int[] candidates, int from, int target, List&lt;Integer&gt; cur, List&lt;List&lt;Integer&gt;&gt; ret) {
+    if(target &lt; 0 || from &gt;= candidates.length) return ;  // all numbers are positive, just ignore 
+    
+    if(target == 0) {
+        ret.add(new ArrayList&lt;&gt;(cur));
+        return;
+    }
+            
+    // 1. skip current number 
+    backtrack(candidates, from+1, target, cur, ret);
+
+    // 2. select current number if possible
+    if(target &gt;= candidates[from]) {
+        cur.add(candidates[from]);
+        // because each number can be used multiple times, so after selection, we can still check from i 
+        backtrack(candidates, from, target-candidates[from], cur, ret);
+        cur.remove(cur.size()-1);
+    }    
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(2^N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>递归深度是O(N) ?</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
