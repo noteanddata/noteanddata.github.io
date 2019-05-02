@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Lyft面试题目 leetcode 735 Asteroid Collision解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Lyft面试题目 leetcode 735 Asteroid Collision解题笔记</h1>
+			</div>
+
+			<p><em>30 April 2019</em></p>
+
+			<p><h2><a href="#lyft面试题目-leetcode-735-asteroid-collision" id="lyft面试题目-leetcode-735-asteroid-collision">Lyft面试题目 leetcode 735 Asteroid Collision</a></h2> 
+<ol> 
+ <li>输入一个非0整数数组， 每个数的绝对值表示小行星的质量，正数表示向右，负数表示向左；</li> 
+ <li>两个同方向的小行星速度一样，永远不会相撞； 相反方向的小行星，质量小的会被撞掉； 如果两个质量一样大，两个一起消失；</li> 
+ <li>问，最后还剩下哪些小行星？</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>从左向右扫描，如果遇到正数，就可以放到容器里面； 如果遇到负数，那么看容器里面原来的值， 如果新遇到的质量比较大，那么原来的就可能会连续被撞掉。 那么，适合的数据结构就是堆栈</li> 
+ <li>具体步骤如下:<br> a. 遇到正数， 就加到堆栈里面<br> b. 遇到负数，</li> 
+</ol> 
+<ul> 
+ <li>先把堆栈上的绝对值更小的正数全部弹出</li> 
+ <li>如果堆栈上有绝对值一样的正数，也弹出， 同时结束当前步骤（不需要把当前数加到堆栈上）</li> 
+ <li>否则，就剩下几种情况</li> 
+ <li>要么堆栈是空的 –&gt; 需要加入新来的数</li> 
+ <li>要么堆栈顶端的数是负数 –&gt; 需要加入新来的数</li> 
+ <li>要么堆栈顶端的正数比新来的数绝对值大 –&gt; 不需要加入新来的数</li> 
+</ul> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int[] asteroidCollision(int[] arr) {
+    Stack&lt;Integer&gt; stack = new Stack&lt;&gt;();
+    for(int item: arr) {
+        if(item &gt; 0) {
+            stack.push(item);    
+        }
+        else { // item &lt; 0 
+            while(!stack.isEmpty() &amp;&amp; stack.peek() &gt; 0 &amp;&amp; stack.peek() &lt; -item) {
+                stack.pop();
+            }
+            if(!stack.isEmpty() &amp;&amp; stack.peek() &gt; 0 &amp;&amp; stack.peek() == -item) {
+                stack.pop();
+            }
+            else {
+                if(stack.isEmpty() || stack.peek() &lt; 0 ) {
+                    stack.push(item);
+                }
+            }                
+        }
+    }
+    
+    int[] ret = new int[stack.size()];
+    for(int i = ret.length-1; i &gt;= 0; --i) {
+        ret[i] = stack.pop();
+    }
+    return ret;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
