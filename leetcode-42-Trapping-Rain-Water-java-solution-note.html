@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 42 Trapping Rain Water解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 42 Trapping Rain Water解题笔记</h1>
+			</div>
+
+			<p><em>02 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-42-trapping-rain-water" id="题目-leetcode-42-trapping-rain-water">题目 leetcode 42 Trapping Rain Water</a></h2> 
+<p>著名的leetcode 蓄水题， 输入一个整数数组， 每个元素表示每个index上的砖头的高度， 问整个容器能够放多少单位的水？</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<p>这个题目有好几个做法， 然后最简洁的做法其实是非常简洁优美的，但是要说自己分析，一定是分析不出来的。<br> 隐约感觉这个分析的关键是分析出状态的核心信息， 但是自己还是没太多理解和体会！</p> 
+<h2><a href="#解题思路分析1" id="解题思路分析1">解题思路分析1</a></h2> 
+<ol> 
+ <li>水能够放住是因为两边都有比当前高度更高的砖块</li> 
+ <li>这里的第一步思想应该是, 对于每一个位置，能够放的水的容量是，左边的最大高度和右边的最大高度里面取小的值，然后减去当前的高度</li> 
+ <li>对于每个位置左边最大的高度，可以用一个int[] left表示，然后一次遍历，每次取最大值，就可以<br> 同样，每个数组右边的最大高度也可以一次遍历得到</li> 
+ <li>有了int[] left 和int[] right 分别表示每个元素左边和右边的最大高度以后，<br> 那么， 取int minmax = Math.min(left[i-1], right[i-1])就可以取到一个较小的高度，<br> 这时候，如果minmax &gt; height[i], 那么就加上 minmax-height[i]</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<p>下面是代码，这个思路我认为非常容易理解，而且没有任何tricky的地方，写起来基本不容易出bug</p> 
+<pre><code>public int trap(int[] height) {
+    int[] left = new int[height.length];
+    int[] right = new int[height.length];
+    for(int i = 0; i &lt; height.length; ++i) {
+        if(i == 0) {
+            left[i] = height[i];
+        }
+        else {
+            left[i] = Math.max(left[i-1], height[i]);
+        }
+    }
+    for(int i = height.length-1; i &gt;= 0; --i) {
+        if(i == height.length-1) {
+            right[i] = height[i];
+        }
+        else {
+            right[i] = Math.max(right[i+1], height[i]);
+        }
+    }
+    int sum = 0;
+    for(int i = 1; i &lt; height.length-1; ++i) {
+        int minmax = Math.min(left[i-1], right[i+1]);
+        if(minmax &gt; height[i]) {
+            sum += minmax - height[i];
+        }
+    }
+    return sum;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
