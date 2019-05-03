@@ -103,10 +103,33 @@ var _hmt = _hmt || [];
     return sum;
 }
 </code></pre> 
+<p>当然，这里遍历了数组三次，其实取一个方向的max可以在最后遍历计算的时候顺便得到, 这样就可以减少一次遍历，也减少了一个N大小的数组</p> 
+<pre><code>public int trap(int[] height) {
+    int[] right = new int[height.length];
+    for(int i = height.length-1; i &gt;= 0; --i) {
+        if(i == height.length-1) {
+            right[i] = height[i];
+        }
+        else {
+            right[i] = Math.max(right[i+1], height[i]);
+        }
+    }
+    int sum = 0;
+    int leftmax = 0;
+    for(int i = 1; i &lt; height.length-1; ++i) {
+        leftmax = Math.max(leftmax, height[i-1]);
+        int minmax = Math.min(leftmax, right[i+1]);
+        if(minmax &gt; height[i]) {
+            sum += minmax - height[i];
+        }
+    }
+    return sum;
+}
+</code></pre> 
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
 <p>O(N)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>O(1)</p></p>
+<p>O(N)</p></p>
 	</div>		
 
 <div class="col-sm-4">
