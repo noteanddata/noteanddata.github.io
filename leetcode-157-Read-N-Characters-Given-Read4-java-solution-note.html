@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 157 Read N Characters Given Read4解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 157 Read N Characters Given Read4解题笔记</h1>
+			</div>
+
+			<p><em>03 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-157-read-n-characters-given-read4" id="题目-leetcode-157-read-n-characters-given-read4">题目 leetcode 157 Read N Characters Given Read4</a></h2> 
+<p>现在要从文件里面读n个字符串，可以用的API只有read4<br> int read4(char[] buf);</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li> <p>基本步骤就是可以分成几种情况，<br> 第一是读的过程中遇到文件结束了， 这个需要判断每次返回的字符个数是不是&lt;4<br> 第一是可以完整的读入4个字符的， 总共可以读n/4次<br> 第二是最后多出来的几个字符， n%4</p> </li> 
+ <li> <p>整体可以分成两步</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * The read4 API is defined in the parent class Reader4.
+ *     int read4(char[] buf);
+ */
+public class Solution extends Reader4 {
+    /**
+     * @param buf Destination buffer
+     * @param n   Number of characters to read
+     * @return    The number of actual characters read
+     */
+    public int read(char[] buf, int n) {
+        
+        int total = 0;
+        char[] temp = new char[4];
+        for(int i = 0; i &lt; n/4; ++i) {
+            int count = read4(temp);
+            System.arraycopy(temp, 0, buf, total, count);
+            total += count;
+            if(count &lt; 4) {
+                return total;
+            }
+        }
+        if(n%4 &gt; 0) {
+            int remain = n%4;
+            int count = read4(temp);
+            count = Math.min(count, remain);
+            System.arraycopy(temp, 0, buf, total, count);
+            total += count;
+        }
+        return total;
+    }
+}
+</code></pre> 
+<h2><a href="#java题解代码2" id="java题解代码2">java题解代码2</a></h2> 
+<ol> 
+ <li>上面的代码其实比较冗余，代码结构不清晰， 整体状态可以分成下面两部分<br> a. 文件是否结束, 这个只需要看返回值就可以<br> b. 需要拷贝多少个字符到buf里面， 这个其实需要取Math.min(count, n-total)<br> 其中total是目前已经读过的字符数</li> 
+</ol> 
+<p>这样，可以直接在一个循环里面把所有过程用一个统一的逻辑完成</p> 
+<pre><code>/**
+ * The read4 API is defined in the parent class Reader4.
+ *     int read4(char[] buf);
+ */
+public class Solution extends Reader4 {
+    /**
+     * @param buf Destination buffer
+     * @param n   Number of characters to read
+     * @return    The number of actual characters read
+     */
+    public int read(char[] buf, int n) {
+        
+        int total = 0;
+        char[] temp = new char[4];
+        boolean eof = false;
+        while(!eof &amp;&amp; total &lt; n) {
+            int count = read4(temp);
+            if(count &lt; 4) {
+                eof = true;
+            }
+            count = Math.min(count, n-total);
+            System.arraycopy(temp, 0, buf, total, count);
+            total += count;
+        }
+        
+        return total;
+    }
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
