@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 42 Trapping Rain Water解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 42 Trapping Rain Water解题笔记2</h1>
+			</div>
+
+			<p><em>02 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-42-trapping-rain-water" id="题目-leetcode-42-trapping-rain-water">题目 leetcode 42 Trapping Rain Water</a></h2> 
+<p>著名的leetcode 蓄水题， 输入一个整数数组， 每个元素表示每个index上的砖头的高度， 问整个容器能够放多少单位的水？</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>用O(N)空间复杂度的思路和代码在之前的文章里面已经分析了 <a href="http://www.noteanddata.com/leetcode-42-Trapping-Rain-Water-java-solution-note.html">http://www.noteanddata.com/leetcode-42-Trapping-Rain-Water-java-solution-note.html</a></li> 
+ <li>这里分析一个O(1)空间复杂度的代码， 核心思路如下：<br> a. 使用双指针，从两边向中间移动，开始的时候，两个指针分别指向0和n-1<br> b. 之前的分析已经讲到，对于每一个位置sum += Math.min(left_max[i], right_max[i]) - height[i]<br> 也就是取min(左边最大的高度， 右边最大的高度), 那么我们在遍历的过程中肯定要保存left_max和right_max,<br> c. 这里的核心思想是，用两个指针的时候，每次都从高度更小的开始移动，并且，只需要检查同一个方向的left_max或者是right_max就可以。</li> 
+ <li>直觉上，这个思路隐约好像有那么一点道理，因为感觉从高的那个开始移动好像不太对。 但是为什么这个是正确的，我想了很久， 然后看了很多人写的代码和文章，感觉都没有写清楚为什么，并没有清晰的正确性证明。<br> 但是这片文章的证明是非常清晰的。<br> <a href="https://zhuanlan.zhihu.com/p/34328213">https://zhuanlan.zhihu.com/p/34328213</a></li> 
+ <li>证明的核心逻辑是反证法<br> a. 只要每次移动的时候, 我们都是移动较小的那个数，<br> 那么对于height[left]的两边来说，leftmax一定是更小的那个数。 因为left &gt;= indexOf(leftmax), 那么left之所以会从indexOf(leftmax)移动到现在这个位置, 就是在当时的指针在的时候遇到的右边的数更大，所以，leftmax一定是更小的；<br> 对于height[right]的两边来说, rightmax也一定是那个更小的数。<br> b. 上面的结论看起来虽然有那么一点道理，但是好像又有点矛盾，主要的矛盾是说为什么leftmax是更小的那个，rightmax也是更小的那个？那leftmax和rightmax哪个大？<br> 这个是这样，每次遇到那个最大的数的时候，这个数就不会动了，都是另外一个方向在动,所以那个方向上都只检查自己这边的max就可以；然后,直到在另外一个方向遇到一个更大的数，当前的数才会移动，同样，由于在另外一边遇到了一个更大的数，这边也是只检查自己这边的max就可以，因为这次另外一个方向上遇到的新的更大的数是比这边之前的都要大</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int trap(int[] height) {
+    int left = 0, right = height.length-1;
+    int leftmax = 0, rightmax = 0;
+    int sum = 0;
+    while(left &lt; right) {
+        leftmax = Math.max(leftmax, height[left]);
+        rightmax = Math.max(rightmax, height[right]);
+        if(height[left] &lt; height[right]) {
+            sum += leftmax - height[left];
+            left++;
+        }
+        else {
+            sum += rightmax - height[right];
+            right--;
+        }
+    }
+    return sum;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
