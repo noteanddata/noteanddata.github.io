@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1038 Binary Search Tree to Greater Sum Tree解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1038 Binary Search Tree to Greater Sum Tree解题笔记</h1>
+			</div>
+
+			<p><em>04 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1038-binary-search-tree-to-greater-sum-tree" id="题目-leetcode-1038-binary-search-tree-to-greater-sum-tree">题目 leetcode 1038 Binary Search Tree to Greater Sum Tree</a></h2> 
+<ol> 
+ <li>输入一个二叉搜索树, 把每个节点的值改成整个树里面&gt;=当前节点值的节点和</li> 
+ <li>这里二叉搜索树没有相等的值</li> 
+</ol> 
+<pre><code>As a reminder, a binary search tree is a tree that satisfies these constraints:
+    * The left subtree of a node contains only nodes with keys less than the node's key.
+    * The right subtree of a node contains only nodes with keys greater than the node's key.
+    * Both the left and right subtrees must also be binary search trees.
+</code></pre> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目递归还是比较明显， 但是具体怎么递归，还是有不少细节，需要好好想一想，比赛的时候我也是调试了好久才分析清楚</li> 
+ <li>因为我们是要把更大的数加上，递归的过程，一定是先递归右子树，这个应该非常直接，因为右边的值都比当前节点大</li> 
+ <li>对于任何一个节点，右边子树所有的值都要加到当前节点上</li> 
+ <li>如果一个节点有左子树， 当前节点的值（已经从右子树加上的值）要传递给左子树，然后也要全部加到左边的每一个节点上</li> 
+ <li>dfs递归要传递的参数，包括由父节点传递下来的值（比如左子树的右子树）</li> 
+ <li>dfs要返回的值， 是当前树的最左边的子节点的值(因为这个节点本来是BST里面的最小值)</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode bstToGst(TreeNode root) {
+        if(null != root)  {
+            dfs(root, 0);
+        }
+        return root;
+    }
+    
+    int dfs(TreeNode node, int diff) {
+        if(null != node.right) {
+            int rdiff = dfs(node.right, diff);    
+            node.val += rdiff;
+        }
+        else {
+            node.val += diff;
+        }
+        
+        if(null == node.left) {
+            return node.val;
+        }
+        else {
+            int left = dfs(node.left, node.val);
+            return left;
+        } 
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>每个节点都只遍历一次 O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>递归的深度就是树的高度， 所以空间复杂度是 O(lgN) ？</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
