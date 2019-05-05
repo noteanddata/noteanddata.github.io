@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1039 Minimum Score Triangulation of Polygon解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1039 Minimum Score Triangulation of Polygon解题笔记</h1>
+			</div>
+
+			<p><em>04 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1039-minimum-score-triangulation-of-polygon" id="题目-leetcode-1039-minimum-score-triangulation-of-polygon">题目 leetcode 1039 Minimum Score Triangulation of Polygon</a></h2> 
+<ol> 
+ <li>输入一个整数数组, 数组的index表示一个平面上点的index， 这样就组成一个多边形；</li> 
+ <li>然后数组每个元素的值表示这个元素的分数</li> 
+ <li>要在这个多边形里面把一些点连起来，组成N-2个三角形</li> 
+ <li>每个三角形的分数是a[i] * a[j] * a[k]， 整体的分数是所有三角形的分数和</li> 
+ <li>问，这个分数和的最小值是多少？</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目dp的特征也比较明显，但是dp的难度就在于如何定义状态， 从而可以把大问题转换成重叠子问题； 最近的感悟是输入是一维数组的dp通常会比较难，除非题目本身就是简单的一维动态规划， 因为如果输入是二维的，那么通常定义dp[i][j]的状态都会非常直接。 但是如果输入是一维的，通常需要自己想办法定义合理的状态， 形成重叠子问题，但是这个状态的定义有时候会比较难，摸不着套路。</li> 
+ <li>比如之前做了312 Burst Balloons, <a href="http://www.noteanddata.com/leetcode-312-Burst-Balloons-java-solution-note.html">http://www.noteanddata.com/leetcode-312-Burst-Balloons-java-solution-note.html</a><br> 重点在于如果选择第一步的话，子问题在不停的变换（左右气球发生了变化)，从而无法重叠， 但是如果选择最后一步的话, 左右的数都还没有被扎， 因为我们计算是从小距离到大距离开始计算，所以形成了重叠的子问题，这样就可以用动态规划的思路</li> 
+ <li>又比如leetcode 1000 Minimum Cost to Merge Stones, <a href="http://www.noteanddata.com/leetcode-1000-Minimum-Cost-to-Merge-Stones-java-solution-note.html">http://www.noteanddata.com/leetcode-1000-Minimum-Cost-to-Merge-Stones-java-solution-note.html</a>, 里面通过一个三维的状态数组， 构造了dp[i][j][c], 然后通过两个递推关系，计算了普通c个堆的构造， c-1和1堆，相当于切一刀； 另外把k个合并成一个<br> dp[i][j][c] = dp[i][t][c-1] + dp[t+1][j][1]<br> dp[i][j][1] = dp[i][j][k] + sum[i][j]</li> 
+ <li>和前面两个问题类似， 这里的动态规划也是需要寻找重叠子问题<br> 这里假设dp[i][j]是从i到j的多边形的最小值。 那么，假设中间选一个点是k， 那么可以由i,j,k组成一个三角形，然后左边和右边就会形成重叠的子问题dp[i][k]和dp[k][j], 那么就有递推公式如下<br> dp[i][j] = min(dp[i][k] + dp[k][j] + a[i] * a[j] * a[k])</li> 
+ <li> <p>同时，我们做这个计算需要从小到大计算，所以需要循环距离从小到大， 也就是要计算dp[i][j]的时候，要保证dp[i][k]和dp[k][j]已经计算过了， 这样我们需要d=j-i 然后从小到大循环</p> </li> 
+ <li>对边界条件的思考需要自己推理一下， 这里需要防止溢出， 然后其他情况设置默认0就好了</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int minScoreTriangulation(int[] A) {
+    int[][] dp = new int[A.length][A.length];
+    for(int d = 2; d &lt; A.length; ++d) {
+        for(int i = 0; i+d &lt; A.length; ++i) {
+            int j = i + d;
+            int min = Integer.MAX_VALUE;
+            for(int k = i+1; k &lt; j; ++k) {
+                min = Math.min(min, dp[i][k] + dp[k][j] + A[i] * A[k] * A[j]);
+            }
+            if(min != Integer.MAX_VALUE) {
+                dp[i][j] = min;    
+            }
+        }
+    }
+    return dp[0][A.length-1];
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^3)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N^2)</p> 
+<h2><a href="#超时的代码" id="超时的代码">超时的代码</a></h2> 
+<ol> 
+ <li>这里是我自己写的时候的做法，毫无疑问的超时了，虽然这里有子问题，也用了记忆化，但是这个切分问题的方式，虽然也有重叠的子问题，但是重叠的子问题比较少</li> 
+ <li>动态规划的核心思路应该是，状态最好是连续的， 比如定义dp[i][j]是表示从i到j的，</li> 
+</ol> 
+<pre><code>class Solution {
+    public int minScoreTriangulation(int[] A) {
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        for(int v: A) {
+            list.add(v);
+        }
+        return findMin(list, new HashMap&lt;&gt;());
+    }
+    
+    int findMin(List&lt;Integer&gt; list, Map&lt;List&lt;Integer&gt;, Integer&gt; map) {
+        Integer ret = map.get(list);
+        if(null != ret) return ret;
+        
+        if(list.size() == 3) {
+            int prod = 1;
+            for(int v: list) {
+                prod *= v;
+            }
+            map.put(list, prod);
+            return prod;
+        }
+        else {
+            ret = Integer.MAX_VALUE;
+            for(int i = 0; i &lt; list.size(); ++i) {
+                List&lt;Integer&gt; copy = new ArrayList&lt;&gt;(list);
+                copy.remove(i);
+                int prod = list.get(i) * myget(list, i-1) * myget(list, i+1);
+                ret = Math.min(ret, prod + findMin(copy, map));
+            }
+            map.put(list, ret);
+            return ret;
+        }
+    }
+    
+    int myget(List&lt;Integer&gt; list, int i) {
+        i = (i + list.size())%list.size();
+        return list.get(i);
+    }
+}
+
+</code></pre> 
+<h2><a href="#超时的代码2" id="超时的代码2">超时的代码2</a></h2> 
+<p>试图改成BitSet做key， 还是超时</p> 
+<pre><code>class Solution {
+    public int minScoreTriangulation(int[] A) {
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        for(int v: A) {
+            list.add(v);
+        }
+        BitSet visited = new BitSet(list.size());
+        return findMin(list, new HashMap&lt;&gt;(), visited);
+    }
+    
+    int findMin(List&lt;Integer&gt; list, Map&lt;BitSet, Integer&gt; map, BitSet visited) {
+        Integer ret = map.get(visited);
+        if(null != ret) return ret;
+        
+        if(list.size() - visited.cardinality() == 3) {
+            int prod = 1;
+            for(int i = 0; i &lt; list.size(); ++i) {
+                if(!visited.get(i)) {
+                    prod *= list.get(i);    
+                }
+            }
+            map.put(visited, prod);
+            return prod;
+        }
+        else {
+            ret = Integer.MAX_VALUE;
+            for(int i = 0; i &lt; list.size(); ++i) {
+                if(visited.get(i)) continue;
+                int prod = list.get(i) * get(list, i, visited, true) * get(list, i, visited, false);
+                visited.set(i);
+                ret = Math.min(ret, prod + findMin(list, map, visited));
+                visited.clear(i);
+            }
+            map.put(visited, ret);
+            return ret;
+        }
+    }
+
+    int get(List&lt;Integer&gt; list, int i, BitSet visited, boolean next) {
+        while(true) {
+            i += (next ? 1 : -1);
+            if(i &gt;= list.size()) {
+                i = 0;
+            }
+            if(i &lt; 0) {
+                i = list.size()-1;
+            }
+            if(!visited.get(i)) {
+                return list.get(i);    
+            }
+        }
+    }
+    
+    int myget(List&lt;Integer&gt; list, int i) {
+        i = (i + list.size())%list.size();
+        return list.get(i);
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
