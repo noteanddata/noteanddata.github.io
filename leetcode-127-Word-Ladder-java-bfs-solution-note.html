@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 127 Word Ladder解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 127 Word Ladder解题笔记</h1>
+			</div>
+
+			<p><em>03 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-127-word-ladder" id="题目-leetcode-127-word-ladder">题目 leetcode 127 Word Ladder</a></h2> 
+<ol> 
+ <li>输入一个开始单词和结束单词， 然后在输入一个单词数组，</li> 
+ <li>定义一个transform操作是从一个单词变换到另外一个单词， 然后这个变换是每次只能替换单词里面的一个字符到另外一个字符</li> 
+ <li>问，最少需要经过多少个变换才可以从开始的单词到结束的单词， 返回的长度是变换列表的长度</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>这个比较直接的思路是BFS，但是这题数据量比较大，单纯的BFS需要在细节上写的比较注意才可以通过，否则每个地方都是暴力的话会超时。</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int ladderLength(String beginWord, String endWord, List&lt;String&gt; wordList) {
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(beginWord);
+        int steps = 1;
+        
+        Set&lt;String&gt; wordSet = new HashSet&lt;&gt;(wordList);
+        while(!queue.isEmpty()) {
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(!queue.isEmpty()) {
+                String word = queue.poll();
+                Iterator&lt;String&gt; pos = wordSet.iterator();
+                while(pos.hasNext()) {
+                    String str = pos.next();
+                    if(validNext(word, str)) {
+                        if(str.equals(endWord)) {
+                            return steps+1;
+                        }
+                        nextQueue.add(str);
+                        pos.remove();
+                    }
+                }        
+            }
+            queue = nextQueue;
+            steps++;
+        }
+        return 0;
+    }
+    boolean validNext(String a, String b) {
+        int diff = 0;
+        for(int i = 0; i &lt; a.length(); ++i) {
+            if(a.charAt(i) != b.charAt(i)) {
+                diff++;
+                if(diff &gt;= 2) return false;
+            }
+        }
+        return diff == 1;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^2*L) ？ 其中N是单词的个数， L是单词的平均长度<br> 总共循环可能N次， 每次里面都可能需要对N个单词分别做遍历， 单词的平均长度是L</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>queue的最大长度是N, O(N)</p> 
+<h2><a href="#超时的代码" id="超时的代码">超时的代码</a></h2> 
+<p>每次新生成一个set，那么就会超时</p> 
+<pre><code>class Solution {
+    public int ladderLength(String beginWord, String endWord, List&lt;String&gt; wordList) {
+        if(!wordList.contains(endWord)) return 0;
+        
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(beginWord);
+        int steps = 1;
+        
+        Set&lt;String&gt; wordSet = new HashSet&lt;&gt;(wordList);
+        
+        while(!queue.isEmpty()) {
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            
+            Set&lt;String&gt; nextWordSet = new HashSet&lt;&gt;(wordSet);
+            
+            while(!queue.isEmpty()) {
+                String word = queue.poll();
+                for(String str: wordSet) {                    
+                    if(validNext(word, str)) {
+                        if(str.equals(endWord)) {
+                            return steps+1;
+                        }
+                        nextQueue.add(str);
+                        nextWordSet.remove(str);
+                    }
+                }        
+            }
+            queue = nextQueue;
+            wordSet = nextWordSet;
+            steps++;
+        }
+        return 0;
+    }
+    boolean validNext(String a, String b) {
+        int diff = 0;
+        for(int i = 0; i &lt; a.length(); ++i) {
+            if(a.charAt(i) != b.charAt(i)) {
+                diff++;
+                if(diff &gt;= 2) return false;
+            }
+        }
+        return diff == 1;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误的代码" id="错误的代码">错误的代码</a></h2> 
+<p>前面超时以后， 试图改成用原来的容器然后直接用iterator.delete(), 但是写的时候就不对了， 需要对queue里面取出来的每个单词都遍历剩下的所有单词， 而不是在一层里面取单词就完了。<br> 在每一步操作的时候，具体对哪些元素遍历的顺序一定要清晰。</p> 
+<pre><code>class Solution {
+    public int ladderLength(String beginWord, String endWord, List&lt;String&gt; wordList) {
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(beginWord);
+        int steps = 1;
+        
+        Set&lt;String&gt; wordSet = new HashSet&lt;&gt;(wordList);
+        
+        
+        while(!queue.isEmpty()) {
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            Iterator&lt;String&gt; pos = wordSet.iterator();
+            while(!queue.isEmpty()) {
+                String word = queue.poll();
+                while(pos.hasNext()) {
+                    String str = pos.next();
+                    if(validNext(word, str)) {
+                        if(str.equals(endWord)) {
+                            return steps+1;
+                        }
+                        nextQueue.add(str);
+                        pos.remove();
+                    }
+                }        
+            }
+            queue = nextQueue;
+            steps++;
+        }
+        return 0;
+    }
+    boolean validNext(String a, String b) {
+        int diff = 0;
+        for(int i = 0; i &lt; a.length(); ++i) {
+            if(a.charAt(i) != b.charAt(i)) {
+                diff++;
+                if(diff &gt;= 2) return false;
+            }
+        }
+        return diff == 1;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
