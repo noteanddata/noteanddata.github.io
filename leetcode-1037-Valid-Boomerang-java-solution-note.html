@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1037 Valid Boomerang解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1037 Valid Boomerang解题笔记</h1>
+			</div>
+
+			<p><em>04 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1037-valid-boomerang" id="题目-leetcode-1037-valid-boomerang">题目 leetcode 1037 Valid Boomerang</a></h2> 
+<p>在一个二维平面上，输入三个点，判断三个点是否不在一条直线上</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>判断点是否在一个直线上，可以固定一个点，然后看其他点和这个点的斜率<br> y = kx + b<br> 固定了一个点以后，只要斜率一样，那么直线就是一样</li> 
+ <li>但是，算斜率会有一个特殊情况要处理，<br> k = (y1-y0)/(x1-x0)<br> 如果x是一样点，那么就会有除0问题</li> 
+ <li>但是判断了这个情况以后还有一个特殊情况要处理，就是重复的点，<br> 如果point[0]和point[1]有重复，那么判断斜率这个就不可以了。 所以对重复点还要做一个判断</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<p>下面是代码，可以看到其实比较繁琐</p> 
+<pre><code>public boolean isBoomerang(int[][] points) {
+    if(equal(points[0], points[1]) || equal(points[0], points[2]) ) {
+        return false;
+    }
+    if(points[0][0] == points[1][0]) {
+        return points[2][0] != points[1][0];
+    }
+    else {
+        double k1 = 1.0 * (points[1][1] - points[0][1]) / (points[1][0] - points[0][0]);
+        double k2 = 1.0 * (points[2][1] - points[0][1]) / (points[2][0] - points[0][0]);
+        return k1 != k2;
+    }
+}
+boolean equal(int[] p1, int[] p2) {
+    return p1[0] == p2[0] &amp;&amp; p1[1] == p2[1];
+}
+
+</code></pre> 
+<h2><a href="#错误的代码" id="错误的代码">错误的代码</a></h2> 
+<p>比如，开始写的这个代码就没有考虑到重复的点的问题。</p> 
+<pre><code>public boolean isBoomerang(int[][] points) {
+    if(points[0][0] == points[1][0]) {
+        return points[2][0] != points[1][0];
+    }
+    else {
+        double k1 = 1.0 * (points[1][1] - points[0][1]) / (points[1][0] - points[0][0]);
+        double k2 = 1.0 * (points[2][1] - points[0][1]) / (points[2][0] - points[0][0]);
+        return k1 != k2;
+    }
+}
+</code></pre> 
+<h2><a href="#简洁的代码" id="简洁的代码">简洁的代码</a></h2> 
+<p>当然，更简洁的一个代码是，把斜率相等的除法转换成乘法， 这样就不需要判断除以0的问题， 也可以判断重复点的问题，<br> 因为有重复点的话，两个0都会作用到等号的两边。 这个技巧以后可以记住，在平面上的点用起来会比较方便</p> 
+<pre><code>public boolean isBoomerang(int[][] points) {
+    // double k1 = 1.0 * (points[2][1] - points[0][1]) / (points[2][0] - points[0][0]);
+    // double k2 = 1.0 * (points[1][1] - points[0][1]) / (points[1][0] - points[0][0]);
+    return (points[2][1] - points[0][1]) * (points[1][0] - points[0][0]) != (points[1][1] - points[0][1]) * (points[2][0] - points[0][0]);
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
