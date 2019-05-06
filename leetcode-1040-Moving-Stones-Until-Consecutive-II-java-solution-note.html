@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1040 Moving Stones Until Consecutive II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1040 Moving Stones Until Consecutive II解题笔记</h1>
+			</div>
+
+			<p><em>04 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1040-moving-stones-until-consecutive-ii" id="题目-leetcode-1040-moving-stones-until-consecutive-ii">题目 leetcode 1040 Moving Stones Until Consecutive II</a></h2> 
+<p>输入一个整数数组， 每个数字表示这个石头在一条直线上的位置， 然后定义移动操作：<br> 1. 每次只能从直线的两端开始取石头，然后移动到中间空的位置上<br> 2. 移动端点的石头的时候，只能把石头移动到非端点的位置<br> 比如[1,2,5], 这里就不能移动5， 因为5无论移动到中间那个位置， 5仍然是端点<br> 3. 移动的目标是所有的石头都在一个连续的位置上</p> 
+<p>问<br> 1. 最少可以移动多少次可以让所有的石头都在一个连续的位置上？<br> 2. 最多可以移动多少次可以让所有的石头都在一个连续的位置上</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>如果题目条件比较多，可以先从简单的情况开始， 简单的情况可以从小样本开始做； 也可以是把部分条件去掉。 然后再考虑如何加上条件， 这里， 如果直接考虑两个条件，对于求最小值，就比较难找（可能会考虑贪心或者二分，但是这里无论想用贪心还是二分都比较难找，或者考虑简化的场景，也不太好处理，反而把第二个条件去掉，会相对容易分析一点)。</li> 
+ <li>这次leetcode contest 135比赛的时候只有40个人全部做出来了。 也就是这个题目本身是很难想到思路的。<br> 所以自我安慰一下不会也没关系：）但是具体分析以后，这个sliding windows的技巧，需要好好学习。 然后分析问题先去掉限制的套路，也可以学习一下。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目思路不太好找， 当然第一步肯定是排序</li> 
+ <li>找最大的可能比较容易， 我们先分析最大的。<br> a. 假设没有第二个条件， 可以在中间的空位上随意移动， 那就比较直接了， 每次都移动到最远的可以填的空位上，相当于把每一个空位都利用上，那么直接遍历一下数组， 把所有都空位都加起来，就是最大的可能移动的位置。<br> b. 这时候我们考虑不能把端点的石头移动到端点， 这只会出现在端点只有一个石头， 然后中间空了x个位置的情况。 因为端点如果有两个石头的话，就可以轮流移动到中间。<br> c. 但是如果我们只有一个端点是这样的情况的话，也可以避免这样的情况，因为我们可以直接移动另外一端的石头到这边来。<br> 所以只有两边都是这样的情况才会出现问题， 这时候的区别其实也比较明显，第一步只能移动一端到另外一个gap那边靠近端点的位置，然后就没有这样的情况了。 这时候相当于跳过了小的gap</li> 
+ <li> <p>找最小的步骤， 这个也先把端点不能移动到端点的限制去掉。<br> a. 因为最后这n个石头是连续的，相当于找一个sliding window, 这个sliding window按照值来说要&lt;=n, 然后减去这个window里面的元素的个数， 就是有多少个空位， 这个空位的最小值，就是最小的移动值<br> b. 这个sliding window的过程可以通过两个指针来实现， 一个快指针每次向前移动一个， 如果当前window的值 &gt; n了, 那么移动慢指针；<br> c. 每次双指针合法的时候，计算当前有多少个元素， 然后n-count就是gap的大小， 然后取最小值就好<br> d. 这时候，考虑加上端点不能移动到端点的限制。 那么只有一种情况是不能按照最小步骤来直接移动的，就是n-1个石头是连续的，另外一个石头在和这些石头的距离&gt;=2, 那么，这时候需要移动两次才可以得到最终结果。</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int[] numMovesStonesII(int[] stones) {
+        Arrays.sort(stones);
+        return new int[]{findMin(stones), findMax(stones)};
+    }
+    
+    int findMin(int[] stones) {
+        int n = stones.length;
+        int j = 0;
+        int min = n;
+        for(int i = 0; i &lt; n; ++i) { // first move fast pointer, 
+            while(stones[i] - stones[j] +1 &gt; n) j++; // if window is over, move slow pointer
+            
+            int count = i-j+1;
+            if(count == n-1 &amp;&amp; stones[i] - stones[j] == n-2) {
+                min = Math.min(min, 2);
+            }
+            else {
+                int gapcount = n - count;
+                min = Math.min(min, gapcount);                            
+            }
+        }
+        return min;
+    }
+    
+    int findMax(int[] stones) {
+        int sum = 0;
+        for(int i = 1; i &lt; stones.length; ++i) {
+            sum += stones[i] - stones[i-1] - 1;
+        }
+        int n = stones.length;
+        if(n &gt;= 1 &amp;&amp; stones[1] != stones[0] + 1) { // single element gap at the beginning
+            if(n &gt;= 2 &amp;&amp; stones[n-1] != stones[n-2] + 1) { // single element end at the end 
+                int gap1 = stones[1] - stones[0]-1;
+                int gap2 = stones[n-1] - stones[n-2]-1;
+                return sum - Math.min(gap1, gap2);
+            }
+        }
+        return sum;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N<em>lgN)<br> 1. 排序部分是O(N</em>lgN)<br> 2. 双指针部分是O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
