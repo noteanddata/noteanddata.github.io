@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 694 Number of Distinct Islands解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 694 Number of Distinct Islands解题笔记</h1>
+			</div>
+
+			<p><em>05 May 2018</em></p>
+
+			<p><h2><a href="#题目-leetcode-694-number-of-distinct-islands" id="题目-leetcode-694-number-of-distinct-islands">题目 leetcode 694 Number of Distinct Islands</a></h2> 
+<p>在一个2d的矩阵上，1表示是陆地，0表示是水， 要求返回总共有多少个不同形状的岛屿</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目是前面的题目的升级版<a href="http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html">http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html</a></li> 
+ <li>遍历的过程还是可以用dfs遍历</li> 
+ <li>核心的变化是这里要判断岛屿的形状， 如果形状一样的话，就当成是不同的岛屿. 所以这里重点是判断形状；<br> 形状可以这样定义： 按照固定的顺序做dfs， 然后把每个位置和开始的位置的坐标差放到一个字符串里面，那么所有的形状都可以用这个字符串作为key来判断。 因为我们只存储了坐标差，所以只和每个点的相对位置有关系，和绝对位置没有关系， 这样就可以判断形状。</li> 
+ <li>做开始的位置，就是在最外层循环的时候第一次成功进入dfs的位置，然后以后每次递归的时候仍然传递这个值就好</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int numDistinctIslands(int[][] grid) {
+        
+        Set&lt;String&gt; set = new HashSet&lt;&gt;();
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        for(int i = 0; i &lt; grid.length; ++i) {
+            for(int j = 0; j &lt; grid[i].length; ++j) {
+                StringBuilder sb = new StringBuilder();
+                dfs(grid, i, j, visited, i, j, sb);
+                if(sb.length() &gt; 0) {
+                    set.add(sb.toString());
+                }            
+            }
+        }
+        return set.size();
+    }
+    
+    void dfs(int[][] grid, int x, int y, boolean[][] visited, int ox, int oy, StringBuilder sb) {
+        if(x &lt; 0 || y &lt; 0 || x &gt;= grid.length || y &gt;= grid[0].length) return;
+        if(visited[x][y] || grid[x][y] != 1) return;
+        visited[x][y] = true;
+        
+        sb.append(x - ox).append(".").append(y-oy).append(".");
+        
+        int[][] dirs = {{-1,0}, {1,0}, {0,1}, {0, -1}};
+        for(int i = 0; i &lt; dirs.length; ++i) {
+            int nextx = x + dirs[i][0];
+            int nexty = y + dirs[i][1];
+            dfs(grid, nextx, nexty, visited, ox, oy, sb);
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(M*N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M*N)</p> 
+<h2><a href="#一个冗长的版本" id="一个冗长的版本">一个冗长的版本</a></h2> 
+<p>之前写的一个版本，可以通过， 但是也是调试了好几次才通过， 而且这么长的代码肯定调试了很久才通过</p> 
+<pre><code>class Solution {
+    public int numDistinctIslands(int[][] grid) {
+        List&lt;TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt;&gt; mapList = new ArrayList&lt;&gt;();
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        
+        for(int i = 0; i &lt; grid.length; ++i) {
+            for(int j = 0; j &lt; grid[i].length; ++j) {
+                TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; map = new TreeMap&lt;&gt;();
+                dfs(grid, i, j, map, visited);
+                if(map.size() &gt; 0) {
+                    mapList.add(map);
+                }
+            }
+        }
+        
+        System.out.println("map.size=" + mapList.size());
+        
+        int count = 0;
+        while(mapList.size() &gt; 0) {
+            List&lt;TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt;&gt; unprocessed = new ArrayList&lt;&gt;();
+            for(int i = 1; i &lt; mapList.size(); ++i) {
+                TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; map0 = mapList.get(0);
+                TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; mapi = mapList.get(i);
+                
+                //if(!equal(map0,mapi) || !equal(transform(map0), transform(mapi))) {
+                if(!realequal(map0, mapi)) {
+                    unprocessed.add(mapList.get(i));
+                }
+            }
+            mapList = unprocessed;
+            count++;
+        }
+        return count;
+    }
+
+    /**
+even we compare each row and column, it will still fail for this test case     
+[[0,1,1,0,1,1,0]
+,[1,1,0,0,0,1,1]]
+    
+    */
+    TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; transform(TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; map) {
+        TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; tmap = new TreeMap&lt;&gt;();
+        for(Map.Entry&lt;Integer, TreeSet&lt;Integer&gt;&gt; entry: map.entrySet()) {
+            int row = entry.getKey();
+            TreeSet&lt;Integer&gt; cols = entry.getValue();
+            for(int col : cols) {
+                TreeSet&lt;Integer&gt; rows = tmap.get(col);
+                if(null == rows) {
+                    rows = new TreeSet&lt;&gt;();
+                    tmap.put(col, rows);
+                }
+                rows.add(row);
+            }
+        }
+        return tmap;
+    }
+    
+    // row-&gt;set&lt;col&gt;
+    boolean realequal(TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; map1, TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; map2) {
+        if(map1.size() != map2.size()) {
+            return false;
+        }
+        List&lt;List&lt;Integer&gt;&gt; allDiff1 = getAllDiff(map1);
+        List&lt;List&lt;Integer&gt;&gt; allDiff2 = getAllDiff(map2);
+        return allDiff1.equals(allDiff2);
+    }
+    
+    List&lt;List&lt;Integer&gt;&gt; getAllDiff(TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; map) {
+        List&lt;List&lt;Integer&gt;&gt; allDiff = new ArrayList&lt;&gt;();
+        Integer firstrow = null;
+        Integer firstcol = null;
+        for(Map.Entry&lt;Integer, TreeSet&lt;Integer&gt;&gt; entry: map.entrySet()) {
+            int row = entry.getKey();
+            for(int v: entry.getValue()) {
+                int col = v;
+                if(null == firstrow &amp;&amp; null == firstcol) {
+                    firstrow = row;
+                    firstcol = col;
+                }
+                else {
+                    allDiff.add(Arrays.asList(row-firstrow, col-firstcol));
+                }
+            }
+        }
+        return allDiff;
+    }
+    
+    
+    /*
+    below will fail, even rowcount equals, and for each row, column count equals, column diff matches, they are still not the same
+[[1,1]
+,[1,0]
+,[0,0]
+,[1,1]
+,[0,1]]    
+    */
+    boolean equal(TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; map1, TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; map2) {
+        if(map1.size() != map2.size()) {
+            return false;
+        }
+        if(!equal(map1.keySet(), map2.keySet())) {
+            return false;
+        }
+        
+        List&lt;TreeSet&lt;Integer&gt;&gt; colList1 = new ArrayList&lt;&gt;(map1.values());
+        List&lt;TreeSet&lt;Integer&gt;&gt; colList2 = new ArrayList&lt;&gt;(map2.values());
+        if(colList1.size() != colList2.size()) {
+            return false;
+        }
+        for(int i = 0; i &lt; colList1.size(); ++i) {
+            TreeSet&lt;Integer&gt; set1 = colList1.get(i);
+            TreeSet&lt;Integer&gt; set2 = colList2.get(i);
+            if(!equal(set1, set2)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    boolean equal(Set&lt;Integer&gt; set1, Set&lt;Integer&gt; set2) {
+        List&lt;Integer&gt; diff1List = getDiffList(set1);
+        List&lt;Integer&gt; diff2List = getDiffList(set2);
+        if(!diff1List.equals(diff2List)) {
+            return false;
+        }
+        return true;
+    }
+    
+    List&lt;Integer&gt; getDiffList(Set&lt;Integer&gt; set) {
+        int i = 0;
+        int lastkey = 0;
+        List&lt;Integer&gt; diffList = new ArrayList&lt;&gt;();
+        for(int key: set) {
+            if(i &gt; 0) {
+                diffList.add(key-lastkey);
+            }
+            lastkey = key;
+            i++;
+        }
+        return diffList;        
+    }
+    
+    
+    // map: row--&gt; set of columns
+    void dfs(int[][] grid, int x, int y, TreeMap&lt;Integer, TreeSet&lt;Integer&gt;&gt; map, boolean[][] visited) {
+        if(x &lt; 0 || y &lt; 0 || x &gt;= grid.length || y &gt;= grid[0].length || grid[x][y] == 0 || visited[x][y]) {
+            return;
+        }
+        visited[x][y] = true;
+        TreeSet&lt;Integer&gt; set = map.get(x);
+        if(null == set) {
+            set = new TreeSet&lt;&gt;();
+            map.put(x, set);
+        }
+        set.add(y);
+        
+        dfs(grid, x+1, y, map, visited);
+        dfs(grid, x-1, y, map, visited);
+        dfs(grid, x, y+1, map, visited);
+        dfs(grid, x, y-1, map, visited);
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
