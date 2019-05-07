@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 127 Word Ladder双向BFS解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 127 Word Ladder双向BFS解题笔记2</h1>
+			</div>
+
+			<p><em>06 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-127-word-ladder" id="题目-leetcode-127-word-ladder">题目 leetcode 127 Word Ladder</a></h2> 
+<ol> 
+ <li>输入一个开始单词和结束单词， 然后在输入一个单词数组，</li> 
+ <li>定义一个transform操作是从一个单词变换到另外一个单词， 然后这个变换是每次只能替换单词里面的一个字符到另外一个字符</li> 
+ <li>问，最少需要经过多少个变换才可以从开始的单词到结束的单词， 返回的长度是变换列表的长度</li> 
+</ol> 
+<h2><a href="#思路分析" id="思路分析">思路分析</a></h2> 
+<ol> 
+ <li>在之前的文章里面<a href="http://www.noteanddata.com/leetcode-127-Word-Ladder-java-bidirectional-bfs-solution-note.html">http://www.noteanddata.com/leetcode-127-Word-Ladder-java-bidirectional-bfs-solution-note.html</a>写了双向BFS的解法， 里面有一个小优化就是每次从更小的queue开始遍历，然后这里想尝试一下去掉这个优化直接改成每次取一个方向，结果发现直接不能通过了， 下面分析一些错误的代码和为什么是错的，以及如何去掉优化以后还是可以通过</li> 
+</ol> 
+<h2><a href="#错误的代码1" id="错误的代码1">错误的代码1</a></h2> 
+<p>这里把之前的按size来判断做替换的逻辑去掉了，然后直接就不能通过了， 这里的重点在于， beginWord不是在wordList里面的，如果直接改成从endword开始遍历的话，在wordList里面找是不能找到beginword的， 那就return<br> false， 但是可能存在beginword一步就替换成endWord</p> 
+<pre><code>class Solution {
+    public int ladderLength(String beginWord, String endWord, List&lt;String&gt; wordList) {
+        Queue&lt;String&gt; queue1 = new LinkedList&lt;&gt;();
+        queue1.add(beginWord);
+        Queue&lt;String&gt; queue2 = new LinkedList&lt;&gt;();
+        queue2.add(endWord);
+        
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        visited.add(endWord);
+        
+        int steps = 1;
+        while(queue1.size() &gt; 0 &amp;&amp; queue2.size() &gt; 0) {            
+            Queue&lt;String&gt; temp = queue1;
+            queue1 = queue2;
+            queue2 = temp;
+            
+            
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(!queue1.isEmpty()) {
+                String cur = queue1.poll();
+                for(String word: wordList) {
+                    if(valid(cur, word)) {
+                        if(queue2.contains(word)) {
+                            return steps+1;
+                        }
+                        
+                        if(!visited.contains(word)) {
+                            nextQueue.add(word);
+                            visited.add(word);                            
+                        }
+                    }
+                }
+            }
+            queue1 = nextQueue;
+            steps++;
+        }
+        return 0;
+    }
+    
+    boolean valid(String a, String b) {
+        int diff = 0;
+        for(int i = 0; i &lt; a.length(); ++i) {
+            if(a.charAt(i) != b.charAt(i)) {
+                diff++;
+                if(diff &gt;= 2) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误的代码2" id="错误的代码2">错误的代码2</a></h2> 
+<p>这里改了前面的bug， 第一次都是从beginWord开始搜索，然后每次搜索完换一个方向，但是还是出错，原因在于，对于endword， 如果他不在wordList里面, 也会继续搜索。</p> 
+<pre><code>class Solution {
+    public int ladderLength(String beginWord, String endWord, List&lt;String&gt; wordList) {
+        Queue&lt;String&gt; queue1 = new LinkedList&lt;&gt;();
+        queue1.add(beginWord);
+        Queue&lt;String&gt; queue2 = new LinkedList&lt;&gt;();
+        queue2.add(endWord);
+        
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        visited.add(endWord);
+        
+        int steps = 1;
+        while(queue1.size() &gt; 0 &amp;&amp; queue2.size() &gt; 0) {            
+            
+            
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(!queue1.isEmpty()) {
+                String cur = queue1.poll();
+                for(String word: wordList) {
+                    if(valid(cur, word)) {
+                        if(queue2.contains(word)) {
+                            return steps+1;
+                        }
+                        
+                        if(!visited.contains(word)) {
+                            nextQueue.add(word);
+                            visited.add(word);                            
+                        }
+                    }
+                }
+            }
+            queue1 = nextQueue;
+            steps++;
+            
+            Queue&lt;String&gt; temp = queue1;
+            queue1 = queue2;
+            queue2 = temp;
+            
+        }
+        return 0;
+    }
+    
+    boolean valid(String a, String b) {
+        int diff = 0;
+        for(int i = 0; i &lt; a.length(); ++i) {
+            if(a.charAt(i) != b.charAt(i)) {
+                diff++;
+                if(diff &gt;= 2) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+
+</code></pre> 
+<h2><a href="#正确的代码" id="正确的代码">正确的代码</a></h2> 
+<ol> 
+ <li>开始的时候, 先检查endword是不是在wordList里面</li> 
+ <li>搜索的时候，从beginword开始搜索</li> 
+ <li>然后每次搜索交替搜索</li> 
+</ol> 
+<p>这样是常规的双向搜索，也是可以的</p> 
+<pre><code>class Solution {
+    public int ladderLength(String beginWord, String endWord, List&lt;String&gt; wordList) {
+        if(!wordList.contains(endWord)) return 0;
+        
+        Queue&lt;String&gt; queue1 = new LinkedList&lt;&gt;();
+        queue1.add(beginWord);
+        Queue&lt;String&gt; queue2 = new LinkedList&lt;&gt;();
+        queue2.add(endWord);
+        
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        visited.add(endWord);
+        
+        int steps = 1;
+        while(queue1.size() &gt; 0 &amp;&amp; queue2.size() &gt; 0) {            
+            
+            
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(!queue1.isEmpty()) {
+                String cur = queue1.poll();
+                for(String word: wordList) {
+                    if(valid(cur, word)) {
+                        if(queue2.contains(word)) {
+                            return steps+1;
+                        }
+                        
+                        if(!visited.contains(word)) {
+                            nextQueue.add(word);
+                            visited.add(word);                            
+                        }
+                    }
+                }
+            }
+            queue1 = nextQueue;
+            steps++;
+            
+            Queue&lt;String&gt; temp = queue1;
+            queue1 = queue2;
+            queue2 = temp;
+            
+        }
+        return 0;
+    }
+    
+    boolean valid(String a, String b) {
+        int diff = 0;
+        for(int i = 0; i &lt; a.length(); ++i) {
+            if(a.charAt(i) != b.charAt(i)) {
+                diff++;
+                if(diff &gt;= 2) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
