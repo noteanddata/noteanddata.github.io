@@ -174,6 +174,105 @@ var _hmt = _hmt || [];
 }
 
 </code></pre> 
+<h3><a href="#可以通过的代码2" id="可以通过的代码2">可以通过的代码2</a></h3> 
+<p>这里把所有的旋转和reflection结合起来，就是原来是6种情况现在变8种情况，发现也一样可以ac。<br> 也就是说其实判断形状相同,6种情况已经覆盖了8种情况？</p> 
+<pre><code>class Solution {
+    public int numDistinctIslands2(int[][] grid) {
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        
+        Set&lt;String&gt; set = new HashSet&lt;&gt;();
+        int count = 0;
+        for(int i = 0; i &lt; grid.length; ++i) {
+            for(int j = 0; j &lt; grid[i].length; ++j) {
+                if(grid[i][j] == 1 &amp;&amp; !visited[i][j]) {
+                    List&lt;List&lt;int[]&gt;&gt; allList = new ArrayList&lt;&gt;();
+                    for(int t = 0; t &lt; 8; ++t) {
+                        allList.add(new ArrayList&lt;&gt;());
+                    }
+                    
+                    dfs(grid, i, j, visited, i, j, allList);
+                    
+                    boolean exist = false;
+                    List&lt;String&gt; nset = new ArrayList&lt;&gt;();
+                    for(List&lt;int[]&gt; list : allList) {
+                        if(list.size() == 0) continue;
+                        
+                        // sort after finishing all operations 
+                        Collections.sort(list, new Comparator&lt;int[]&gt;() {
+                            public int compare(int[] a, int[] b) {
+                                return (a[0] != b[0]) ? (a[0] - b[0]) : (a[1] - b[1]);
+                            }
+                        });
+                        
+                        String s = encode(list);
+                        
+                        if(set.contains(s)) {
+                            exist = true;
+                        }                        
+                        nset.add(s);
+                    }
+                                        
+                    if(!exist) {
+                        count++;
+                        set.addAll(nset);
+                    }
+                }
+            }
+        }
+        return count;
+    }
+    
+    String encode(List&lt;int[]&gt; list) {
+        int ox = list.get(0)[0];
+        int oy = list.get(0)[1];
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("0,0;");
+
+        for(int k = 1; k &lt; list.size(); ++k) {
+            int dx = list.get(k)[0] - ox;
+            int dy = list.get(k)[1] - oy;
+            sb.append(dx).append(",").append(dy).append(";");
+        }
+
+        String s = sb.toString();
+        return s;        
+    }
+    
+    void addAll(List&lt;List&lt;int[]&gt;&gt; allList, int dx, int dy) {
+        allList.get(0).add(new int[]{dx, dy});
+        
+        // rotation
+        allList.get(1).add(new int[]{-dy, dx});
+        allList.get(2).add(new int[]{-dx, -dy});
+        allList.get(3).add(new int[]{dy, -dx});
+        
+        // mirror
+        allList.get(4).add(new int[]{-dx, dy});        
+        allList.get(5).add(new int[]{dx, -dy});
+
+        allList.get(6).add(new int[]{dy, dx});
+        allList.get(7).add(new int[]{dy, -dx});
+        
+    }
+    
+    void dfs(int[][] grid, int x, int y, boolean[][] visited, int ox, int oy, List&lt;List&lt;int[]&gt;&gt; allList) {
+        if(x &lt; 0 || x &gt;= grid.length || y &lt; 0 || y &gt;= grid[0].length) return;
+        if(visited[x][y] || grid[x][y] == 0) return;
+        visited[x][y] = true;
+        
+        addAll(allList, x-ox, y-oy);
+        
+        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+        for(int i  = 0; i &lt; dirs.length; ++i) {
+            int nextx = x + dirs[i][0];
+            int nexty = y + dirs[i][1];
+            dfs(grid, nextx, nexty, visited, ox, oy, allList);
+        }
+    }
+}
+
+</code></pre> 
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
 <p>整个矩阵还是只遍历一次， 所以时间复杂度还是O(M*N)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
