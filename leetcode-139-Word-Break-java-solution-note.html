@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 139 Word Break解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 139 Word Break解题笔记</h1>
+			</div>
+
+			<p><em>06 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-139-word-break" id="题目-leetcode-139-word-break">题目 leetcode 139 Word Break</a></h2> 
+<ol> 
+ <li>输入一个字符串s和一个单词列表， 问， 字符串s能不能通过单词列表里面的单词组成？</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>一个直观的思路是暴力解，首先从头开始，看看每个单词能不能成为成为字符串的开头， 如果匹配上了， 可以对后面的继续这个过程</li> 
+ <li>但是这个过程有一点重复， 其实每次计算都是计算的时候，问题是判断某一个子字符串是不是满足要求， 而某一个子字符串，在这个问题里面其实就是原始字符串的index， 那么， 这个子问题可能是重叠的。<br> 比如， 针对"abcdef"和[“ab”, “cd”, “abcd”]<br> 那么， 针对index=4 （从1开始计数， 可以有ab+cd 或者abcd两种方式， 那么，一个计算过了，后面的就不需要再计算了。</li> 
+ <li>这样，就可以应用动态规划的思想， 设置dp[i]表示在i位已经满足要求的， 然后从前向后遍历，看看每一位是否可以走到更多的位；</li> 
+ <li>动态规划的常用套路，就是看prefix， 因为计算prefix的时候，问题已经求解过了，固定了； 当然要从postfix去理解也可以， 但是那样通常会是解问题的自然思路，但是从动态规划bottom up的方式，往往不是那么好理解。<br> 而当然，如果用记忆化递归的方式去理解，也是可以的。 但是同样要抽象出需要记忆的状态。 对于每个substring， 其实也是要用index来定义状态。 当然，完全用string做key也可能可以， 但是那样会浪费很多空间。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public boolean wordBreak(String s, List&lt;String&gt; wordDict) {
+    boolean[] dp = new boolean[s.length()+1];
+    dp[0] = true;
+    for(int i = 0; i &lt; s.length(); ++i) {
+        if(!dp[i]) continue;
+        for(String word: wordDict) {
+            boolean match = true;
+            for(int j = 0; j &lt; word.length(); ++j) {
+                if(i+j &gt;= s.length() || s.charAt(i+j) != word.charAt(j)) {
+                    match = false;
+                    break;
+                }
+            }
+            if(match) {
+                dp[i + word.length()] = true;
+            }
+        }
+    }
+    return dp[s.length()];
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*M^2)<br> N是字符串的长度， M是字典里面每个单词的长度</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#更好的代码" id="更好的代码">更好的代码</a></h2> 
+<pre><code>public boolean wordBreak(String s, List&lt;String&gt; wordDict) {
+    Set&lt;String&gt; wordSet = new HashSet&lt;&gt;(wordDict);
+    boolean[] dp = new boolean[s.length()+1];
+    dp[0] = true;
+    for(int i = 0; i &lt; s.length(); ++i) {
+        if(!dp[i]) continue;
+        for(int j = i+1; j &lt;= s.length(); ++j) {
+            String part = s.substring(i, j);
+            if(wordSet.contains(part)) {
+                dp[j] = true;
+            }
+        }
+    }
+    return dp[s.length()];
+}
+</code></pre> 
+<h2><a href="#一个不太简洁的版本" id="一个不太简洁的版本">一个不太简洁的版本</a></h2> 
+<p>之前写的， 看上去不像是参考别人的思路， 因为别人的思路一般不会这么复杂；<br> 同时也不像是自己写的， 感觉好像自己写不出来:)</p> 
+<p>这里的主要问题是感觉有很多重复计算， 很多index， 虽然可能之前已经计算过了， 但是后面还是可能会重复计算。</p> 
+<pre><code>class Solution {
+    public boolean wordBreak(String s, List&lt;String&gt; wordDict) {
+        boolean[] dp = new boolean[s.length()+1];
+        int i = 0;
+        TreeSet&lt;Integer&gt; ts = new TreeSet&lt;&gt;();
+        ts.add(i);
+        while(ts.size() &gt; 0) {
+            calc(s, dp, ts, wordDict);    
+        }
+        return dp[s.length()];
+    }
+    
+    public void calc(String s, boolean[] dp, TreeSet&lt;Integer&gt; ts, List&lt;String&gt; wordDict) {
+        int i = ts.pollFirst();
+        for(String word: wordDict) {
+            if(i + word.length() &lt;= s.length()) {
+                boolean match = true;
+                for(int j = 0; j &lt; word.length(); ++j) {
+                    if(word.charAt(j) != s.charAt(i+j)) {
+                        match = false;
+                        break;
+                    }
+                }
+                if(match) {
+                    dp[i+word.length()] = true;
+                    ts.add(i + word.length());
+                }
+            }
+        }
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
