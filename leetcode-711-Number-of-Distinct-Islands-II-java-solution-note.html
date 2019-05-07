@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 711 Number of Distinct Islands II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 711 Number of Distinct Islands II解题笔记</h1>
+			</div>
+
+			<p><em>05 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-711-number-of-distinct-islands-ii" id="题目-leetcode-711-number-of-distinct-islands-ii">题目 leetcode 711 Number of Distinct Islands II</a></h2> 
+<ol> 
+ <li> <p>输入一个矩阵， 1表示陆地，0表示水，求不同形状的岛屿的个数.<br> 这里，岛屿的形状可以旋转90度，180度，270度； 或者也可以按照x轴对称反转或者按照y轴对称反转</p> </li> 
+ <li> <p>这个题目是前面两个题目的升级版<br> <a href="http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html">http://www.noteanddata.com/leetcode-200-Number-of-Islands-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-694-Number-of-Distinct-Islands-java-solution-note.html">http://www.noteanddata.com/leetcode-694-Number-of-Distinct-Islands-java-solution-note.html</a></p> </li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本的结构可以还是dfs， 这里的主要难点在于判断形状是否相同，也就是旋转以后，或者按坐标轴对称反转以后如何判断形状是否一样</li> 
+ <li>在694里面， 我们在dfs遍历的时候，计算每个坐标和{ox,oy}之间的距离，然后形成一个字符串作为key，可以判断一个岛屿的形状， 原因有:<br> a. 所有的dfs都是按照一个顺序去遍历的<br> b. 外层的循环也是按顺序的，每次遇到一个新节点的时候，一定是整个形状里面相对位置是同一个位置的节点</li> 
+ <li>但是这个逻辑在这里就不能直接用了， 原因在于， 如果两个形状是经过旋转或者对称反转后的，那么，在当时遍历的时候遇到的第一个节点可能不一样，导致用距离作为key计算的时候，由于选择的原点不一样，那么计算距离，然后encode以后，key已经不一样了。<br> 具体可以思考下面这个例子</li> 
+</ol> 
+<pre><code>[[1,0,0,0,1,1]
+,[1,1,0,1,1,0]
+,[0,1,0,0,0,0]]
+</code></pre> 
+<ol> 
+ <li>正确的做法是， 遍历后，根据dx和dy， 把旋转和反转的坐标都计算出来（这里计算的时候仍然可以用dx和dy）， 然后把所有的坐标都取出来以后，再对坐标进行排序， 然后在把每个坐标换算成key， 进行去重判断。</li> 
+ <li>去重的时候有一个细节，就是如果两个岛屿形状一样， 那么，并不是意味着两个岛屿的所有转换的key都是一样的，而是说如果把之前遇到的key加到一个set里面的话，新来的岛屿，只要有一个key是一样的，那么就当这个岛屿是一样的。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int numDistinctIslands2(int[][] grid) {
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        
+        Set&lt;String&gt; set = new HashSet&lt;&gt;();
+        int count = 0;
+        for(int i = 0; i &lt; grid.length; ++i) {
+            for(int j = 0; j &lt; grid[i].length; ++j) {
+                if(grid[i][j] == 1 &amp;&amp; !visited[i][j]) {
+                    List&lt;List&lt;int[]&gt;&gt; allList = new ArrayList&lt;&gt;();
+                    for(int t = 0; t &lt; 6; ++t) {
+                        allList.add(new ArrayList&lt;&gt;());
+                    }
+                    
+                    dfs(grid, i, j, visited, i, j, allList);
+                    
+                    boolean exist = false;
+                    List&lt;String&gt; nset = new ArrayList&lt;&gt;();
+                    for(List&lt;int[]&gt; list : allList) {
+                        if(list.size() == 0) continue;
+                        
+                        // sort after finishing all operations 
+                        Collections.sort(list, new Comparator&lt;int[]&gt;() {
+                            public int compare(int[] a, int[] b) {
+                                return (a[0] != b[0]) ? (a[0] - b[0]) : (a[1] - b[1]);
+                            }
+                        });
+                        
+                        String s = encode(list);
+                        
+                        if(set.contains(s)) {
+                            exist = true;
+                        }                        
+                        nset.add(s);
+                    }
+                                        
+                    if(!exist) {
+                        count++;
+                        set.addAll(nset);
+                    }
+                }
+            }
+        }
+        return count;
+    }
+    
+    String encode(List&lt;int[]&gt; list) {
+        int ox = list.get(0)[0];
+        int oy = list.get(0)[1];
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("0,0;");
+
+        for(int k = 1; k &lt; list.size(); ++k) {
+            int dx = list.get(k)[0] - ox;
+            int dy = list.get(k)[1] - oy;
+            sb.append(dx).append(",").append(dy).append(";");
+        }
+
+        String s = sb.toString();
+        return s;        
+    }
+    
+    void addAll(List&lt;List&lt;int[]&gt;&gt; allList, int dx, int dy) {
+        allList.get(0).add(new int[]{dx, dy});
+        
+        // rotation
+        allList.get(1).add(new int[]{-dy, dx});
+        allList.get(2).add(new int[]{-dx, -dy});
+        allList.get(3).add(new int[]{dy, -dx});
+        
+        // mirror
+        allList.get(4).add(new int[]{-dx, dy});        
+        allList.get(5).add(new int[]{dx, -dy});
+    }
+    
+    void dfs(int[][] grid, int x, int y, boolean[][] visited, int ox, int oy, List&lt;List&lt;int[]&gt;&gt; allList) {
+        if(x &lt; 0 || x &gt;= grid.length || y &lt; 0 || y &gt;= grid[0].length) return;
+        if(visited[x][y] || grid[x][y] == 0) return;
+        visited[x][y] = true;
+        
+        addAll(allList, x-ox, y-oy);
+        
+        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+        for(int i  = 0; i &lt; dirs.length; ++i) {
+            int nextx = x + dirs[i][0];
+            int nexty = y + dirs[i][1];
+            dfs(grid, nextx, nexty, visited, ox, oy, allList);
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>整个矩阵还是只遍历一次， 所以时间复杂度还是O(M*N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M*N)</p> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>这里，错误在于认为要新来的岛屿的所有形状都一样才是正确的，其实是只要有一个就是重复的。</p> 
+<pre><code>class Solution {
+    public int numDistinctIslands2(int[][] grid) {
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        
+        Set&lt;String&gt; set = new HashSet&lt;&gt;();
+        int count = 0;
+        for(int i = 0; i &lt; grid.length; ++i) {
+            for(int j = 0; j &lt; grid[i].length; ++j) {
+                if(grid[i][j] == 1 &amp;&amp; !visited[i][j]) {
+                    List&lt;List&lt;int[]&gt;&gt; allList = new ArrayList&lt;&gt;();
+                    for(int t = 0; t &lt; 6; ++t) {
+                        allList.add(new ArrayList&lt;&gt;());
+                    }
+                    
+                    dfs(grid, i, j, visited, i, j, allList);
+                    
+                    boolean toadd = false;
+                    for(List&lt;int[]&gt; list : allList) {
+                        if(list.size() == 0) continue;
+                        
+                        // sort after finishing all operations 
+                        Collections.sort(list, new Comparator&lt;int[]&gt;() {
+                            public int compare(int[] a, int[] b) {
+                                return (a[0] != b[0]) ? (a[0] - b[0]) : (a[1] - b[1]);
+                            }
+                        });
+                        
+                        int ox = list.get(0)[0];
+                        int oy = list.get(0)[1];
+                        
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("0-0;");
+                        
+                        for(int k = 1; k &lt; list.size(); ++k) {
+                            int dx = list.get(k)[0] - ox;
+                            int dy = list.get(k)[1] - oy;
+                            sb.append(dx).append("-").append(dy).append(";");
+                        }
+                        
+                        String s = sb.toString();
+                        if(!set.contains(s)) {
+                            set.add(s);
+                            toadd = true;
+                        }
+                    }
+                    
+                    if(toadd) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+    
+    void addAll(List&lt;List&lt;int[]&gt;&gt; allList, int dx, int dy) {
+        allList.get(0).add(new int[]{dx, dy});
+        
+        // rotation
+        allList.get(1).add(new int[]{-dy, dx});
+        allList.get(2).add(new int[]{-dx, -dy});
+        allList.get(3).add(new int[]{dy, -dx});
+        
+        // mirror
+        allList.get(4).add(new int[]{-dx, dy});        
+        allList.get(5).add(new int[]{dx, -dy});
+    }
+    
+    void dfs(int[][] grid, int x, int y, boolean[][] visited, int ox, int oy, List&lt;List&lt;int[]&gt;&gt; allList) {
+        if(x &lt; 0 || x &gt;= grid.length || y &lt; 0 || y &gt;= grid[0].length) return;
+        if(visited[x][y] || grid[x][y] == 0) return;
+        visited[x][y] = true;
+        
+        addAll(allList, x-ox, y-oy);
+        
+        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+        for(int i  = 0; i &lt; dirs.length; ++i) {
+            int nextx = x + dirs[i][0];
+            int nexty = y + dirs[i][1];
+            dfs(grid, nextx, nexty, visited, ox, oy, allList);
+        }
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>对于任何一次dfs遍历，最多count加一次， 逻辑要放到外面来</p> 
+<pre><code>class Solution {
+    public int numDistinctIslands2(int[][] grid) {
+        boolean[][] visited = new boolean[grid.length][grid[0].length];
+        
+        Set&lt;String&gt; set = new HashSet&lt;&gt;();
+        int count = 0;
+        for(int i = 0; i &lt; grid.length; ++i) {
+            for(int j = 0; j &lt; grid[i].length; ++j) {
+                if(grid[i][j] == 1 &amp;&amp; !visited[i][j]) {
+                    List&lt;List&lt;int[]&gt;&gt; allList = new ArrayList&lt;&gt;();
+                    for(int t = 0; t &lt; 8; ++t) {
+                        allList.add(new ArrayList&lt;&gt;());
+                    }
+                    
+                    dfs(grid, i, j, visited, i, j, allList);
+                    
+                    for(List&lt;int[]&gt; list : allList) {
+                        if(list.size() == 0) continue;
+                        
+                        // sort after finishing all operations 
+                        Collections.sort(list, new Comparator&lt;int[]&gt;() {
+                            public int compare(int[] a, int[] b) {
+                                return (a[0] != b[0]) ? (a[0] - b[0]) : (a[1] - b[1]);
+                            }
+                        });
+                        
+                        int ox = list.get(0)[0];
+                        int oy = list.get(0)[1];
+                        
+                        StringBuilder sb = new StringBuilder();
+                        sb.append("0-0;");
+                        
+                        for(int k = 1; k &lt; list.size(); ++k) {
+                            int dx = list.get(k)[0] - ox;
+                            int dy = list.get(k)[1] - oy;
+                            sb.append(dx).append("-").append(dy).append(";");
+                        }
+                        
+                        String s = sb.toString();
+                        if(!set.contains(s)) {
+                            set.add(s);
+                            count++;
+                        }
+                    }
+                }
+            }
+        }
+        return count;
+    }
+    
+    void addAll(List&lt;List&lt;int[]&gt;&gt; allList, int dx, int dy) {
+        allList.get(0).add(new int[]{dx, dy});
+        
+        allList.get(1).add(new int[]{dx, -dy});
+        allList.get(2).add(new int[]{-dx, dy});
+        allList.get(3).add(new int[]{-dx, dy});
+        
+        allList.get(4).add(new int[]{-dy, dx});
+        allList.get(5).add(new int[]{-dy, -dx});
+        allList.get(6).add(new int[]{dy, dx});
+        allList.get(7).add(new int[]{dy, -dx});
+    }
+    
+    void dfs(int[][] grid, int x, int y, boolean[][] visited, int ox, int oy, List&lt;List&lt;int[]&gt;&gt; allList) {
+        if(x &lt; 0 || x &gt;= grid.length || y &lt; 0 || y &gt;= grid[0].length) return;
+        if(visited[x][y] || grid[x][y] == 0) return;
+        visited[x][y] = true;
+        
+        addAll(allList, x-ox, y-oy);
+        
+        int[][] dirs = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+        for(int i  = 0; i &lt; dirs.length; ++i) {
+            int nextx = x + dirs[i][0];
+            int nexty = y + dirs[i][1];
+            dfs(grid, nextx, nexty, visited, ox, oy, allList);
+        }
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
