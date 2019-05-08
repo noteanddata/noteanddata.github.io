@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 161 One Edit Distance题java解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 161 One Edit Distance题java解题笔记</h1>
+			</div>
+
+			<p><em>06 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-161-one-edit-distance" id="题目-leetcode-161-one-edit-distance">题目 leetcode 161 One Edit Distance</a></h2> 
+<p>输入两个字符串，定义edit操作是添加，删除，或者替换字符， 问能否通过一次edit操作完成使得两个字符串变成一样</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目可以直接沿用leetcode 72 Edit Distance的做法， 用动态规划求出距离， 然后判断距离是否是1<br> <a href="http://www.noteanddata.com/leetcode-72-Edit-Distance-java-solution-rewrite.html">http://www.noteanddata.com/leetcode-72-Edit-Distance-java-solution-rewrite.html</a></li> 
+ <li>隐约感觉也许只要求是否是1的话，也许可以不用动态规划直接双指针？？</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public boolean isOneEditDistance(String s, String t) {
+    if(Math.abs(s.length() - t.length()) &gt;= 2) return false;
+    int[][] dp = new int[s.length()+1][t.length()+1];
+    for(int i = 1; i &lt;= s.length(); ++i) {
+        dp[i][0] = i;
+    }
+    for(int j = 1; j &lt;= t.length(); ++j) {
+        dp[0][j] = j;
+    }
+    
+    for(int i = 1; i &lt;= s.length(); ++i) {
+        for(int j = 1; j &lt;= t.length(); ++j) {
+            dp[i][j] = Math.min(dp[i-1][j], dp[i][j-1]) + 1;
+            if(s.charAt(i-1) == t.charAt(j-1)) {
+                dp[i][j] = Math.min(dp[i][j], dp[i-1][j-1]);
+            }
+            else {
+                dp[i][j] = Math.min(dp[i][j], dp[i-1][j-1]+1);
+            }
+        }
+    }
+    return dp[s.length()][t.length()] == 1;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(M*N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M*N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
