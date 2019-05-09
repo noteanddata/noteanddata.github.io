@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 279 Perfect Squares解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 279 Perfect Squares解题笔记</h1>
+			</div>
+
+			<p><em>08 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-279-perfect-squares" id="题目-leetcode-279-perfect-squares">题目 leetcode 279 Perfect Squares</a></h2> 
+<ol> 
+ <li>输入一个正整数n， 问最少可以用几个perfect square的数组成这个n；</li> 
+ <li>perfect square就是正整数的平方数， 比如1,4,9,16,…</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目首先想查看的是能否用贪心来做， 尝试小样本发现贪心是不对的， 比如18=9+9, 但是如果先取最大数，那就变成18=16+1+1; 具体贪心不对的原因是这个函数不是单调的，所以不存在先取最大的就是最好的情况</li> 
+ <li>那基本就只能暴力解了， 尝试每个可能性</li> 
+ <li>但是这里会有很多重复计算，所以可以用一个表格记录结果（动态规划的递归版）</li> 
+ <li>递归+记忆化的方式也可以做， 但是这个题目用bottom up的方式做动态规划也比较清晰</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int numSquares(int n) {
+    int[] dp = new int[n+1];
+    for(int i = 1; i &lt;= n; ++i) {
+        int min = Integer.MAX_VALUE;
+        for(int j = 1; j * j &lt;= i; ++j) {
+            min = Math.min(min, 1 + dp[i-j*j]);
+        }
+        dp[i] = min;
+    }
+    return dp[n];
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#递归代码" id="递归代码">递归代码</a></h2> 
+<pre><code>class Solution {
+    public int numSquares(int n) {
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        for(int i = 1; i * i &lt;= n; ++i) {
+            list.add(i);
+        }
+        int[] dp = new int[n+1];
+        Arrays.fill(dp, -1);
+        return dfs(list, n, dp);
+    }
+    
+    int dfs(List&lt;Integer&gt; list, int n, int[] dp) {
+        if(n == 0) return 0;
+        if(dp[n] != -1) return dp[n];
+        int min = Integer.MAX_VALUE;
+        for(int v: list) {
+            if(v * v &gt; n) break;
+            min = Math.min(min, 1+dfs(list, n-v*v, dp));
+        }
+        dp[n] = min;
+        return min;
+    }
+}
+
+</code></pre> 
+<h2><a href="#递归的超时代码" id="递归的超时代码">递归的超时代码</a></h2> 
+<p>没有通过一个表格避免重复计算</p> 
+<pre><code>class Solution {
+    public int numSquares(int n) {
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        for(int i = 1; i*i &lt;= n; ++i) {
+            list.add(i);
+        }
+        return dfs(list, n);
+    }
+    
+    public int dfs(List&lt;Integer&gt; list, int n) {
+        if(n == 0) return 0;
+        
+        int min = Integer.MAX_VALUE;
+        for(int i = 0; i &lt; list.size(); ++i) {
+            int cur = list.get(i);
+            if(cur * cur &gt; n) {
+                break;
+            }
+            min = Math.min(min, 1 + dfs(list, n-cur*cur));
+        }
+        return min;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
