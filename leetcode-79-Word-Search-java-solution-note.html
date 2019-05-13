@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 79 Word Search解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 79 Word Search解题笔记</h1>
+			</div>
+
+			<p><em>12 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-79-word-search" id="题目-leetcode-79-word-search">题目 leetcode 79 Word Search</a></h2> 
+<p>输入一个字符矩阵， 和一个单词， 问单词是否出现在字符矩阵中； 每个字符都只能在搜索的时候用一次</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本的做法就是对每个位置尝试所有的可能， 因为这里要递归做并且每个位置都只能用一次，所以要backtrack， 用一个visited表示当前位置是否已经用过</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public boolean exist(char[][] board, String word) {
+    for(int i = 0; i &lt; board.length; ++i) {
+        for(int j = 0; j &lt; board[i].length; ++j) {
+            boolean[][] visited = new boolean[board.length][board[i].length];
+            if(backtrack(board, i, j, 0, word, visited)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+boolean backtrack(char[][] board, int i, int j, int index, String word, boolean[][] visited) {
+    if(index == word.length()) return true;
+    if(i &lt; 0 || i &gt;= board.length || j &lt; 0 || j &gt;= board[i].length) return false;
+    if(visited[i][j] || board[i][j] != word.charAt(index)) return false;
+    
+    visited[i][j] = true;
+    if(backtrack(board, i+1, j, index+1, word, visited)
+      || backtrack(board, i-1, j, index+1, word, visited)
+       || backtrack(board, i, j+1, index+1, word, visited)
+       || backtrack(board, i, j-1, index+1, word, visited)
+      ) {
+        return true;
+    }
+    visited[i][j] = false;
+    return false;
+}
+</code></pre> 
+<h2><a href="#一些写错的代码" id="一些写错的代码">一些写错的代码</a></h2> 
+<p>visited没有用来判断</p> 
+<pre><code>class Solution {
+    public boolean exist(char[][] board, String word) {
+        for(int i = 0; i &lt; board.length; ++i) {
+            for(int j = 0; j &lt; board[i].length; ++j) {
+                boolean[][] visited = new boolean[board.length][board[i].length];
+                if(backtrack(board, i, j, 0, word, visited)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    boolean backtrack(char[][] board, int i, int j, int index, String word, boolean[][] visited) {
+        if(index == word.length()) return true;
+        if(i &lt; 0 || i &gt;= board.length || j &lt; 0 || j &gt;= board[i].length) return false;
+        if(board[i][j] != word.charAt(index)) return false;
+        visited[i][j] = true;
+        if(backtrack(board, i+1, j, index+1, word, visited)
+          || backtrack(board, i-1, j, index+1, word, visited)
+           || backtrack(board, i, j+1, index+1, word, visited)
+           || backtrack(board, i, j-1, index+1, word, visited)
+          ) {
+            return true;
+        }
+        visited[i][j] = false;
+        return false;
+    }
+}
+
+</code></pre> 
+<p>index如果不放到最前面判断，会直接out of range</p> 
+<pre><code>class Solution {
+    public boolean exist(char[][] board, String word) {
+        for(int i = 0; i &lt; board.length; ++i) {
+            for(int j = 0; j &lt; board[i].length; ++j) {
+                boolean[][] visited = new boolean[board.length][board[i].length];
+                if(backtrack(board, i, j, 0, word, visited)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    boolean backtrack(char[][] board, int i, int j, int index, String word, boolean[][] visited) {
+        if(i &lt; 0 || i &gt;= board.length || j &lt; 0 || j &gt;= board[i].length) return false;
+        if(visited[i][j] || board[i][j] != word.charAt(index)) return false;
+        if(index == word.length()) return true;
+        
+        visited[i][j] = true;
+        if(backtrack(board, i+1, j, index+1, word, visited)
+          || backtrack(board, i-1, j, index+1, word, visited)
+           || backtrack(board, i, j+1, index+1, word, visited)
+           || backtrack(board, i, j-1, index+1, word, visited)
+          ) {
+            return true;
+        }
+        visited[i][j] = false;
+        return false;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
