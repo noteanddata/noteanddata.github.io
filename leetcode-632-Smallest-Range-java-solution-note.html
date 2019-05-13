@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 632 Smallest Range解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 632 Smallest Range解题笔记</h1>
+			</div>
+
+			<p><em>11 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-632-smallest-range" id="题目-leetcode-632-smallest-range">题目 leetcode 632 Smallest Range</a></h2> 
+<ol> 
+ <li>输入k个整数列表， 每个列表都是从小到大排序的； 如果一个范围[start,end]包含每个列表的至少一个元素， 那么这个范围就是一个目标范围； 求最小的目标范围； 小的定义如下<br> We define the range [a,b] is smaller than range [c,d] if b-a &lt; d-c or a &lt; c if b-a == d-c.</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目一时不太有思路， 奇怪的是，我两个月前自己写的代码， 然后昨天看居然看不懂是什么意思，直到拿笔在纸上模拟了程序的过程才搞清楚状况。</li> 
+ <li>首先题目的特征是每个列表都是排序的， 所以我们如果没有思路的话，可以从每个列表里面取一个元素， 然后计算一个[min,max]， 那么，这个[min,max]就是一个合法的[min,max]</li> 
+ <li>这时候，我们希望换掉其中的元素找一个更小的解, 这时候，一般都是找一个极端的值替换。<br> a. 如果找max替换， 那么由于替换是在当前列表上找后面的其他元素， 所以换的元素一定是更大的。 那么， [min,max]的range就会变的更大<br> b. 而找其他元素替换， 不会改变min, 但是有可能改变max, 所以range也会变大<br> c. 所以， 只有替换min，才有可能让[min,max]的范围变的更小；</li> 
+ <li>前面这个过程可以循环，每次替换了一个元素以后，就查看是否有更小的range， 然后形成一个新的状态，继续对最小的替换<br> 直到有一个元素到了这个列表的结尾</li> 
+ <li>由于每次都要取当前的最小值， 所以需要一个heap</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    static class Node implements Comparable&lt;Node&gt; {
+        private int val;
+        private int row;
+        private int col;
+        public Node(int val, int row, int col) {
+            this.val = val;
+            this.row = row;
+            this.col = col;
+        }
+        public int compareTo(Node other) {
+            return val-other.val;
+        }
+    }
+    public int[] smallestRange(List&lt;List&lt;Integer&gt;&gt; nums) {
+        PriorityQueue&lt;Node&gt; minpq = new PriorityQueue&lt;&gt;();
+        int[] indexList = new int[nums.size()];
+        Arrays.fill(indexList, 0);
+        
+
+        // init pq by adding first element of every list to both pq
+        int max = Integer.MIN_VALUE;
+        for(int i = 0; i &lt; nums.size(); ++i) {
+            if(nums.get(i).size() == 0) { // some list is empty
+                return null; 
+            }
+            int v = nums.get(i).get(0);
+            Node node = new Node(v, i, 0);
+            minpq.add(node);
+            max = Math.max(max, v);
+        }        
+        
+        
+        int rangestart = minpq.peek().val;
+        int rangeend = max;
+        
+        while(true) {
+            Node minpeek = minpq.poll();
+            if(minpeek.col+1 == nums.get(minpeek.row).size()) {
+                break;
+            }
+            int v = nums.get(minpeek.row).get(minpeek.col+1);
+            Node node = new Node(v, minpeek.row, minpeek.col+1);
+            minpq.add(node);
+            max = Math.max(max, v);
+            int curmin = minpq.peek().val;
+            if(max-curmin &lt; rangeend-rangestart) {
+                rangestart = curmin;
+                rangeend = max;
+            }
+        }
+        
+        return new int[]{rangestart, rangeend};
+    }
+    
+    
+    /*
+    int[] calc1st(List&lt;Integer&gt; list1, List&lt;Integer&gt; list2) {
+        if(list1.get(list1.size()-1) &lt;= list2.get(0)) {
+            return new int[]{list1.get(list1.size()-1) , list2.get(0)};
+        }
+        else 
+    }
+    */
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N<em>K</em>lgK) ?</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(K)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
