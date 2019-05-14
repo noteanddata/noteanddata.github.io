@@ -254,6 +254,52 @@ class Solution {
     }
 }
 
+</code></pre> 
+<h2><a href="#更好的代码" id="更好的代码">更好的代码</a></h2> 
+<p>经过学习以后，我认为下面这个代码应该更好； 因为这里每个位置的值最后应该只遍历了一次。 当然， 中间的过程生成了很多无用的对象，然后合并掉了。</p> 
+<pre><code>/*
+// Definition for a QuadTree node.
+class Node {
+    public boolean val;
+    public boolean isLeaf;
+    public Node topLeft;
+    public Node topRight;
+    public Node bottomLeft;
+    public Node bottomRight;
+
+    public Node() {}
+
+    public Node(boolean _val,boolean _isLeaf,Node _topLeft,Node _topRight,Node _bottomLeft,Node _bottomRight) {
+        val = _val;
+        isLeaf = _isLeaf;
+        topLeft = _topLeft;
+        topRight = _topRight;
+        bottomLeft = _bottomLeft;
+        bottomRight = _bottomRight;
+    }
+};
+*/
+class Solution {
+    public Node construct(int[][] grid) {
+        return dfs(grid, 0, 0, grid.length);
+    }
+    
+    public Node dfs(int[][] grid, int x, int y, int len) {
+        if(len == 1) return new Node(grid[x][y] == 1, true, null, null, null, null);
+        Node topLeft = dfs(grid, x, y, len/2);
+        Node topRight = dfs(grid, x, y+len/2, len/2);
+        Node bottomLeft = dfs(grid, x+len/2, y, len/2);
+        Node bottomRight = dfs(grid, x+len/2, y+len/2, len/2);
+        if(topLeft.isLeaf &amp;&amp; topRight.isLeaf &amp;&amp; bottomLeft.isLeaf &amp;&amp; bottomRight.isLeaf
+          &amp;&amp; topLeft.val == topRight.val &amp;&amp; topLeft.val == bottomLeft.val &amp;&amp; topLeft.val == bottomRight.val) {
+            return new Node(topLeft.val, true, null, null, null, null);
+        }
+        else {
+            return new Node(topLeft.val, false, topLeft, topRight, bottomLeft, bottomRight);
+        }
+    }
+}
+
 </code></pre></p>
 	</div>		
 
