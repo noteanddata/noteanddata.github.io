@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Uber面试题目 leetcode 427 Construct Quad Tree解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Uber面试题目 leetcode 427 Construct Quad Tree解题笔记</h1>
+			</div>
+
+			<p><em>12 May 2019</em></p>
+
+			<p><h2><a href="#uber面试题目-leetcode-427-construct-quad-tree" id="uber面试题目-leetcode-427-construct-quad-tree">Uber面试题目 leetcode 427 Construct Quad Tree</a></h2> 
+<ol> 
+ <li>输入一个二维矩阵， 其中边长是2的指数， 里面有0和1， 输出一个四叉树</li> 
+ <li>如果一个方块里面只有一个值的话，那就成为叶节点</li> 
+ <li>如果里面既有0又有1， 那就分成4块， 每块再判断</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本的思路就是递归， 对于每个方块， 先计算是否既有0又有1， 如果只有一个值的话，那就是叶节点</li> 
+ <li>如果没有的话，需要分成4块递归</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/*
+// Definition for a QuadTree node.
+class Node {
+    public boolean val;
+    public boolean isLeaf;
+    public Node topLeft;
+    public Node topRight;
+    public Node bottomLeft;
+    public Node bottomRight;
+
+    public Node() {}
+
+    public Node(boolean _val,boolean _isLeaf,Node _topLeft,Node _topRight,Node _bottomLeft,Node _bottomRight) {
+        val = _val;
+        isLeaf = _isLeaf;
+        topLeft = _topLeft;
+        topRight = _topRight;
+        bottomLeft = _bottomLeft;
+        bottomRight = _bottomRight;
+    }
+};
+*/
+class Solution {
+    public Node construct(int[][] grid) {
+        return dfs(grid, 0, grid.length, 0, grid[0].length);
+    }
+    
+    public Node dfs(int[][] grid, int fromi, int toi, int fromj, int toj) {
+        boolean has0 = false, has1 = false;
+        for(int i = fromi; i &lt; toi; ++i) {
+            for(int j = fromj; j &lt; toj; ++j) {
+                if(grid[i][j] == 0) has0 = true;
+                else has1 = true;
+            }
+        }
+        if(has0 &amp;&amp; has1) {
+            Node node = new Node(has1, false, null, null, null, null);
+            int midi = (fromi + toi)/2;
+            int midj = (fromj + toj)/2;
+            node.topLeft = dfs(grid, fromi, midi, fromj, midj);
+            node.topRight = dfs(grid, fromi, midi, midj, toj);
+            node.bottomLeft = dfs(grid, midi, toi, fromj, midj);
+            node.bottomRight = dfs(grid, midi, toi, midj, toj);
+            return node;
+        }
+        else {
+            return new Node(has1, true, null, null, null, null);
+        }
+        
+    }
+}
+</code></pre> 
+<h2><a href="#之前写的一个代码" id="之前写的一个代码">之前写的一个代码</a></h2> 
+<p>基本思路差不多， 但是实现略繁琐</p> 
+<pre><code>/*
+// Definition for a QuadTree node.
+class Node {
+    public boolean val;
+    public boolean isLeaf;
+    public Node topLeft;
+    public Node topRight;
+    public Node bottomLeft;
+    public Node bottomRight;
+
+    public Node() {}
+
+    public Node(boolean _val,boolean _isLeaf,Node _topLeft,Node _topRight,Node _bottomLeft,Node _bottomRight) {
+        val = _val;
+        isLeaf = _isLeaf;
+        topLeft = _topLeft;
+        topRight = _topRight;
+        bottomLeft = _bottomLeft;
+        bottomRight = _bottomRight;
+    }
+};
+*/
+class Solution {
+    public Node construct(int[][] grid) {
+        Node root = new Node(false, false);
+        dfs(grid, 0, grid.length, 0, grid[0].length, root);
+        return root;
+    }
+    
+    void dfs(int[][] grid, int fromi, int toi, int fromj,  int toj, Node node) {
+        boolean valid = false;
+        
+        boolean has0 = false;
+        boolean has1 = false;
+        for(int i = fromi; i &lt; toi; ++i) {
+            for(int j = fromj;j &lt; toj; ++j) {
+                if(grid[i][j] == 0) {
+                    has0 = true;
+                }
+                else {
+                    has1 = true;
+                }
+                if(has0 &amp;&amp; has1) {
+                    break;
+                }
+            }
+        }
+        
+        System.out.println("has0=" + has0 + ", has1=" + has1);
+        
+        if(has0 &amp;&amp; has1) { 
+            node.isLeaf = false;
+            // dfs 4 parts
+            node.topLeft = new Node(false, false);
+            node.topRight = new Node(false, false);
+            node.bottomLeft = new Node(false, false);
+            node.bottomRight = new Node(false, false);
+            
+            int midi = (fromi+toi)/2;
+            int midj = (fromj+toj)/2;
+            
+            dfs(grid, fromi, midi,fromj,  midj, node.topLeft);
+            dfs(grid, midi, toi, fromj,  midj, node.bottomLeft);
+            dfs(grid, fromi, midi,midj,  toj, node.topRight);
+            dfs(grid, midi, toi, midj,  toj, node.bottomRight);
+        }
+        else { // valid
+            node.val = has1;
+            node.isLeaf = true;
+        }
+        
+    }
+}
+
+</code></pre> 
+<h2><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h2> 
+<p>这个递归的时间复杂度一时还分析不来， 要回去看主定理（基本上每次看了就忘了）；<br> 但是这个写法的时间复杂度是比较高的， 因为每个格子经历了多次遍历</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
