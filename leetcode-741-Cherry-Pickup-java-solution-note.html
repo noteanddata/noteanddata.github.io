@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Uber面试leetcode 741 Cherry Pickup解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Uber面试leetcode 741 Cherry Pickup解题笔记</h1>
+			</div>
+
+			<p><em>13 May 2019</em></p>
+
+			<p><h2><a href="#uber面试题目-leetcode-741-cherry-pickup" id="uber面试题目-leetcode-741-cherry-pickup">Uber面试题目 leetcode 741 Cherry Pickup</a></h2> 
+<p>一个二维矩阵上0,-1,1, 其中-1表示是墙，不能行走。 0表示是空位， 1表示是樱桃。 从左上角走到右下角摘一次樱桃， 然后再从右下角回到左上角， 问最多能够摘到多少个樱桃。</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<p>这个题目挺难的，如果没好好写过几次，几乎是必挂。 当然，有好多题目其实都是这样，比如那些计算器题目，写了好几次，还是不能很好的一遍通过。<br> 1. 首先题目意思容易理解错，<br> 2. 然后也非常难分析，自己不容易想到，<br> 3. 第三就算有了思路， 代码实现也比较多的坑； 坑主要是因为dp矩阵会依赖于前面的值， 然后越界的情况比较多， 这里越界包括<br> 每个坐标小于0和&gt;=n的情况。 如果dp矩阵把长度多开一个，坐标对齐又特别麻烦， 因为x1要对应到x+1;<br> 这个解决办法是干脆矩阵不要多开一个， 然后写一个getdp函数获取dp的值， 这样就可以很容易处理坐标是负的情况，而且不容易出错。<br> 4. 这个动态规划的空间复杂度还可以再降一次， 变成O(N^2), 不过我写到现在这个版本就已经很累了， 以后有机会的话再刷吧。</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目的意思是只走两次， 不是走无数次， 也就是从起点到终点走一次， 然后从终点到起点再走一次； 而不是走无数次</li> 
+ <li>如果直接按照题目的意思走两次，会非常难处理。 比如首先这个贪心的思路是不对的. 比如下面这个例子， 如果第一次选了一条最长的路， 那么剩下的两个樱桃不能在一次里面走完。 相反， 如果选择合适的路径， 两条路线可以把所有樱桃全部摘了。</li> 
+</ol> 
+<pre><code>1 1 1 1 0 0 0
+0 0 0 1 0 0 0
+0 0 0 1 0 0 1
+1 0 0 1 0 0 0
+0 0 0 1 0 0 0
+0 0 0 1 0 0 0
+0 0 0 1 1 1 1
+
+</code></pre> 
+<ol> 
+ <li>贪心不对的原因是因为第一次的路线会影响到第二次的结果， 也就是局部最优不一定是全局最优。</li> 
+ <li>这个题目的主要思路是让两条路线一起从开始走到结尾， 然后记录当前的状态， 这样， 就可以用一个状态来记录整体的值， 那么就可以使用动态规划。 因为走两次和两条路线一起走效果上是等价的， 而且两条路线一起走还有一个好处是可以处理重叠的情况， 这样可以在计算当前状态的时候把所有的可能情况都处理了， 当前的信息是完备的。</li> 
+ <li>还有一个原因是， 这里一起走的话，就变成从起点开始，每次只能向右或者向下走一步。 所以如果有重叠，那一定是同时重叠，不会存在先后重叠的情况。</li> 
+ <li>因为两条路线一起走，所以状态可以用[x1,y1,x2,y2]来表达， 但是这个4维的有点太多了。 由于x1+y1=x2+y2,<br> 那么dp数组可以降一维， dp[t][x1][y1], 其中t = x1+y1</li> 
+ <li>递推关系的核心逻辑可以如下表达， 大概意思就是看前一步(t-1)的时候几种可能， 然后求一个最大值，<br> 接着先加上一个节点。 最后如果没有重复的话，再加上另外一个节点。</li> 
+</ol> 
+<pre><code>int prev1 = Math.max(getdp(dp, t-1,x1-1,x2), getdp(dp, t-1,x1-1,x2-1));
+int prev2 = Math.max(getdp(dp, t-1,x1,x2), getdp(dp, t-1,x1,x2-1));
+prev = Math.max(prev1, prev2);
+dp[t][x1][x2] = prev + grid[x1][y1];
+if(x1 != x2) {
+    dp[t][x1][x2] += grid[x2][y2];
+}
+
+
+</code></pre> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int cherryPickup(int[][] grid) {
+        int n = grid.length;
+        int count = 2 * n - 1; 
+        int[][][] dp = new int[count][n][n];  // count, x1, x2
+                
+        for(int t = 0; t &lt; count; t++) {
+            for(int i = 0; i &lt; n; ++i) {
+                for(int j = 0; j &lt; n; ++j) {
+                    int x1 = i, y1 = t-x1;
+                    int x2 = j, y2 = t-x2;
+                    
+                    if(x1 &lt; 0 || y1 &lt; 0 || x1 &gt;= n || y1 &gt;= n) continue;
+                    if(x2 &lt; 0 || y2 &lt; 0 || x1 &gt;= n || y2 &gt;= n) continue;                    
+                    
+                    if(grid[x1][y1] == -1 || grid[x2][y2] == -1) {
+                        dp[t][x1][x2] = -1;
+                        continue;
+                    }
+                    int prev = 0;
+                    if(t &gt; 0) {
+                        int prev1 = Math.max(getdp(dp, t-1,x1-1,x2), getdp(dp, t-1,x1-1,x2-1));
+                        int prev2 = Math.max(getdp(dp, t-1,x1,x2), getdp(dp, t-1,x1,x2-1));
+                        prev = Math.max(prev1, prev2);
+                        if(prev &lt; 0) {
+                            dp[t][x1][x2] = -1;
+                            continue;
+                        }
+                    }
+                    
+                    dp[t][x1][x2] = prev + grid[x1][y1];
+                    if(x1 != x2) {
+                        dp[t][x1][x2] += grid[x2][y2];
+                    }
+                }
+            }
+        }
+        return  Math.max(0, dp[count-1][n-1][n-1]);
+    }
+    
+    int getdp(int[][][] dp, int t, int x1, int x2) {
+        if(x1 &lt; 0 || x2 &lt; 0 || t-x1 &lt; 0 || t-x2 &lt; 0) return -1;
+        return dp[t][x1][x2];
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^3)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N^3)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
