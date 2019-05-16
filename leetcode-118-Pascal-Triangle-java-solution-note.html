@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 118 Pascal&apos;s Triangle解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 118 Pascal&apos;s Triangle解题笔记</h1>
+			</div>
+
+			<p><em>14 May 2019</em></p>
+
+			<p><h2><a href="#leetcode-118-pascals-triangle" id="leetcode-118-pascals-triangle">leetcode 118 Pascal’s Triangle</a></h2> 
+<p>输出一个Pascal三角形</p> 
+<h2><a href="#java代码实现" id="java代码实现">java代码实现</a></h2> 
+<p>这个题目直接按照逻辑来做就好， 代码尽量简洁一点， 下面是我目前可以写到到版本</p> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; generate(int numRows) {
+    List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+    for(int i = 0; i &lt; numRows; ++i) {
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        if(i == 0) {
+            list.add(1);
+        }
+        else {
+            list.add(1);
+            List&lt;Integer&gt; prevList = allList.get(i-1);
+            for(int j = 1; j &lt; i; ++j) {
+                list.add(prevList.get(j-1) + prevList.get(j));
+            }
+            list.add(1);
+        }
+        allList.add(list);
+    }
+    return allList;
+}
+
+
+</code></pre> 
+<h2><a href="#之前的一个版本" id="之前的一个版本">之前的一个版本</a></h2> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; generate(int numRows) {
+    List&lt;List&lt;Integer&gt;&gt; allList = new ArrayList&lt;&gt;();
+    for(int i = 0; i &lt; numRows; ++i) {
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        if(i &lt; 2) {                
+            for(int j = 0; j &lt;= i; ++j) {
+                list.add(1);
+            }
+            allList.add(list);
+        }
+        else {
+            list.add(1);
+            List&lt;Integer&gt; prev = allList.get(i-1);
+            for(int j = 1; j &lt; i; ++j) {
+                list.add(prev.get(j-1) + prev.get(j));
+            }
+            list.add(1);
+            allList.add(list);
+        }
+    }
+    return allList;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
