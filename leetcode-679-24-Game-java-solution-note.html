@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>uber面试题leetcode 679 24 Game解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>uber面试题leetcode 679 24 Game解题笔记</h1>
+			</div>
+
+			<p><em>16 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-679-24-game" id="题目-leetcode-679-24-game">题目 leetcode 679 24 Game</a></h2> 
+<p>24点游戏， 可以用分数</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这里只是记录下我的代码， 我是递归做的， 调试了一晚上， 代码非常繁琐， 面试的时候是万万不能用这个版本的， 还需要学习一下别人的精简代码， 但是这里只是记录一下自己的过程， 反正就是分各种情况暴力递归</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public boolean judgePoint24(int[] nums) {
+        return dfs(nums, 0, 24, 1) || dfs2(nums);
+    }
+    
+    boolean dfs2(int[] nums) {
+        for(int i = 1; i &lt; nums.length; ++i) {
+            swap(nums, i, 1);
+            
+            List&lt;int[]&gt; list1 = get2(nums[0], nums[1]);
+            List&lt;int[]&gt; list2 = get2(nums[2], nums[3]);
+            
+            for(int[] item0: list1) {
+                for(int[] item1: list2) {
+                    
+                    if(item0[0] * item1[1] + item1[0] * item0[1] == 24 * item0[1] * item1[1]) {
+                        return true;
+                    }
+                    if(item1[0] * item1[1] - item1[1] * item0[0] == 24 * (item0[1] * item1[1])) {
+                        return true;
+                    }
+                    if(item1[1] * item0[0] - item1[0] * item1[1]  == 24 * (item0[1] * item1[1])) {
+                        return true;
+                    }
+                    
+                    if(item0[0] * item1[0] == 24 * item0[1] * item1[1]) {
+                        return true;
+                    }
+                    
+                    if(item0[0] * item1[1] == 24 * item0[1] * item1[0]) {
+                        return true;
+                    }
+                    
+                    if(item1[0] * item0[1] == 24 * item1[1] * item0[0]) {
+                        return true;
+                    }
+                    
+                }
+            }
+            
+            swap(nums, i, 1);
+        }
+        return false;
+    }
+    
+    List&lt;int[]&gt; get2(int a, int b) {
+        List&lt;int[]&gt; list = new ArrayList&lt;&gt;();
+        list.add(new int[]{a+b, 1});
+        if(a != b) {
+            list.add(new int[]{a-b, 1});
+            list.add(new int[]{b-a, 1});            
+        }
+        list.add(new int[]{b*a, 1});
+        list.add(new int[]{a, b});
+        list.add(new int[]{b, a});
+        return list;
+    }
+    
+    boolean dfs(int[] nums, int from, int targeta, int targetb) {
+        if(from &gt;= nums.length) return false;
+        
+        if(from == nums.length-1) {
+            return nums[from] * targetb == targeta;
+        }
+
+        for(int i = from; i &lt; nums.length; ++i) {
+            swap(nums, from, i);
+        
+            // 1. single operation 
+            
+            // 1.a:  + - * 
+            
+            // +
+            if(dfs(nums, from+1, targeta-nums[from] * targetb, targetb)) {
+                return true;
+            }
+            // - 
+            if(dfs(nums, from+1, targeta+targetb * nums[from], targetb)) {
+                return true;
+            }
+
+            if(dfs(nums, from+1, nums[from] * targetb -targeta, targetb)) {
+                return true;
+            }
+
+            // * 
+            if(dfs(nums, from+1, targeta, nums[from] * targetb)) {
+                return true;
+            }
+            
+
+            // 1.b : /
+            if(dfs(nums, from+1, nums[from] * targetb, targeta)) {
+                return true;
+            }
+            
+            if(dfs(nums, from+1, nums[from] * targeta, targetb)) {
+                return true;
+            }
+            
+            swap(nums, from, i);
+        }
+        
+        return false;
+    }
+    
+    void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>连分数都没有处理好， 比如这个case就通过不了<br> [1,3,4,6]</p> 
+<pre><code>class Solution {
+    public boolean judgePoint24(int[] nums) {
+        return dfs(nums, 0, 24, 1);
+    }
+    
+    boolean dfs(int[] nums, int from, int targeta, int targetb) {
+        if(from &gt;= nums.length) return false;
+        
+        if(from == nums.length-1) {
+            return nums[from] == targeta &amp;&amp; targetb == 1;
+        }
+
+        for(int i = from; i &lt; nums.length; ++i) {
+            swap(nums, from, i);
+        
+            // 1. single operation 
+            
+            // 1.a:  + - * 
+            if(targetb == 1) {
+                // +
+                if(dfs(nums, from+1, targeta-nums[from], 1)) {
+                    return true;
+                }
+                // - 
+                if(dfs(nums, from+1, targeta+nums[from], 1)) {
+                    return true;
+                }
+
+                // * 
+                if(targeta%nums[from] == 0 &amp;&amp; dfs(nums, from+1, targeta/nums[from], 1)) {
+                    return true;
+                }
+                
+            }
+
+            // 1.b : /
+            if(dfs(nums, from+1, nums[from] * targetb, targeta)) {
+                return true;
+            }
+            
+//             for(int j = from+1; j &lt; nums.length; ++j) {
+//                 swap(nums, from+1, j);
+                
+//                 if(dfs(nums, from+2))
+                
+//                 swap(nums, from+1, j);
+//             }
+            
+            
+            swap(nums, from, i);
+        }
+        
+        return false;
+    }
+    
+    void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>继续bug， [4,1,8,7]</p> 
+<pre><code>class Solution {
+    public boolean judgePoint24(int[] nums) {
+        return dfs(nums, 0, 24, 1);
+    }
+    
+    boolean dfs(int[] nums, int from, int targeta, int targetb) {
+        if(from &gt;= nums.length) return false;
+        
+        if(from == nums.length-1) {
+            return nums[from] == targeta &amp;&amp; targetb == 1;
+        }
+
+        for(int i = from; i &lt; nums.length; ++i) {
+            swap(nums, from, i);
+        
+            // 1. single operation 
+            
+            // 1.a:  + - * 
+            
+            // +
+            if(dfs(nums, from+1, targeta-nums[from] * targetb, targetb)) {
+                return true;
+            }
+            // - 
+            if(dfs(nums, from+1, targeta+targetb * nums[from], targetb)) {
+                return true;
+            }
+
+            if(dfs(nums, from+1, nums[from] * targetb -targeta, targetb)) {
+                return true;
+            }
+
+            // * 
+            if(dfs(nums, from+1, targeta, nums[from] * targetb)) {
+                return true;
+            }
+            
+
+            // 1.b : /
+            if(dfs(nums, from+1, nums[from] * targetb, targeta)) {
+                return true;
+            }
+            
+            if(dfs(nums, from+1, nums[from] * targeta, targetb)) {
+                return true;
+            }
+            
+//             for(int j = from+1; j &lt; nums.length; ++j) {
+//                 swap(nums, from+1, j);
+                
+//                 if(dfs(nums, from+2))
+                
+//                 swap(nums, from+1, j);
+//             }
+            
+            
+            swap(nums, from, i);
+        }
+        
+        return false;
+    }
+    
+    void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码3" id="错误代码3">错误代码3</a></h2> 
+<p>单个解决好了， 但是(a+b) * (c+d)这样的情况没有处理<br> [1,9,1,2]</p> 
+<pre><code>class Solution {
+    public boolean judgePoint24(int[] nums) {
+        return dfs(nums, 0, 24, 1);
+    }
+    
+    boolean dfs(int[] nums, int from, int targeta, int targetb) {
+        if(from &gt;= nums.length) return false;
+        
+        if(from == nums.length-1) {
+            return nums[from] * targetb == targeta;
+        }
+
+        for(int i = from; i &lt; nums.length; ++i) {
+            swap(nums, from, i);
+        
+            // 1. single operation 
+            
+            // 1.a:  + - * 
+            
+            // +
+            if(dfs(nums, from+1, targeta-nums[from] * targetb, targetb)) {
+                return true;
+            }
+            // - 
+            if(dfs(nums, from+1, targeta+targetb * nums[from], targetb)) {
+                return true;
+            }
+
+            if(dfs(nums, from+1, nums[from] * targetb -targeta, targetb)) {
+                return true;
+            }
+
+            // * 
+            if(dfs(nums, from+1, targeta, nums[from] * targetb)) {
+                return true;
+            }
+            
+
+            // 1.b : /
+            if(dfs(nums, from+1, nums[from] * targetb, targeta)) {
+                return true;
+            }
+            
+            if(dfs(nums, from+1, nums[from] * targeta, targetb)) {
+                return true;
+            }
+            
+//             for(int j = from+1; j &lt; nums.length; ++j) {
+//                 swap(nums, from+1, j);
+                
+//                 if(dfs(nums, from+2))
+                
+//                 swap(nums, from+1, j);
+//             }
+            
+            
+            swap(nums, from, i);
+        }
+        
+        return false;
+    }
+    
+    void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码4" id="错误代码4">错误代码4</a></h2> 
+<p>[1,2,1,2]<br> 等于0的情况没有处理</p> 
+<pre><code>class Solution {
+    public boolean judgePoint24(int[] nums) {
+        return dfs(nums, 0, 24, 1) || dfs2(nums);
+    }
+    
+    boolean dfs2(int[] nums) {
+        for(int i = 1; i &lt; nums.length; ++i) {
+            swap(nums, i, 1);
+            
+            List&lt;int[]&gt; list1 = get2(nums[0], nums[1]);
+            List&lt;int[]&gt; list2 = get2(nums[2], nums[3]);
+            
+            for(int[] item0: list1) {
+                for(int[] item1: list2) {
+                    if(item1[0] * item1[1] + item1[1] * item0[0] == 24 * (item0[1] * item1[1])) {
+                        return true;
+                    }
+                    if(item1[0] * item1[1] - item1[1] * item0[0] == 24 * (item0[1] * item1[1])) {
+                        return true;
+                    }
+                    if(item1[1] * item0[0] - item1[0] * item1[1]  == 24 * (item0[1] * item1[1])) {
+                        return true;
+                    }
+                    
+                    if(item0[0] * item1[0] == 24 * item0[1] * item1[1]) {
+                        return true;
+                    }
+                    
+                    if(item0[0] * item1[1] == 24 * item0[1] * item1[0]) {
+                        return true;
+                    }
+                    
+                    if(item1[0] * item0[1] == 24 * item1[1] * item0[0]) {
+                        return true;
+                    }
+                    
+                }
+            }
+            
+            swap(nums, i, 1);
+        }
+        return false;
+    }
+    
+    List&lt;int[]&gt; get2(int a, int b) {
+        List&lt;int[]&gt; list = new ArrayList&lt;&gt;();
+        list.add(new int[]{a+b, 1});
+        list.add(new int[]{a-b, 1});
+        list.add(new int[]{b-a, 1});
+        list.add(new int[]{b*a, 1});
+        list.add(new int[]{a, b});
+        list.add(new int[]{b, a});
+        return list;
+    }
+    
+    boolean dfs(int[] nums, int from, int targeta, int targetb) {
+        if(from &gt;= nums.length) return false;
+        
+        if(from == nums.length-1) {
+            return nums[from] * targetb == targeta;
+        }
+
+        for(int i = from; i &lt; nums.length; ++i) {
+            swap(nums, from, i);
+        
+            // 1. single operation 
+            
+            // 1.a:  + - * 
+            
+            // +
+            if(dfs(nums, from+1, targeta-nums[from] * targetb, targetb)) {
+                return true;
+            }
+            // - 
+            if(dfs(nums, from+1, targeta+targetb * nums[from], targetb)) {
+                return true;
+            }
+
+            if(dfs(nums, from+1, nums[from] * targetb -targeta, targetb)) {
+                return true;
+            }
+
+            // * 
+            if(dfs(nums, from+1, targeta, nums[from] * targetb)) {
+                return true;
+            }
+            
+
+            // 1.b : /
+            if(dfs(nums, from+1, nums[from] * targetb, targeta)) {
+                return true;
+            }
+            
+            if(dfs(nums, from+1, nums[from] * targeta, targetb)) {
+                return true;
+            }
+            
+//             for(int j = from+1; j &lt; nums.length; ++j) {
+//                 swap(nums, from+1, j);
+                
+//                 if(dfs(nums, from+2))
+                
+//                 swap(nums, from+1, j);
+//             }
+            
+            
+            swap(nums, from, i);
+        }
+        
+        return false;
+    }
+    
+    void swap(int[] nums, int i, int j) {
+        int t = nums[i];
+        nums[i] = nums[j];
+        nums[j] = t;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
