@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 780 Reaching Points解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 780 Reaching Points解题笔记</h1>
+			</div>
+
+			<p><em>16 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-780-reaching-points" id="题目-leetcode-780-reaching-points">题目 leetcode 780 Reaching Points</a></h2> 
+<ol> 
+ <li>输入[sx,sy], 可以走的下一步是[sx+sy, sy] 或者 [sx, sx+sy]</li> 
+ <li>问能不能到[tx,ty]<br> 其中， sx和sy都是正数</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个还是看答案的：） 自己只能想到从开始点做bfs，但是又觉得那样复杂度一定太高。</li> 
+ <li>这个思路是从结束点开始， 而且不需要遍历各种可能， 因为只有一条路径.<br> 因为转换是通过在一个坐标上加一个正数得到的, 那么逆操作一定是从大的那个数开始转换<br> 对于[sx+sy, sy], 因为sx+sy &gt; sy<br> 对于[sx, sx+sy], 因为sx+sy &gt; sx<br> 所以， 转换后的坐标， 大的那个数一定数被转换的数， 然后直接减去另外一个坐标就是[sx,sy]</li> 
+ <li> <p>所以逆操作的路径是固定的， 核心步骤可以这样的代码</p> </li> 
+</ol> 
+<pre><code>if(tx &gt;= ty) {
+    return reachingPoints(sx, sy, tx-ty, ty);     
+}
+else {
+    return reachingPoints(sx, sy, tx, ty-tx); 
+}
+</code></pre> 
+<ol> 
+ <li>当然，对于不停的做减法的操作，其实可以直接取余，这样更快</li> 
+</ol> 
+<pre><code>if(tx &gt;= ty) {
+    return reachingPoints(sx, sy, tx%ty, ty) ;     
+}
+else {
+    return reachingPoints(sx, sy, tx, ty%tx); 
+}
+</code></pre> 
+<ol> 
+ <li>然后， 还有一个步骤是边界条件， 什么时候退出，<br> a. 如果tx &lt; sx || ty &lt; sy, 那肯定就是不可能了<br> b. 如果tx == sx || ty == sy, 那么，就看另外一个数能不能完全通过多次减法操作到达开始点<br> 所以可以直接看另外一个数相减以后能不能被tx或者ty整除</li> 
+</ol> 
+<pre><code>if(tx == sx ) {
+    return (ty-sy) % tx == 0;
+}
+else if(ty == sy) {
+    return (tx-sx) % ty == 0;
+}
+
+
+</code></pre> 
+<ol> 
+ <li>具体思路可以参考这个图， 非常清晰<br> <a href="https://leetcode.com/problems/reaching-points/discuss/230588/Easy-to-understand-diagram-and-recursive-solution">https://leetcode.com/problems/reaching-points/discuss/230588/Easy-to-understand-diagram-and-recursive-solution</a></li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public boolean reachingPoints(int sx, int sy, int tx, int ty) {
+    if(tx &lt; sx || ty &lt; sy) {
+        return false;
+    }
+    else {
+        if(tx == sx) {
+            return (ty-sy)%sx == 0;
+        }
+        if(ty == sy) {
+            return (tx-sx)%sy == 0;
+        }
+        
+        if(tx &gt;= ty) {
+            return reachingPoints(sx, sy, tx%ty, ty) ;     
+        }
+        else {
+            return reachingPoints(sx, sy, tx, ty%tx); 
+        }
+    }
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lgN)?</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN)?</p> 
+<h2><a href="#代码2" id="代码2">代码2</a></h2> 
+<p>直接相减也可以通过</p> 
+<pre><code>public boolean reachingPoints(int sx, int sy, int tx, int ty) {
+    if(tx &lt; sx || ty &lt; sy) {
+        return false;
+    }
+    else {
+        if(tx == sx) {
+            return (ty-sy)%sx == 0;
+        }
+        if(ty == sy) {
+            return (tx-sx)%sy == 0;
+        }
+        
+        if(tx &gt;= ty) {
+            return reachingPoints(sx, sy, tx-ty, ty);     
+        }
+        else {
+            return reachingPoints(sx, sy, tx, ty-tx); 
+        }
+    }
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
