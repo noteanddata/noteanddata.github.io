@@ -118,6 +118,41 @@ public int find(int[] nums, int target, int from) {
         return count;
     }
 }
+</code></pre> 
+<h2><a href="#bottom-up的动态规划解法" id="bottom-up的动态规划解法">bottom up的动态规划解法</a></h2> 
+<ol> 
+ <li>因为所有数的和不会超过1000， 所以在表格向上平移了1000</li> 
+ <li>dp的基本递推关系如下</li> 
+</ol> 
+<p>dp[i][j+nums[i]] += dp[i-1][j];<br> dp[i][j-nums[i]] += dp[i-1][j];</p> 
+<pre><code>public int findTargetSumWays(int[] nums, int S) {
+    int[][] dp = new int[nums.length][2001];
+    for(int i = 0; i &lt; nums.length; ++i) {
+        if(i == 0) {
+            dp[i][1000 + nums[i]] += 1;
+            dp[i][1000 - nums[i]] += 1;
+        }
+        else {
+            for(int j = 0; j &lt; dp[i].length; ++j) {
+                if(dp[i-1][j] &gt; 0) {
+                    if(j+nums[i] &lt; dp[i].length) {
+                        dp[i][j+nums[i]] += dp[i-1][j];    
+                    }
+                    
+                    if(j-nums[i] &gt;= 0) {
+                        dp[i][j-nums[i]] += dp[i-1][j];    
+                    }
+                }
+            }
+        }
+    }
+    if(S &gt; 1000) {
+        return 0;
+    }
+    return dp[nums.length-1][1000+S];
+}
+
+
 </code></pre></p>
 	</div>		
 
