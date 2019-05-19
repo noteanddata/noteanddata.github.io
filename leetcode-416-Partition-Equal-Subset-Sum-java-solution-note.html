@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 416 Partition Equal Subset Sum解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 416 Partition Equal Subset Sum解题笔记</h1>
+			</div>
+
+			<p><em>18 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-416-partition-equal-subset-sum" id="题目-leetcode-416-partition-equal-subset-sum">题目 leetcode 416 Partition Equal Subset Sum</a></h2> 
+<p>输入一个数组， 里面都是正整数， 问能不能把整数数组分成两个部分， 使得这两个部分的和相同</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>先对数组求和， 如果不是偶数就返回false</li> 
+ <li>然后看数组里面是否可以取若干个数的和是sum/2, 那就可以回到combination sum的方法， 对每个数分别做取和不取两种选择</li> 
+ <li>但是这个题目要求的是返回可能或者不可能， 然后这里有很多重叠子问题， 所以递归的时候可以用一个map来存储已经计算好的结果, 否则会超时. 也就是动态规划的top down模式</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public boolean canPartition(int[] nums) {
+        int sum = 0;
+        for(int num: nums) {
+            sum += num;
+        }
+        if(sum%2 != 0) return false;
+        return dfs(nums, 0, sum/2, new HashMap&lt;&gt;());
+    }
+    public boolean dfs(int[] nums, int from, int target, Map&lt;Integer, Map&lt;Integer, Boolean&gt;&gt; map) {
+        if(target &lt; 0) return false;
+        if(target == 0) return true;
+        if(from == nums.length) return false;
+        Map&lt;Integer, Boolean&gt; tmap = map.get(from);
+        if(null != tmap) {
+            if(tmap.containsKey(target)) {
+                return tmap.get(target);
+            }
+        }
+        else {
+            tmap = new HashMap&lt;&gt;();
+            map.put(from, tmap);
+        }
+        boolean ret = dfs(nums, from+1, target-nums[from], map) || dfs(nums, from+1, target, map) ;
+        tmap.put(target, ret);
+        return ret;
+    }
+}
+
+</code></pre> 
+<p>一个有趣的结果， 递归的时候对当前数有两种选择， 一个是用这个数， 一个是不用这个数， 如果不用的放前面，在leetcode上会慢很多很多</p> 
+<pre><code>class Solution {
+    public boolean canPartition(int[] nums) {
+        int sum = 0;
+        for(int num: nums) {
+            sum += num;
+        }
+        if(sum%2 != 0) return false;
+        return dfs(nums, 0, sum/2, new HashMap&lt;&gt;());
+    }
+    public boolean dfs(int[] nums, int from, int target, Map&lt;Integer, Map&lt;Integer, Boolean&gt;&gt; map) {
+        if(target &lt; 0) return false;
+        if(target == 0) return true;
+        if(from == nums.length) return false;
+        Map&lt;Integer, Boolean&gt; tmap = map.get(from);
+        if(null != tmap) {
+            if(tmap.containsKey(target)) {
+                return tmap.get(target);
+            }
+        }
+        else {
+            tmap = new HashMap&lt;&gt;();
+            map.put(from, tmap);
+        }
+        boolean ret = dfs(nums, from+1, target, map) || dfs(nums, from+1, target-nums[from], map) ;
+        tmap.put(target, ret);
+        return ret;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
