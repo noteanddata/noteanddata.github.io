@@ -103,7 +103,31 @@ var _hmt = _hmt || [];
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
 <p>O(N*20000)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>O(N*20000)</p></p>
+<p>O(N*20000)</p> 
+<h2><a href="#一维空间的算法" id="一维空间的算法">一维空间的算法</a></h2> 
+<p>这个其实是典型的背包问题(knapsack problem),每一次其实只依赖于前面一个状态，所以空间可以用滚动数组优化到一维， 而且代码也会简洁很多；<br> 注意用滚动数组的时候， 第二层循环， 需要从大到小循环， 这样才可以在一层循环中依赖之前的数字， 而不会出现覆盖的情况。</p> 
+<pre><code>public boolean canPartition(int[] nums) {
+    int sum = 0;
+    for(int num: nums) {
+        sum += num;
+    }
+    if(sum%2 != 0) return false;
+    
+    boolean[] dp = new boolean[sum/2+1];
+    dp[0] = true;
+    for(int i = 0; i &lt; nums.length; ++i) {
+        for(int j = sum/2; j &gt;= nums[i]; --j) {
+            dp[j] = dp[j] || dp[j-nums[i]];
+            if(dp[sum/2]) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+</code></pre></p>
 	</div>		
 
 <div class="col-sm-4">
