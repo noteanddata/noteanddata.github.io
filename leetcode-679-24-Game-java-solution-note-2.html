@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>uber面试题leetcode 679 24 Game解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>uber面试题leetcode 679 24 Game解题笔记2</h1>
+			</div>
+
+			<p><em>16 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-679题-24-game" id="题目-leetcode-679题-24-game">题目 leetcode 679题 24 Game</a></h2> 
+<p>输入4个数， 问能不能通过四则运算得到24， 可以有分数运算</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目前面自己写了一遍， 各种bug， 代码也非常繁琐，<br> <a href="http://www.noteanddata.com/leetcode-679-24-Game-java-solution-note.html">http://www.noteanddata.com/leetcode-679-24-Game-java-solution-note.html</a></li> 
+ <li>后来学习了一下大家的写法， 感觉比较好的思路是两点<br> a. 使用double， 然后用0.000001来作为0的判断, 这样不需要像我一样用分数来表示结果, 毕竟用分数比较麻烦<br> b. 关于计算的优先级， 感觉在4个数里面计算优先级还是比较麻烦， 其实直接模拟现实生活中的24点游戏的过程就可以， 我们平常玩24点游戏的时候，都是先任意取两个数计算， 然后把这个结果放回去， 再和原来的结果做计算， 那么，只要模拟这个过程， 就可以计算类似(a+b)/(c+d)这样的计算过程了。</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    private double EPS = 0.000001;
+    public boolean judgePoint24(int[] nums) {
+        double[] dnums = new double[nums.length];
+        for(int i = 0; i &lt; nums.length; ++i) {
+            dnums[i] = 1.0 * nums[i];
+        }
+        return dfs(dnums);
+    }
+    
+    public boolean dfs(double[] arr) {
+        if(arr.length == 1) {
+            return Math.abs(arr[0] - 24) &lt; EPS;
+        }
+        for(int i = 0; i &lt; arr.length; ++i) {
+            for(int j = i+1; j &lt; arr.length; ++j) {
+                List&lt;Double&gt; nextList = new ArrayList&lt;&gt;();
+                nextList.addAll(Arrays.asList(arr[i] + arr[j], arr[i] - arr[j], arr[j] - arr[i], arr[i] * arr[j]));
+                if(Math.abs(arr[i]) &gt; EPS) {
+                    nextList.add(arr[j]/arr[i]);    
+                } 
+                if(Math.abs(arr[j]) &gt; EPS) {
+                    nextList.add(arr[i]/arr[j]);
+                }
+                
+                for(double next: nextList) {
+                    double[] copy = new double[arr.length-1];
+                    int t = 0;
+                    for(int k = 0; k &lt; arr.length; ++k) {
+                        if(k != i &amp;&amp; k != j) {
+                            copy[t++] = arr[k];
+                        }
+                    }
+                    copy[t] = next;
+                    if(dfs(copy)) {
+                        return true;
+                    }
+                }
+                
+            }        
+        }
+        return false;
+    }
+    
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
