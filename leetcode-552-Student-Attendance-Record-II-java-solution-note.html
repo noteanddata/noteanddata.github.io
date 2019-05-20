@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 552 Student Attendance Record II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 552 Student Attendance Record II解题笔记</h1>
+			</div>
+
+			<p><em>18 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-552-student-attendance-record-ii" id="题目-leetcode-552-student-attendance-record-ii">题目 leetcode 552 Student Attendance Record II</a></h2> 
+<p>学生的记录， A表示缺席， L表示迟到， P表示按时到<br> 如果有两次A，就不符合奖励要求；<br> 如果有超过两次连续的迟到(L), 也就不符合要求</p> 
+<p>问， 总共是N天的情况下， 会有多少种符合要求的记录?</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目首先肯定是用动态规划解， 但是难点在于定义状态， 用传统的数组的方式定义， 总是感觉状态分析不清楚；<br> 在<a href="http://www.noteanddata.com/leetcode-494-Target-Sum-java-solution-note.html">http://www.noteanddata.com/leetcode-494-Target-Sum-java-solution-note.html</a>这个题目的最后一种解法里面， 用一个map来表达状态， 现在感觉这个对有一些动态规划的题目非常有用， 状态非常清晰直接， 非常好理解</li> 
+ <li>这里， 同样用map来表达不同的状态<br> 我们用AmLn表示有总共有m个A，以n个L结尾， 根据题目意思，合法的状态总共只有6种可能:<br> A0L0<br> A0L1<br> A0L2</li> 
+</ol> 
+<p>A1L0<br> A1L1<br> A1L2<br> 3. 同样， 状态转移也会非常清晰， 针对这6种情况， 分别对下一位是A, L, P做状态转换就好<br> // A<br> A0L0 –&gt; A1L0<br> A0L1 –&gt; A1L0<br> A0L2 –&gt; A1L0<br> A1L0/A1L1/A1/L2 –&gt; 0</p> 
+<p>// P<br> A0L0 –&gt; A0L0<br> A0L1 –&gt; A0L0<br> A0L2 –&gt; A0L0<br> A1L0 –&gt; A1L0<br> A1L1 –&gt; A1L0<br> A1L2 –&gt; A1L0</p> 
+<p>// L<br> A0L0 –&gt; A0L1<br> A0L1 –&gt; A0L2<br> A0L2 –&gt; 0<br> A1L0 –&gt; A1L1<br> A1L1 –&gt; A1L2<br> A1L2 –&gt; 0</p> 
+<ol> 
+ <li>这个题目做加法的时候会溢出， 需要单独做一个函数来对每次加法做取模</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int checkRecord(int n) {
+        Map&lt;String, Integer&gt; map = new HashMap&lt;&gt;();
+        map.put("A0L0", 1); // P
+        map.put("A0L1", 1); // L
+        map.put("A1L0", 1); // A
+        
+        for(int i = 2; i &lt;= n; ++i) {
+            Map&lt;String, Integer&gt; next = new HashMap&lt;&gt;();
+                        
+            next.put("A0L0", sum(map, new String[]{"A0L0", "A0L1", "A0L2"}));
+            next.put("A0L1", map.getOrDefault("A0L0", 0)%1000000007);
+            next.put("A0L2", map.getOrDefault("A0L1", 0)%1000000007);
+            next.put("A1L0", sum(map, new String[]{"A0L0", "A0L1", "A0L2", "A1L0", "A1L1", "A1L2"}));
+            next.put("A1L1", map.getOrDefault("A1L0", 0)%1000000007);
+            next.put("A1L2", map.getOrDefault("A1L1", 0)%1000000007);
+            
+            map = next;
+        }
+        
+        int sum = 0;
+        for(Map.Entry&lt;String, Integer&gt; entry: map.entrySet()) {
+            sum = (sum + entry.getValue())%1000000007;
+        }
+        return sum;
+    }
+    
+    int sum(Map&lt;String, Integer&gt; map, String[] keys) {
+        int sum = 0;
+        for(String key: keys) {
+            sum = (sum + map.getOrDefault(key, 0))%1000000007;
+        }
+        return sum;
+    }
+    
+    
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
