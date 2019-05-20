@@ -153,6 +153,64 @@ public int find(int[] nums, int target, int from) {
 }
 
 
+</code></pre> 
+<h2><a href="#一维dp" id="一维dp">一维dp</a></h2> 
+<p>由于每个数的状态都只和前面一个数的状态有关， 所以，可以在空间上把二维降到一维</p> 
+<pre><code>public int findTargetSumWays(int[] nums, int S) {
+    if(S &gt; 1000) return 0;
+    int[] dp = new int[2001];
+    dp[1000] = 1;
+    for(int num: nums) {
+        int[] next = new int[2001];
+        for(int i = dp.length-1-num; i &gt;= num; --i) {
+            next[i+num] += dp[i];
+            next[i-num] += dp[i];
+        }
+        dp = next;
+    }
+    return dp[S+1000];
+}
+
+</code></pre> 
+<p>** 错误的代码<br> 在改成一维dp的过程中， 写了一个下面的错误代码！ 还是要注意dp的递推关系</p> 
+<pre><code>public int findTargetSumWays(int[] nums, int S) {
+    if(S &gt; 1000) return 0;
+    int[] dp = new int[2001];
+    dp[1000] = 1;
+    for(int num: nums) {
+        int[] next = new int[2001];
+        for(int i = dp.length-1-num; i &gt;= num; --i) {
+            next[i] += dp[i-num];
+            next[i] += dp[i+num];
+        }
+        dp = next;
+    }
+    return dp[S+1000];
+}
+
+</code></pre> 
+<p>还有一个小trick是， 这里的dp方向是两个方向， 所以不能直接使用背包问题中二维转一维的从大到小遍历的方式来减少空间。</p> 
+<h2><a href="#更好的dp-和数组的值无关" id="更好的dp-和数组的值无关">更好的dp， 和数组的值无关</a></h2> 
+<p>这个dp的实现我认为更好一些， 用了一个map， 然后迭代的时候有点相当于level order的遍历；<br> 对于每一层来说， 如果有c个方法到达v， 那么v+num 和v-num都会增加c种方法</p> 
+<pre><code>public int findTargetSumWays(int[] nums, int S) {
+    Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+    countMap.put(0, 1);
+    
+    for(int num: nums) {
+        Map&lt;Integer, Integer&gt; next = new HashMap&lt;&gt;();
+        for(Map.Entry&lt;Integer, Integer&gt; entry: countMap.entrySet()) {
+            int v = entry.getKey();
+            int count = entry.getValue();
+            
+            next.put(v+num, next.getOrDefault(v + num, 0) + count);
+            next.put(v-num, next.getOrDefault(v - num, 0) + count);
+        }
+        countMap = next;
+    }
+    return countMap.getOrDefault(S, 0);
+}
+
+
 </code></pre></p>
 	</div>		
 
