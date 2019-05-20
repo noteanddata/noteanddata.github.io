@@ -173,6 +173,7 @@ public int find(int[] nums, int target, int from) {
 
 </code></pre> 
 <p>** 错误的代码<br> 在改成一维dp的过程中， 写了一个下面的错误代码！ 还是要注意dp的递推关系</p> 
+<p>Input: [1000]<br> 1000<br> Output: 0<br> Expected: 1</p> 
 <pre><code>public int findTargetSumWays(int[] nums, int S) {
     if(S &gt; 1000) return 0;
     int[] dp = new int[2001];
