@@ -314,6 +314,72 @@ public class Codec {
 // Codec codec = new Codec();
 // codec.deserialize(codec.serialize(root));
 
+</code></pre> 
+<h2><a href="#之前写的非常繁琐的代码" id="之前写的非常繁琐的代码">之前写的非常繁琐的代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if(null == root) return "";
+        // recursion, first root.val, and then left and right
+        return  root.val + "((" + serialize(root.left) + ")" + "(" + serialize(root.right) + "))";
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if(null == data || data.length() == 0) {
+            return null;
+        }
+        
+        // parse root val, 
+        TreeNode root = null;
+        int i = 0;
+        for(; i &lt; data.length(); ++i) {
+            if(data.charAt(i) == '(') {
+                int val = Integer.valueOf(data.substring(0, i));
+                root = new TreeNode(val);
+                break;
+            }
+        }
+        
+        // des left
+        int lcount = 1;
+        i += 2;
+        
+        int j = i;
+        for(; j &lt; data.length(); ++j) {
+            if(data.charAt(j) == '(') {
+                lcount++;
+            }
+            else if(data.charAt(j) == ')') {
+                lcount--;
+                if(lcount == 0) {
+                    root.left = deserialize(data.substring(i, j));
+                    break;
+                }
+            }
+        }
+        
+        // des right
+        root.right = deserialize(data.substring(j+2, data.length()-2));
+        return root;
+        
+    }
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.deserialize(codec.serialize(root));
+
 </code></pre></p>
 	</div>		
 
