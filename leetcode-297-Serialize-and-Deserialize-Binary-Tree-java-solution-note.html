@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 297 Serialize and Deserialize Binary Tree解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 297 Serialize and Deserialize Binary Tree解题笔记</h1>
+			</div>
+
+			<p><em>19 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-297-serialize-and-deserialize-binary-tree" id="题目-leetcode-297-serialize-and-deserialize-binary-tree">题目 leetcode 297 Serialize and Deserialize Binary Tree</a></h2> 
+<p>对一个二叉树进行序列化和反序列化</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本的思路是递归的思路， 重要的地方是在于序列化了以后可以反序列化回来</li> 
+ <li>首先考虑序列化， 树的基本遍历方式有pre order, middle order, post order,<br> 如果选择middle order或者post order, 反序列化的时候连根节点的值都不知道在哪里， 所以处理起来不太好处理。</li> 
+ <li>所以选择pre order, 先把根节点序列化成一个数， 然后节点之间用逗号分开，</li> 
+ <li>pre order序列化的时候， 先序列化左子树， 然后序列化右子树。 这里， 如果一个节点的左子树或者右子树是空的， 我们也需要序列化成一个特殊符合， 比如#, 这样， 反序列化的时候就知道这里是null， 然后可以终止递归</li> 
+ <li>反序列化的时候，就是先读根节点， 然后把左子树和右子树分别反序列化， 为了模拟这个一路走过去的过程， 可以直接用一个queue来模拟这个遍历过程</li> 
+ <li>这个解法的核心， 应该是想明白什么时候终止了递归过程，</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if(null == root) return "#";
+        StringBuilder sb = new StringBuilder();
+        sb.append(root.val)
+        .append(",").append(serialize(root.left))
+        .append(",").append(serialize(root.right));
+        
+        return sb.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] arr = data.split(",");
+        if(arr.length == 0) return null;
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        for(String item: arr) {
+            queue.add(item);
+        }
+        return des(queue);
+    }   
+    
+    public TreeNode des(Queue&lt;String&gt; queue) {
+        if(queue.size() == 0) return null;
+        
+        String cur = queue.poll();
+        if("#".equals(cur)) return null;
+        
+        TreeNode root = new TreeNode(Integer.valueOf(cur));
+        
+        root.left = des(queue);
+        root.right = des(queue);
+        return root;
+    }
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.deserialize(codec.serialize(root));
+
+</code></pre> 
+<p>再简化一下, 其实反序列化的时候， 并不会出现queue.size()==0的情况</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if(null == root) return "#";
+        StringBuilder sb = new StringBuilder();
+        sb.append(root.val).append(",").append(serialize(root.left)).append(",").append(serialize(root.right));
+        return sb.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] arr = data.split(",");
+        if(arr.length == 0) return null;
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        for(String item: arr) {
+            queue.add(item);
+        }
+        return des(queue);
+    }   
+    
+    public TreeNode des(Queue&lt;String&gt; queue) {        
+        String cur = queue.poll();
+        if("#".equals(cur)) return null;
+        
+        TreeNode root = new TreeNode(Integer.valueOf(cur));
+        
+        root.left = des(queue);
+        root.right = des(queue);
+        return root;
+    }
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.deserialize(codec.serialize(root));
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#之前写的繁琐的代码" id="之前写的繁琐的代码">之前写的繁琐的代码</a></h2> 
+<p>没有用递归， 理论上代码应该可以写的很简洁， 可是我这代码只能ac， 读起来真是惨不忍睹</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+
+    // Encodes a tree to a single string.
+   
+    public String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("[");
+
+        Queue&lt;TreeNode&gt; queue = new LinkedList&lt;&gt;();
+        queue.add(root);
+
+        boolean first = true;
+
+        while(!queue.isEmpty()) {
+            if(!first) {
+                sb.append(",");
+            }
+            first = false;
+
+
+            TreeNode node = queue.poll();
+            if(null == node) {
+                sb.append("null");
+            }
+            else {
+                sb.append(node.val);
+                queue.add(node.left);
+                queue.add(node.right);
+            }
+
+        }
+
+        sb.append("]");
+
+        return sb.toString();
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        if(null == data || data.length() &lt;= 2) return null;
+        data = data.substring(1, data.length()-1);
+        String[] arr = data.split(",");
+        TreeNode root = null;
+        TreeNode parent = null;
+
+        Queue&lt;TreeNode&gt; queue = new LinkedList&lt;&gt;();
+        boolean expectLeft = true;
+        for(int i = 0; i &lt; arr.length; ++i) {
+            String cur = arr[i];
+            if("null".equalsIgnoreCase(cur)) {
+                if(null == root) {
+                    root = null; // do nothing
+                }
+                else {
+                    if(expectLeft) {
+                        parent.left = null;
+                    }
+                    else {
+                        parent.right = null;
+                        parent = queue.poll();
+                    }
+                    expectLeft = !expectLeft;
+                }
+            }
+            else {
+                int v = Integer.valueOf(cur);
+                TreeNode node = new TreeNode(v);
+                queue.add(node);
+                if(null == root) {
+                    root = node;
+                    parent = queue.poll();
+                }
+                else {
+                    if(expectLeft) {
+                        parent.left = node;
+                    }
+                    else {
+                        parent.right = node;
+                        parent = queue.poll();
+                    }
+                    expectLeft = !expectLeft;
+                }
+            }
+        }
+        return root;
+    }
+
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.deserialize(codec.serialize(root));
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
