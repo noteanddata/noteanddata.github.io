@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 449 Serialize and Deserialize BST解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 449 Serialize and Deserialize BST解题笔记</h1>
+			</div>
+
+			<p><em>19 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-449-serialize-and-deserialize-bst" id="题目-leetcode-449-serialize-and-deserialize-bst">题目 leetcode 449 Serialize and Deserialize BST</a></h2> 
+<p>序列化和反序列化一个二叉搜索树</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>二叉搜索树有特殊的性质， 但是我现在还利用不来， 先按照普通的二叉树的方式来做序列化和反序列化，基本代码和前面的写法一样<br> <a href="http://www.noteanddata.com/leetcode-297-Serialize-and-Deserialize-Binary-Tree-java-solution-note.html">http://www.noteanddata.com/leetcode-297-Serialize-and-Deserialize-Binary-Tree-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-428-Serialize-and-Deserialize-N-ary-Tree-java-solution-note.html">http://www.noteanddata.com/leetcode-428-Serialize-and-Deserialize-N-ary-Tree-java-solution-note.html</a></li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if(null == root) return "";
+        StringBuilder sb = new StringBuilder();
+        dfs(root, sb);
+        return sb.toString();
+    }
+    void dfs(TreeNode root, StringBuilder sb) {
+        if(null == root) {
+            sb.append("#");
+        }
+        else {
+            sb.append(root.val);
+            sb.append(",");
+            dfs(root.left, sb);
+            
+            sb.append(",");
+            dfs(root.right, sb);
+        }
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] arr = data.split(",");
+        if(data.length() == 0 || arr.length == 0) return null;
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        for(String item: arr) {
+            queue.add(item);
+        }
+        return dfs(queue);
+    }
+    TreeNode dfs(Queue&lt;String&gt; queue) {
+        String cur = queue.poll();
+        if("#".equals(cur)) {
+            return null;
+        }
+        else {
+            TreeNode node = new TreeNode(Integer.valueOf(cur));
+            node.left = dfs(queue);
+            node.right = dfs(queue);
+            return node;
+        }
+    }
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.deserialize(codec.serialize(root));
+
+</code></pre> 
+<h2><a href="#错误的代码" id="错误的代码">错误的代码</a></h2> 
+<p>失败的test case ： []<br> 也就是对于空树的序列化和反序列化不能通过</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if(null == root) return "";
+        StringBuilder sb = new StringBuilder();
+        dfs(root, sb);
+        return sb.toString();
+    }
+    void dfs(TreeNode root, StringBuilder sb) {
+        if(null == root) {
+            sb.append("#");
+        }
+        else {
+            sb.append(root.val);
+            sb.append(",");
+            dfs(root.left, sb);
+            
+            sb.append(",");
+            dfs(root.right, sb);
+        }
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] arr = data.split(",");
+        if(arr.length == 0) return null;
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        for(String item: arr) {
+            queue.add(item);
+        }
+        return dfs(queue);
+    }
+    TreeNode dfs(Queue&lt;String&gt; queue) {
+        String cur = queue.poll();
+        if("#".equals(cur)) {
+            return null;
+        }
+        else {
+            TreeNode node = new TreeNode(Integer.valueOf(cur));
+            node.left = dfs(queue);
+            node.right = dfs(queue);
+            return node;
+        }
+    }
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.deserialize(codec.serialize(root));
+
+</code></pre> 
+<h2><a href="#修改后可以通过的代码" id="修改后可以通过的代码">修改后可以通过的代码</a></h2> 
+<p>当然， 前面的bug主要是对于null的序列化没有统一的结果， 直接返回空字符串，其实没有必要， 直接返回#就可以</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        if(null == root) return "#";
+        StringBuilder sb = new StringBuilder();
+        dfs(root, sb);
+        return sb.toString();
+    }
+    void dfs(TreeNode root, StringBuilder sb) {
+        if(null == root) {
+            sb.append("#");
+        }
+        else {
+            sb.append(root.val);
+            sb.append(",");
+            dfs(root.left, sb);
+            
+            sb.append(",");
+            dfs(root.right, sb);
+        }
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] arr = data.split(",");
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        for(String item: arr) {
+            queue.add(item);
+        }
+        return dfs(queue);
+    }
+    TreeNode dfs(Queue&lt;String&gt; queue) {
+        String cur = queue.poll();
+        if("#".equals(cur)) {
+            return null;
+        }
+        else {
+            TreeNode node = new TreeNode(Integer.valueOf(cur));
+            node.left = dfs(queue);
+            node.right = dfs(queue);
+            return node;
+        }
+    }
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.deserialize(codec.serialize(root));
+
+</code></pre> 
+<h2><a href="#再度修改" id="再度修改">再度修改</a></h2> 
+<p>然后再仔细看一下， 前面对空树做了一个特殊判断， 实际上这个没有必要, 放在统一的逻辑里面处理就可以。</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder sb = new StringBuilder();
+        dfs(root, sb);
+        return sb.toString();
+    }
+    void dfs(TreeNode root, StringBuilder sb) {
+        if(null == root) {
+            sb.append("#");
+        }
+        else {
+            sb.append(root.val);
+            sb.append(",");
+            dfs(root.left, sb);
+            
+            sb.append(",");
+            dfs(root.right, sb);
+        }
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String data) {
+        String[] arr = data.split(",");
+        Queue&lt;String&gt; queue = new LinkedList&lt;&gt;();
+        for(String item: arr) {
+            queue.add(item);
+        }
+        return dfs(queue);
+    }
+    TreeNode dfs(Queue&lt;String&gt; queue) {
+        String cur = queue.poll();
+        if("#".equals(cur)) {
+            return null;
+        }
+        else {
+            TreeNode node = new TreeNode(Integer.valueOf(cur));
+            node.left = dfs(queue);
+            node.right = dfs(queue);
+            return node;
+        }
+    }
+}
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec = new Codec();
+// codec.deserialize(codec.serialize(root));
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
