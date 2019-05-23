@@ -166,6 +166,61 @@ boolean dfs(Map&lt;String, List&lt;String&gt;&gt; tickets, List&lt;String&gt; re
 }
 
 
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>递归终止的目标是访问了所有的路径， 而不是访问了所有的节点。<br> 如果访问了所有的节点， 那么就不能处理一个顶点有多条边的情况</p> 
+<pre><code>Input: [["JFK","SFO"],["JFK","ATL"],["SFO","ATL"],["ATL","JFK"],["ATL","SFO"]]
+Output: ["JFK","ATL","JFK","SFO"]
+Expected: ["JFK","ATL","JFK","SFO","ATL","SFO"]
+
+</code></pre> 
+<pre><code>class Solution {
+    public List&lt;String&gt; findItinerary(List&lt;List&lt;String&gt;&gt; tickets) {
+        Map&lt;String, List&lt;String&gt;&gt; graph = new HashMap&lt;&gt;();
+        for(List&lt;String&gt; ticket: tickets) {
+            String from = ticket.get(0);
+            String to = ticket.get(1);
+            List&lt;String&gt; list =graph.compute(from, (k,v)-&gt;{
+                if(v == null) v = new ArrayList&lt;&gt;();
+                v.add(to);
+                return v;
+            });
+        }
+        for(Map.Entry&lt;String, List&lt;String&gt;&gt; entry: graph.entrySet()) {
+            Collections.sort(entry.getValue());
+        }        
+        
+        List&lt;String&gt; path = new ArrayList&lt;&gt;();
+        path.add("JFK");
+        
+        dfs(graph, path, "JFK", graph.size()+1);
+        
+        return path;
+    }
+    
+    boolean dfs(Map&lt;String, List&lt;String&gt;&gt; graph, List&lt;String&gt; path, String cur, int target) {
+        if(path.size() == target) {
+            return true;
+        }
+        List&lt;String&gt; list = graph.get(cur);
+        if(null == list) {
+            return false;
+        }
+        for(int i = 0; i &lt; list.size(); ++i) {
+            String next = list.get(i);
+            list.remove(i);
+            path.add(next);
+            if(dfs(graph, path, next, target)) {
+                return true;
+            }
+            list.add(i, next);
+            path.remove(path.size()-1);
+        }
+        return false;
+    }
+}
+
+
 </code></pre></p>
 	</div>		
 
