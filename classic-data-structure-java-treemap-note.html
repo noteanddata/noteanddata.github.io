@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Java经典数据结构TreeMap笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Java经典数据结构TreeMap笔记</h1>
+			</div>
+
+			<p><em>25 May 2019</em></p>
+
+			<p><h2><a href="#java经典数据结构treemap笔记" id="java经典数据结构treemap笔记">Java经典数据结构TreeMap笔记</a></h2> 
+<ol> 
+ <li>TreeMap是java里面非常有用的一个数据结构，一般我们知道这个数据结构是按照Key排序的Map,<br> 这样遍历的时候可以保证遍历出来的key是有顺序的</li> 
+ <li>实现的数据结构是红黑树，<br> a. 红黑树首先是一个binary search tree, 就是对于任意一个节点来说， 左子树的key都比根节点小， 右子树的key都比根节点大<br> b. 而且红黑树还不是一个普通的binary search tree, 而是一个balanced binary search tree,<br> 也就是对于任意一个节点来说， 左子树的高度和右子树的高度相差最多1， 也就是高度是平衡的。</li> 
+ <li> <p>这样，因为树的高度都是平衡的，所以红黑树的主要操作的时间复杂度都是lg(N)<br> a. 插入: lg(N)<br> b. 删除: lg(N)<br> c. 查询: lg(N)</p> </li> 
+ <li> <p>Java里面排序的数据结构还有PriorityQueue, 也就是heap的实现， 但是PriorityQueue只能按顺序遍历， 而TreeMap可以搜索， 同时在这个搜索上，还有一些非常有用的API<br> a. TreeMap.firstKey()或者TreeMap.firstEntry()<br> 取按顺序的第一个key或者entry， 这个PriorityQueue也可以做到</p> </li> 
+</ol> 
+<p>b. TreeMap.lastKey()或者TreeMap.lastEntry()<br> 取按顺序的最后一个key或者entry</p> 
+<p>c. TreeMap.ceilingKey(K key)或者TreeMap.ceilingEntry()<br> 返回&gt;=key的最小的key或者entry, 也就是找对应参数的天花板</p> 
+<p>d. TreeMap.floorKey(K key)或者TreeMap.floorEntry()<br> 返回&lt;=key的最大的key或者entry, 也就是找对应参数的地板</p> 
+<p>e. TreeMap.lowerKey(K key)或者TreeMap.lowerEntry()<br> 返回 &lt; key的最大key或者entry， 这个和floorKey的区别是floorKey的返回值可能和参数一样， lowerKey的话一定和参数不一样</p> 
+<p>f. TreeMap.higherKey(K key)或者TreeMap.higherEntry()<br> 返回 &gt; key的最大key或者entry, 这个和ceilingKey的区别是ceiling的返回值可能和参数一样， higherKey的返回值和参数不一样</p> 
+<ol> 
+ <li>基本上， 上面几个API核心就是实现了查找的功能, 可以完成大部分有用的操作。当然， TreeMap还提供了其他很多有用的API，方便更多的操作。 当然， 下面这些API应该都可以由前面的floorKey/ceilingKey/higherKey/lowerKey完成</li> 
+</ol> 
+<p>a. public SortedMap&lt;K,V&gt; headMap(K toKey)<br> 返回所有 &lt; toKey的一个Map<br> b. public SortedMap&lt;K,V&gt; tailMap(K fromKey)<br> 返回所有 &gt;= fromKey的一个Map</p> 
+<p>c. public SortedMap&lt;K,V&gt; subMap(K fromKey,K toKey)<br> 返回所有 &gt;= fromKey 并且 &lt; toKey的一个Map<br> 也就是from是inclusive, to是exclusive</p> 
+<p>d. 然后subMap还可以指定from和to的inclusive<br> public NavigableMap&lt;K,V&gt; subMap(K fromKey,<br> boolean fromInclusive,<br> K toKey,<br> boolean toInclusive)</p> 
+<ol> 
+ <li> <p>另外， 前面的headMap和tailMap, 也有支持inclusive参数的API</p> </li> 
+ <li> <p>基本上， 支持搜索和搜索下一个／上一个key的API， 可以有很有用的功能， 在刷题的时候也有很多有题需要用到TreeMap</p> </li> 
+</ol></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
