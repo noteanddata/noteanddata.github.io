@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 635 Design Log Storage System解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 635 Design Log Storage System解题笔记</h1>
+			</div>
+
+			<p><em>25 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-635-design-log-storage-system" id="题目-leetcode-635-design-log-storage-system">题目 leetcode 635 Design Log Storage System</a></h2> 
+<p>设计一个存储log的系统, 实现下面两个API,<br> void Put(int id, string timestamp)<br> 在某一个时间点， 有一个id；</p> 
+<p>int[] Retrieve(String start, String end, String granularity)<br> 搜索在start和end之间的id， 其中granularity是指时间点取整到某一个粒度</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目有几个地方需要处理的<br> a. 如何保存数据？ 数据的存储， 和数据的搜索密切相关, 这里需要按时间范围搜索， 那么就需要在一个排序的集合上做范围查询，<br> 那就需要TreeMap, 也就是balanced binary search tree的java实现<br> 所以需要这样一个数据结构， key是timestamp, value是id的结合<br> TreeMap&lt;String, Set
+  <integer>
+   &gt; map;
+  </integer></li> 
+</ol> 
+<p>b. 如何搜索， 搜索第一步需要对时间向上和向下取整，<br> 取整这里有点麻烦， 一种方法是把时间换算成秒， 然后再做取整计算， 但是这里有个问题是一个月有几天是不规律的， 有可能有31天，也有可能是28天， 所以如果用秒来计算的话会非常麻烦。<br> 另外一种方法是直接在字符串上做操作， 所以这里可以设定两个字符串， 然后看到那个粒度上， 就把后面的部分改成min和max的部分， 这样处理起来就非常简单<br> min = “2000:00:00:00:00:00”;<br> max = “2017:12:31:23:59:59”;</p> 
+<p>所以这样就可以建立一个从granularity到index的map， 那么就可以处理了。<br> 可能这里会有一个问题， 处理的日期可能会不存在， 比如处理max=“2017:02:31”, 但是这样也没有问题， 因为这个key在treemap里面是不存在的。</p> 
+<p>c. 在treemap中搜索的时候， 可以从当前key开始， 然后用TreeMap.higherKey()一个一个向后遍历，<br> 当然， treemap还有一个非常有用的范围搜索API，<br> TreeMap.subMap(fromKey, inclusive, toKey, inclusive)<br> 直接可以遍历得到结果</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class LogSystem {
+    private TreeMap&lt;String, Set&lt;Integer&gt;&gt; map;
+    private String min = "2000:00:00:00:00:00";
+    private String max = "2017:12:31:23:59:59";
+    private Map&lt;String, Integer&gt; indexMap;
+    public LogSystem() {
+        map = new TreeMap&lt;&gt;();
+        indexMap = new HashMap&lt;&gt;();
+        String[] arr = {"Year", "Month", "Day", "Hour", "Minute", "Second"};
+        String[] lenarr = {"2000", "00", "00", "00", "00", "00"};
+        
+        int len = 0;
+        for(int i = 0; i &lt; arr.length; ++i) {
+            len += lenarr[i].length(); 
+            if(i &gt; 0) {
+                len++; // for :
+            }
+            indexMap.put(arr[i], len);
+        }
+    }
+    
+    public void put(int id, String timestamp) {
+        map.compute(timestamp, (ts, set)-&gt; {
+            if(set == null) set = new HashSet&lt;&gt;();
+            set.add(id);
+            return set;
+        });
+    }
+    
+    public List&lt;Integer&gt; retrieve(String s, String e, String gra) {
+        int index = indexMap.get(gra);
+        String start = s.substring(0, index) + min.substring(index);
+        String end = e.substring(0, index) + max.substring(index);
+        Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+        for(Map.Entry&lt;String, Set&lt;Integer&gt;&gt; entry: map.subMap(start, true, end, true).entrySet()) {
+            set.addAll(entry.getValue());
+        }
+        return new ArrayList&lt;&gt;(set);
+    }
+}
+
+/**
+ * Your LogSystem object will be instantiated and called as such:
+ * LogSystem obj = new LogSystem();
+ * obj.put(id,timestamp);
+ * List&lt;Integer&gt; param_2 = obj.retrieve(s,e,gra);
+ */
+
+/**
+ * Your LogSystem object will be instantiated and called as such:
+ * LogSystem obj = new LogSystem();
+ * obj.put(id,timestamp);
+ * List&lt;Integer&gt; param_2 = obj.retrieve(s,e,gra);
+ */
+
+</code></pre> 
+<h2><a href="#可以通过的代码1" id="可以通过的代码1">可以通过的代码1</a></h2> 
+<p>手动hardcode indexMap</p> 
+<pre><code>class LogSystem {
+    
+    private TreeMap&lt;String, List&lt;Integer&gt;&gt; map;
+    private String min = "2000:00:00:00:00:00";
+    private String max = "2017:12:31:23:59:59";
+    private Map&lt;String, Integer&gt; indexMap;
+    public LogSystem() {
+        map = new TreeMap&lt;&gt;();
+        indexMap = new HashMap&lt;&gt;();
+        
+        indexMap.put("Year", 4);
+        indexMap.put("Month", 7);
+        indexMap.put("Day", 10);
+        indexMap.put("Hour", 13);
+        indexMap.put("Minute", 16);
+        indexMap.put("Second", 19);
+    }
+    
+    public void put(int id, String timestamp) {
+        map.compute(timestamp, (ts, list) -&gt; {
+            if(null == list) list = new ArrayList&lt;&gt;();
+            list.add(id);
+            return list;
+        });
+    }
+    
+    public List&lt;Integer&gt; retrieve(String s, String e, String gra) {
+        int index = indexMap.get(gra);
+        
+        String start = s.substring(0, index) + min.substring(index);        
+        String end = e.substring(0, index) + max.substring(index);        
+        
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        
+        for(Map.Entry&lt;String, List&lt;Integer&gt;&gt; entry: map.subMap(start, true, end, true).entrySet()) {
+            list.addAll(entry.getValue());
+        }
+        return list;
+    }
+}
+
+/**
+ * Your LogSystem object will be instantiated and called as such:
+ * LogSystem obj = new LogSystem();
+ * obj.put(id,timestamp);
+ * List&lt;Integer&gt; param_2 = obj.retrieve(s,e,gra);
+ */
+
+</code></pre> 
+<h2><a href="#可以通过的代码2" id="可以通过的代码2">可以通过的代码2</a></h2> 
+<p>搜索的时候， 没有使用subMap, 而是直接使用higherKey自己遍历</p> 
+<pre><code>class LogSystem {
+    
+    private TreeMap&lt;String, List&lt;Integer&gt;&gt; map;
+    private String min = "2000:00:00:00:00:00";
+    private String max = "2017:12:31:23:59:59";
+    private Map&lt;String, Integer&gt; indexMap;
+    public LogSystem() {
+        map = new TreeMap&lt;&gt;();
+        indexMap = new HashMap&lt;&gt;();
+        
+        indexMap.put("Year", 4);
+        indexMap.put("Month", 7);
+        indexMap.put("Day", 10);
+        indexMap.put("Hour", 13);
+        indexMap.put("Minute", 16);
+        indexMap.put("Second", 19);
+    }
+    
+    public void put(int id, String timestamp) {
+        map.compute(timestamp, (ts, list) -&gt; {
+            if(null == list) list = new ArrayList&lt;&gt;();
+            list.add(id);
+            return list;
+        });
+    }
+    
+    public List&lt;Integer&gt; retrieve(String s, String e, String gra) {
+        int index = indexMap.get(gra);
+        
+        String start = s.substring(0, index) + min.substring(index);        
+        String end = e.substring(0, index) + max.substring(index);        
+        
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        String key = start;
+        while(null != key &amp;&amp; key.compareTo(end) &lt;= 0) {
+            List&lt;Integer&gt; itemList = map.get(key);
+            if(null != itemList) {
+                list.addAll(itemList);
+            }
+            key = map.higherKey(key);
+        }
+        
+        return list;
+    }
+}
+
+/**
+ * Your LogSystem object will be instantiated and called as such:
+ * LogSystem obj = new LogSystem();
+ * obj.put(id,timestamp);
+ * List&lt;Integer&gt; param_2 = obj.retrieve(s,e,gra);
+ */
+
+</code></pre> 
+<h2><a href="#可以通过的代码3" id="可以通过的代码3">可以通过的代码3</a></h2> 
+<p>自己写的convert函数， 实在是太麻烦了</p> 
+<pre><code>import java.util.*;
+class LogSystem {
+    
+    private TreeMap&lt;String, Set&lt;Integer&gt;&gt; map;
+    
+
+    public LogSystem() {
+        map = new TreeMap&lt;&gt;();
+    }
+    
+    public void put(int id, String timestamp) {
+        Set&lt;Integer&gt; set = map.get(timestamp);
+        if(null == set) {
+            set = new HashSet&lt;&gt;();
+            map.put(timestamp, set);
+        }
+        set.add(id);
+    }
+        
+    // "2017:01:01:23:59:59"
+    String convert(String t, String gra, boolean end) {
+        String[] splits = {"Year", "Month", "Day", "Hour", "Minute", "Second"};
+        String[] max = {"2017", "12","31", "23","59", "59"};
+    
+        String[] arr = t.split(":");
+        StringBuilder sb = new StringBuilder();
+        boolean match = false;
+        for(int i = 0; i &lt; arr.length; ++i) {
+            if(i &gt; 0) {
+                sb.append(":");
+            }
+            if(match) {
+                if(end) {
+                    sb.append(max[i]);                    
+                }
+                else {
+                    StringBuilder temp = new StringBuilder();
+                    for(int j = 0; j &lt; arr[i].length(); ++j) {
+                        temp.append("0");
+                    }
+                    sb.append(temp.toString());                    
+                }
+            }
+            else {
+                match = gra.equals(splits[i]);
+                sb.append(arr[i]);
+            }
+        }
+        
+        return sb.toString();
+    }
+    
+    public List&lt;Integer&gt; retrieve(String s, String e, String gra) {
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        String ts = convert(s, gra, false);
+        String te = convert(e, gra, true);
+        System.out.println("ts=" + ts + ", te=" + te);
+        
+        String key = ts;
+        while(null != key &amp;&amp; key.compareTo(te) &lt;= 0) {
+            Set&lt;Integer&gt; set = map.get(key);
+            if(null != set) {
+                list.addAll(set);
+            }
+            key = map.higherKey(key);
+        }
+        
+        // NavigableMap&lt;String, Set&lt;Integer&gt;&gt; smap = map.subMap(ts, true, te, true);
+        // for(NavigableMap.Entry&lt;String, Set&lt;Integer&gt;&gt; entry: smap.entrySet()) {
+        //     list.addAll(entry.getValue());
+        // }
+
+        return list;
+    }
+}
+
+/**
+ * Your LogSystem object will be instantiated and called as such:
+ * LogSystem obj = new LogSystem();
+ * obj.put(id,timestamp);
+ * List&lt;Integer&gt; param_2 = obj.retrieve(s,e,gra);
+ */
+
+</code></pre> 
+<h2><a href="#错误的代码1" id="错误的代码1">错误的代码1</a></h2> 
+<p>手动计算index的时候算错了<br> indexMap.put(“Second”, 18);</p> 
+<pre><code>class LogSystem {
+    
+    private TreeMap&lt;String, List&lt;Integer&gt;&gt; map;
+    private String min = "2000:00:00:00:00:00";
+    private String max = "2017:12:31:23:59:59";
+    private Map&lt;String, Integer&gt; indexMap;
+    public LogSystem() {
+        map = new TreeMap&lt;&gt;();
+        indexMap = new HashMap&lt;&gt;();
+        
+        indexMap.put("Year", 4);
+        indexMap.put("Month", 7);
+        indexMap.put("Day", 10);
+        indexMap.put("Hour", 13);
+        indexMap.put("Minute", 16);
+        indexMap.put("Second", 18);
+    }
+    
+    public void put(int id, String timestamp) {
+        map.compute(timestamp, (ts, list) -&gt; {
+            if(null == list) list = new ArrayList&lt;&gt;();
+            list.add(id);
+            
+            
+            
+            return list;
+        });
+        
+        //System.out.println("map=" + map);
+    }
+    
+    public List&lt;Integer&gt; retrieve(String s, String e, String gra) {
+        int index = indexMap.get(gra);
+        System.out.println("index=" + index);
+        System.out.println("s.length()=" + s.length() + ", e.length()=" + e.length() + ", min.length()=" + min.length() + ", max.length()=" + max.length());
+        
+        String start = s.substring(0, index) + min.substring(index);
+        System.out.println("start=" + start);
+        
+        String end = e.substring(0, index) + max.substring(index);
+        
+        System.out.println("start=" + start+ ", end=" + end);
+        
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        String key = start;
+        while(null != key &amp;&amp; key.compareTo(end) &lt;= 0) {
+            List&lt;Integer&gt; itemList = map.get(key);
+            if(null != itemList) {
+                list.addAll(itemList);
+            }
+            key = map.higherKey(key);
+        }
+        
+        return list;
+    }
+}
+
+/**
+ * Your LogSystem object will be instantiated and called as such:
+ * LogSystem obj = new LogSystem();
+ * obj.put(id,timestamp);
+ * List&lt;Integer&gt; param_2 = obj.retrieve(s,e,gra);
+ */
+
+</code></pre> 
+<h2><a href="#错误的代码2" id="错误的代码2">错误的代码2</a></h2> 
+<p>min设置错了，</p> 
+<pre><code>class LogSystem {
+    
+    private TreeMap&lt;String, List&lt;Integer&gt;&gt; map;
+    private String min = "2000:00:00:00:00";
+    private String max = "2017:12:31:23:59:59";
+    private Map&lt;String, Integer&gt; indexMap;
+    public LogSystem() {
+        map = new TreeMap&lt;&gt;();
+        indexMap = new HashMap&lt;&gt;();
+        
+        indexMap.put("Year", 4);
+        indexMap.put("Month", 7);
+        indexMap.put("Day", 10);
+        indexMap.put("Hour", 13);
+        indexMap.put("Minute", 16);
+        indexMap.put("Second", 18);
+    }
+    
+    public void put(int id, String timestamp) {
+        map.compute(timestamp, (ts, list) -&gt; {
+            if(null == list) list = new ArrayList&lt;&gt;();
+            list.add(id);
+            
+            
+            
+            return list;
+        });
+        
+        //System.out.println("map=" + map);
+    }
+    
+    public List&lt;Integer&gt; retrieve(String s, String e, String gra) {
+        int index = indexMap.get(gra);
+        //System.out.println("index=" + index);
+        
+        String start = s.substring(0, index) + min.substring(index);
+        String end = e.substring(0, index) + max.substring(index);
+        
+        //System.out.println("start=" + start+ ", end=" + end);
+        
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        String key = start;
+        while(null != key &amp;&amp; key.compareTo(end) &lt;= 0) {
+            List&lt;Integer&gt; itemList = map.get(key);
+            if(null != itemList) {
+                list.addAll(itemList);
+            }
+            key = map.higherKey(key);
+        }
+        
+        return list;
+    }
+}
+
+/**
+ * Your LogSystem object will be instantiated and called as such:
+ * LogSystem obj = new LogSystem();
+ * obj.put(id,timestamp);
+ * List&lt;Integer&gt; param_2 = obj.retrieve(s,e,gra);
+ */
+
+</code></pre> 
+<h2><a href="#错误的代码3" id="错误的代码3">错误的代码3</a></h2> 
+<p>不仅min设错了， 而且在搜索key的时候， 已经向下取整到start了， 没有必要再调用floorKey, 这时候会出现要么key不存在， 要么多算了一个值， 直接从当前key开始向后遍历就好</p> 
+<pre><code>class LogSystem {
+    
+    private TreeMap&lt;String, List&lt;Integer&gt;&gt; map;
+    private String min = "2000:00:00:00:00";
+    private String max = "2017:12:31:23:59:59";
+    private String format = "Year:Month:Day:Hour:Minute:Second";
+    public LogSystem() {
+        map = new TreeMap&lt;&gt;();
+    }
+    
+    public void put(int id, String timestamp) {
+        map.compute(timestamp, (ts, list) -&gt; {
+            if(null == list) list = new ArrayList&lt;&gt;();
+            list.add(id);
+            return list;
+        });
+    }
+    
+    public List&lt;Integer&gt; retrieve(String s, String e, String gra) {
+        int index = format.indexOf(gra) + gra.length();
+        String start = s.substring(0, index) + min.substring(index);
+        String end = s.substring(0, index) + max.substring(index);
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        String key = map.floorKey(start);
+        while(null != key &amp;&amp; key.compareTo(end) &lt;= 0) {
+            List&lt;Integer&gt; itemList = map.get(key);
+            if(null != itemList) {
+                list.addAll(itemList);
+            }
+            key = map.higherKey(key);
+        }
+        
+        return list;
+    }
+}
+
+/**
+ * Your LogSystem object will be instantiated and called as such:
+ * LogSystem obj = new LogSystem();
+ * obj.put(id,timestamp);
+ * List&lt;Integer&gt; param_2 = obj.retrieve(s,e,gra);
+ */
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
