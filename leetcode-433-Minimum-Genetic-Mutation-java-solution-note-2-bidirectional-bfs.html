@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Twitter面试题leetcode 433 Minimum Genetic Mutation解题笔记2-双向bfs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Twitter面试题leetcode 433 Minimum Genetic Mutation解题笔记2-双向bfs</h1>
+			</div>
+
+			<p><em>26 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-433-minimum-genetic-mutation" id="题目-leetcode-433-minimum-genetic-mutation">题目 leetcode 433 Minimum Genetic Mutation</a></h2> 
+<ol> 
+ <li>输入开始的基因DNA和结束的基因DNA， 然后输入一个合法基因数组，</li> 
+ <li>每次只能变换一个字母， 并且变换的结果需要在合法基因数组里面</li> 
+ <li>问， 最少需要几次变换可以得到结果</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目前面写了bfs的做法， 当然在word ladder里面， 也写了有双向bfs的做法 <a href="http://www.noteanddata.com/leetcode-127-Word-Ladder-bidirectional-bfs-review-note.html">http://www.noteanddata.com/leetcode-127-Word-Ladder-bidirectional-bfs-review-note.html</a><br> 所以这里也写一下双向bfs的做法</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int minMutation(String start, String end, String[] bank) {
+        Set&lt;String&gt; set = new HashSet&lt;&gt;();
+        for(String item: bank) {
+            set.add(item);
+        }
+        if(!set.contains(end)) {
+            return -1;
+        }
+        
+        Queue&lt;String&gt; q1 = new LinkedList&lt;&gt;();
+        q1.add(start);
+        Queue&lt;String&gt; q2 = new LinkedList&lt;&gt;();
+        q2.add(end);
+        
+        int steps = 0;
+        while(q1.size() &gt; 0 &amp;&amp; q2.size() &gt; 0) {
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(q1.size() &gt; 0) {
+                String cur = q1.poll();
+                Iterator&lt;String&gt; pos = set.iterator();
+                while(pos.hasNext()) {
+                    String next = pos.next();
+                    if(valid(cur, next)) {
+                        if(q2.contains(next)) {
+                            return steps+1;
+                        }
+                        
+                        nextQueue.add(next);
+                        
+                        //pos.remove();
+                    }
+                }
+            }
+            q1 = nextQueue;
+            
+            Queue&lt;String&gt; temp = q1;
+            q1 = q2;
+            q2 = temp;
+            
+            steps++;
+        }
+        return -1;
+    }
+    boolean valid(String a, String b) {
+        int diff = 0;
+        for(int i = 0; i &lt; a.length(); ++i) {
+            if(a.charAt(i) != b.charAt(i)) {
+                diff++;
+                if(diff &gt;= 2) {
+                    return false;
+                }
+            }
+        }
+        return diff == 1;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误的代码1" id="错误的代码1">错误的代码1</a></h2> 
+<p>在这个双向bfs里面， 如果把访问过的节点删除的话， 代码就不对了, 比如看这个例子。<br> 原因在于， 删除了以后最后两层距离为1的时候，因为都从set里面删除了， 所以无法访问到对方。<br> 除非到最后看一下两个queue里面的元素有没有距离是1的节点。</p> 
+<p>这里也是一个有趣的地方， 单向bfs，虽然搜索的范围大一点， 但是每次搜索的时候会把元素删除。<br> 双向bfs，不能简单的删除， 除非做一个特殊判断</p> 
+<pre><code>
+Input: "AACCGGTT" "AAACGGTA"
+["AACCGGTA","AACCGCTA","AAACGGTA"]
+Output: -1
+Expected: 2
+
+
+</code></pre> 
+<pre><code>class Solution {
+    public int minMutation(String start, String end, String[] bank) {
+        Set&lt;String&gt; set = new HashSet&lt;&gt;();
+        for(String item: bank) {
+            set.add(item);
+        }
+        if(!set.contains(end)) {
+            return -1;
+        }
+        
+        Queue&lt;String&gt; q1 = new LinkedList&lt;&gt;();
+        q1.add(start);
+        Queue&lt;String&gt; q2 = new LinkedList&lt;&gt;();
+        q2.add(end);
+        
+        int steps = 0;
+        while(q1.size() &gt; 0 &amp;&amp; q2.size() &gt; 0) {
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(q1.size() &gt; 0) {
+                String cur = q1.poll();
+                Iterator&lt;String&gt; pos = set.iterator();
+                while(pos.hasNext()) {
+                    String next = pos.next();
+                    if(valid(cur, next)) {
+                        if(q2.contains(next)) {
+                            return steps+1;
+                        }
+                        
+                        nextQueue.add(next);
+                        
+                        pos.remove();
+                    }
+                }
+            }
+            q1 = nextQueue;
+            
+            Queue&lt;String&gt; temp = q1;
+            q1 = q2;
+            q2 = temp;
+            
+            steps++;
+        }
+        return -1;
+    }
+    boolean valid(String a, String b) {
+        int diff = 0;
+        for(int i = 0; i &lt; a.length(); ++i) {
+            if(a.charAt(i) != b.charAt(i)) {
+                diff++;
+                if(diff &gt;= 2) {
+                    return false;
+                }
+            }
+        }
+        return diff == 1;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误的代码2" id="错误的代码2">错误的代码2</a></h2> 
+<p>双向bfs的时候， 如果end不在bank里面， 因为我们最后判断距离是1是否在对方里面， 所以也会判断成功。<br> 所以需要提前判断一下end是否在bank里面</p> 
+<pre><code>class Solution {
+    public int minMutation(String start, String end, String[] bank) {
+        Set&lt;String&gt; set = new HashSet&lt;&gt;();
+        for(String item: bank) {
+            set.add(item);
+        }
+        
+        Queue&lt;String&gt; q1 = new LinkedList&lt;&gt;();
+        q1.add(start);
+        Queue&lt;String&gt; q2 = new LinkedList&lt;&gt;();
+        q2.add(end);
+        
+        int steps = 0;
+        while(q1.size() &gt; 0 &amp;&amp; q2.size() &gt; 0) {
+            Queue&lt;String&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(q1.size() &gt; 0) {
+                String cur = q1.poll();
+                Iterator&lt;String&gt; pos = set.iterator();
+                while(pos.hasNext()) {
+                    String next = pos.next();
+                    if(valid(cur, next)) {
+                        if(q2.contains(next)) {
+                            return steps+1;
+                        }
+                        
+                        nextQueue.add(next);
+                    }
+                }
+            }
+            q1 = nextQueue;
+            
+            Queue&lt;String&gt; temp = q1;
+            q1 = q2;
+            q2 = temp;
+            
+            steps++;
+        }
+        return -1;
+    }
+    boolean valid(String a, String b) {
+        int diff = 0;
+        for(int i = 0; i &lt; a.length(); ++i) {
+            if(a.charAt(i) != b.charAt(i)) {
+                diff++;
+                if(diff &gt;= 2) {
+                    return false;
+                }
+            }
+        }
+        return diff == 1;
+    }
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
