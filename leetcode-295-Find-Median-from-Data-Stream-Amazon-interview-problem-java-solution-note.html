@@ -116,7 +116,50 @@ var _hmt = _hmt || [];
  <li>这个题目还有一个用binary search tree的做法， 不过写起来有点繁琐，就没有写了</li> 
  <li>follow up需要下次再学习</li> 
  <li>印象中好像有一个题目是数据流里面求某一个值有O(1)解法的？不过想不起来具体是怎么样的题目了</li> 
-</ol></p>
+</ol> 
+<h2><a href="#再写一次的代码" id="再写一次的代码">再写一次的代码</a></h2> 
+<p>2019-05-29: 今天又写了一次这个代码， 体会如下：<br> 1. jdk7的PriorityQueue没有直接传Comparator的构造函数， 需要传入size； 看API的时候看的有点奇怪<br> 2. add的时候， 先add， 然后又poll出来add到另外一边，最后再add回去， 其实是取巧的做法， 平衡了两边的做法<br> 相当于把新加进去的数又重新按照顺序处理了一下<br> 3. findMedian的时候， 严格说来应该判断一下size是否会空</p> 
+<pre><code>import java.util.*;
+
+class MedianFinder {
+    private PriorityQueue&lt;Integer&gt; minpq;
+    private PriorityQueue&lt;Integer&gt; maxpq;
+
+    /** initialize your data structure here. */
+    public MedianFinder() {
+        this.minpq = new PriorityQueue&lt;Integer&gt;();
+        this.maxpq = new PriorityQueue&lt;Integer&gt;(16, Comparator.reverseOrder());
+    }
+    
+    public void addNum(int num) {
+        maxpq.add(num);
+        minpq.add(maxpq.poll());
+        if(minpq.size() &gt; maxpq.size()) {
+            maxpq.add(minpq.poll());
+        }
+    }
+    
+    public double findMedian() {
+        if(maxpq.size() == 0) {
+            return 0.0;
+        }
+        if(minpq.size() == maxpq.size()) {
+            return (minpq.peek() + maxpq.peek()) / 2.0;
+        }
+        else {
+            return (double)maxpq.peek();
+        }
+    }
+}
+
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder obj = new MedianFinder();
+ * obj.addNum(num);
+ * double param_2 = obj.findMedian();
+ */
+
+</code></pre></p>
 	</div>		
 
 <div class="col-sm-4">
