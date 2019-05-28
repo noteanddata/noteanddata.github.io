@@ -86,6 +86,7 @@ var _hmt = _hmt || [];
 <ol> 
  <li>这个题目我自己并没有太好的思路，就暴力递归先把所有的内容拷贝了一遍， 这个做法可以通过oj， 但是实际上面试的时候是不行的</li> 
  <li>主要的思路是用一个stack， 自己为什么想不到？？？？ 当时用index的， 可是感觉要递归，一路过去比较复杂， 还要保存当前的位置。。。 其实这里核心的是因为有递归， 但是如果每次遇到List的时候，都先保存后面的， 那么读的时候就可以先读前面的， 而且，再遇到list的时候， 也可以同样的方式展开， 继续push到stack里面，这样就可以符合顺序取出来。<br> 整个实现是比较简洁的</li> 
+ <li>当然， 这个题目还可以更简洁一点， 初始化的时候，完全不做任何展开， 直接使用一个iterator, 每次读的时候再展开， 这个下次再学习.<br> 具体可以学习著名的leetcode大神 Stefan Pochmann 的帖子<br> <a href="https://leetcode.com/problems/flatten-nested-list-iterator/discuss/80146/Real-iterator-in-Python-Java-C++">https://leetcode.com/problems/flatten-nested-list-iterator/discuss/80146/Real-iterator-in-Python-Java-C++</a></li> 
 </ol> 
 <h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
 <pre><code>/**
