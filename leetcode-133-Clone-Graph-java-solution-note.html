@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 133 Clone Graph解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 133 Clone Graph解题笔记</h1>
+			</div>
+
+			<p><em>27 May 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-133-clone-graph" id="题目-leetcode-133-clone-graph">题目 leetcode 133 Clone Graph</a></h2> 
+<p>对于一个无向图， 要求clone一个出来</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<p>一年前自己写过一个版本， 然后看答案又学习一个版本， 今天自己写， 还是写不对。。。有种要奔溃的感觉</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本思路是dfs可以做， 但是需要一个map保存旧的node到新的node， 这样， 遍历到每个节点的时候， 对于任何一条旧的边，都可以找到对应的新的节点， 这样就可以保存新的边。 而且新的边每次都只需要在自己这个方向上加一次</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public List&lt;Node&gt; neighbors;
+
+    public Node() {}
+
+    public Node(int _val,List&lt;Node&gt; _neighbors) {
+        val = _val;
+        neighbors = _neighbors;
+    }
+};
+*/
+class Solution {
+    public Node cloneGraph(Node node) {
+        Map&lt;Node, Node&gt; map = new HashMap&lt;&gt;();
+        return dfs(node, map);
+    }
+    
+    Node dfs(Node node, Map&lt;Node, Node&gt; map) {
+        Node copy = new Node(node.val, new ArrayList&lt;&gt;());
+        map.put(node, copy);
+        
+        if(null != node.neighbors) {
+            for(Node next: node.neighbors) {
+                Node nextCopy = map.get(next);
+                if(null == nextCopy) {
+                    nextCopy = dfs(next, map);
+                    map.put(next, nextCopy);
+                }
+                copy.neighbors.add(nextCopy);
+            }
+        }
+        return copy;
+    }
+}
+
+</code></pre> 
+<h2><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h2> 
+<p>O(V+E) 每个节点和每条边都遍历一次</p> 
+<h2><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h2> 
+<p>O(V) 每个节点都保存一份</p> 
+<h2><a href="#写错的代码" id="写错的代码">写错的代码</a></h2> 
+<p>无限循环了</p> 
+<pre><code>/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public List&lt;Node&gt; neighbors;
+
+    public Node() {}
+
+    public Node(int _val,List&lt;Node&gt; _neighbors) {
+        val = _val;
+        neighbors = _neighbors;
+    }
+};
+*/
+class Solution {
+    public Node cloneGraph(Node node) {
+        return dfs(node);
+    }
+    
+    Node dfs(Node node) {
+        Node copy = new Node(node.val, new ArrayList&lt;&gt;());
+        if(null != node.neighbors) {
+            for(Node next: node.neighbors) {
+                Node nextCopy = dfs(next);
+                
+                copy.neighbors.add(nextCopy);
+                nextCopy.neighbors.add(copy);
+            }
+        }
+        return copy;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误的代码2" id="错误的代码2">错误的代码2</a></h2> 
+<p>加了visited防止重复遍历， 但是拷贝的时候也少拷贝了一些边； 比如4到1的边就不会加了；</p> 
+<pre><code>/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public List&lt;Node&gt; neighbors;
+
+    public Node() {}
+
+    public Node(int _val,List&lt;Node&gt; _neighbors) {
+        val = _val;
+        neighbors = _neighbors;
+    }
+};
+*/
+class Solution {
+    public Node cloneGraph(Node node) {
+        Set&lt;Node&gt; visited = new HashSet&lt;&gt;();
+        return dfs(node, visited);
+    }
+    
+    Node dfs(Node node, Set&lt;Node&gt; visited) {
+        Node copy = new Node(node.val, new ArrayList&lt;&gt;());
+        visited.add(node);
+        
+        if(null != node.neighbors) {
+            for(Node next: node.neighbors) {
+                if(visited.contains(next)) {
+                    continue;
+                }        
+                Node nextCopy = dfs(next, visited);
+                
+                copy.neighbors.add(nextCopy);
+                nextCopy.neighbors.add(copy);
+            }
+        }
+        return copy;
+    }
+}
+
+</code></pre> 
+<h2><a href="#一年前写的过于复杂的代码" id="一年前写的过于复杂的代码">一年前写的过于复杂的代码</a></h2> 
+<pre><code>/**
+ * Definition for undirected graph.
+ * class UndirectedGraphNode {
+ *     int label;
+ *     List&lt;UndirectedGraphNode&gt; neighbors;
+ *     UndirectedGraphNode(int x) { label = x; neighbors = new ArrayList&lt;UndirectedGraphNode&gt;(); }
+ * };
+ */
+public class Solution {
+        public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        // write your code here
+        if(null == node) return null;
+
+        Queue&lt;UndirectedGraphNode&gt; queue = new LinkedList&lt;UndirectedGraphNode&gt;();
+        Set&lt;Integer&gt; visited = new HashSet&lt;&gt;();
+        UndirectedGraphNode copy = null, root = null;
+        Map&lt;Integer, UndirectedGraphNode&gt; nmap = new HashMap&lt;&gt;();
+
+        queue.add(node);
+
+        while(!queue.isEmpty()) {
+            UndirectedGraphNode cur = queue.poll();
+            visited.add(cur.label);
+
+            if(null == root) {
+                root = copy = new UndirectedGraphNode(cur.label);
+            }
+            else {
+                copy = new UndirectedGraphNode(cur.label);
+            }
+            nmap.put(cur.label, copy);
+
+            for(UndirectedGraphNode neighbor: cur.neighbors) {
+                if(!visited.contains(neighbor.label)) {
+                    queue.add(neighbor);
+                }
+            }
+        }
+
+        visited = new HashSet&lt;&gt;();
+        queue.add(node);
+        visited.add(node.label);
+        
+        while(!queue.isEmpty()) {
+            node = queue.poll();
+
+
+            copy = nmap.get(node.label);
+
+            for(UndirectedGraphNode neighbor: node.neighbors) {
+
+                copy.neighbors.add(nmap.get(neighbor.label));
+
+                if(!visited.contains(neighbor.label)) {
+                    queue.add(neighbor);
+                    visited.add(neighbor.label);
+                }
+            }
+        }
+
+        return root;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
