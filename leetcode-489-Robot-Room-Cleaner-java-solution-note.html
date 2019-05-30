@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 489 Robot Room Cleaner解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 489 Robot Room Cleaner解题笔记</h1>
+			</div>
+
+			<p><em>29 May 2019</em></p>
+
+			<p><h2><a href="#leetcode-489-robot-room-cleaner" id="leetcode-489-robot-room-cleaner">leetcode 489 Robot Room Cleaner</a></h2> 
+<p>有一个扫地机器人， 有下面几个函数, 然后实现一个方法把整个房间都清理一遍</p> 
+<pre><code>interface Robot {
+  // returns true if next cell is open and robot moves into the cell.
+  // returns false if next cell is obstacle and robot stays on the current cell.
+  boolean move();
+
+  // Robot will stay on the same cell after calling turnLeft/turnRight.
+  // Each turn will be 90 degrees.
+  void turnLeft();
+  void turnRight();
+
+  // Clean the current cell.
+  void clean();
+}
+</code></pre> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>相当于在一个二维矩阵上要求遍历所有可能走的点， 遍历的基本方法是DFS和BFS， 这里BFS基本不可行，因为从开始点出发以后，走了旁边4个点以后，如果要bfs的话，就需要从不同的点开始， 但是当前位置只有一个， 机器人需要不停的回到不同的位置， 这个几乎无法操作</li> 
+ <li>而DFS是可以比较好操作的， 沿着一个方向不断遍历， 然后如果4个方向都不能走了， 那么要回溯(backtrack), 同时， DFS的过程中需要记录已经访问的节点。 记录已经访问的节点有几种方法:<br> a. 如果矩阵大小是固定的， 那么可以用一个boolean[][] visited来记录， 但是这个题目矩阵大小是未知的，所以不能用这个方法<br> b. 也可以用一个Map&lt;Integer, Set
+  <integer>
+   &gt;来记录对于每一行，有哪几列已经访问过了, row-&gt;List
+   <br> c. 还有一个常见的技巧是把坐标转换成字符串, “row-col”， 这样处理起来就比较简单， 直接用一个Set就可以
+   <br> 类似的技巧在 leetcode 694 Number of Distinct Islands里面也有应用， 如果不用字符串表示的话，判断两个岛屿形状一样就比较麻烦
+   <br> 
+   <a href="http://www.noteanddata.com/leetcode-694-Number-of-Distinct-Islands-java-solution-note.html">http://www.noteanddata.com/leetcode-694-Number-of-Distinct-Islands-java-solution-note.html</a>
+  </integer></li> 
+ <li>如何表示坐标， 这里， 输入的时候是没有任何坐标的， 也就是说扫地机器人可能会在任意一个位置， 但是这样的话，机器人的绝对位置是没有关系的， 我们需要记录的是相对位置，那么，就可以让开始点设置为[0,0], 这里， 如果白板写题的时候，最好要沟通一下表示机器人的初始位置是任意的， 可以在房间的任何一个位置， 而不是我们假设在一个固定的原点。 之所以设置[0,0]为初始位置，只是因为我们关心的是相对位置。 实际上， 初始位置可以传入任意值， [100,-300]也是可以通过的</li> 
+ <li>DFS的函数参数<br> a. 首先需要当前的坐标<br> b. 然后需要已经visited的坐标， 这样可以去重， 每个已经访问过的节点就不要继续访问<br> c. 还有需要当前的方向， 机器人的方向直接绝对了move()会走到的下一个位置</li> 
+ <li> <p>如何表示方向，<br> a. 我们可以用一个字符(‘N’,‘E’,‘S’,‘W’)来表示， 然后用一个switch语句来对每个方向判断下一个位置.<br> 但是这样代码会比较重复和冗余<br> b. 实际上，不同方向的区别仅仅是move到的下一个位置会不一样, 所以可以用一个数组来表示坐标差， 然后直接用一个index来表示当前的方向<br> int[][] dirs = {{0,1}, {1,0}, {0,-1}, {-1,0}}<br> index = (index+1)%4</p> </li> 
+</ol> 
+<p>但是注意， 这里的dirs需要和旋转的方向需要保持一致。 因为我们要做循环， 所以数组必须是一个方向上的连续方向。 第二和turnLeft()或者turnRight()必须一致， 这里的例子我们就是用的turnRight()</p> 
+<ol> 
+ <li> <p>用一个数组表示方向， 然后用循环的好处， 另外一个方面在于, 如果用(‘N’,‘E’,‘S’,‘W’)的话， 那么需要逐个判断， 然后针对接下来的4个方向做处理， 然后每个方向的下一步都不一样。 比如当前是’N’和当前是’E’的下一个位置是不一样的，<br> 但是， 如果我们把dir用index表示， 那么，下一个位置直接取{cur[0] + dirs[index][0], cur[1] + dirs[index][1]}就好，自然的我们就取到了正确的下一个位置. 然后， 循环4个方向也是直接可以同一行代码循环.</p> </li> 
+ <li> <p>如何backtrack<br> 这里有不同的做法可以做backtrack， 具体可以看后面贴的几种都可以通过的代码，<br> 常规的思路， 通常是在move了以后做， 这个比较符合常规的backtrack的做法，<br> 但是这个题目有点特殊， 如果是把几个方向全部走完以后在backtrack， 也是可以做的， 这里的逻辑在于， 如果走到最后一个不能走的位置， 那么reset就回到前一个位置。 同样， 前一个位置也已经走完所有的可能了， 也就是每次走一个位置，最后都会回到前一个位置。</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * // This is the robot's control interface.
+ * // You should not implement it, or speculate about its implementation
+ * interface Robot {
+ *     // Returns true if the cell in front is open and robot moves into the cell.
+ *     // Returns false if the cell in front is blocked and robot stays in the current cell.
+ *     public boolean move();
+ *
+ *     // Robot will stay in the same cell after calling turnLeft/turnRight.
+ *     // Each turn will be 90 degrees.
+ *     public void turnLeft();
+ *     public void turnRight();
+ *
+ *     // Clean the current cell.
+ *     public void clean();
+ * }
+ */
+class Solution {
+    // we either do dfs or bfs, main question is when to stop and when to not visit a node again??
+    // we need to do backtrack
+    public void cleanRoom(Robot robot) {
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        
+        int[] cur = new int[]{0,0};
+        dfs(robot, cur, 0, visited);
+    }
+    // note, the order here matters, it must matches with the direction change?
+    private int[][] dirs = new int[][]{{0,1}, {1,0},  {0,-1}, {-1,0}};
+    //private int[][] dirs = new int[][]{{0,1},   {0,-1},{1,0}, {-1,0}};
+    void dfs(Robot robot, int[] cur, int dir, Set&lt;String&gt; visited) {
+        robot.clean();
+        visited.add(cur[0] + "-" + cur[1]);
+        for(int i = 0 ;i &lt; dirs.length; ++i) {
+            int ndir = (dir+i)%4;
+            int[] next = new int[] {cur[0] + dirs[ndir][0], cur[1]+dirs[ndir][1]};
+            if(!visited.contains(next[0] + "-" + next[1]) &amp;&amp; robot.move()) {
+                
+                dfs(robot, next, ndir, visited);    
+
+                robot.turnRight();
+                robot.turnRight();
+                robot.move();
+                robot.turnLeft();
+            }
+            else {
+                robot.turnRight();    
+            }
+            
+        }
+    }
+}
+</code></pre> 
+<h3><a href="#java题解代码2" id="java题解代码2">java题解代码2</a></h3> 
+<pre><code>/**
+ * // This is the robot's control interface.
+ * // You should not implement it, or speculate about its implementation
+ * interface Robot {
+ *     // Returns true if the cell in front is open and robot moves into the cell.
+ *     // Returns false if the cell in front is blocked and robot stays in the current cell.
+ *     public boolean move();
+ *
+ *     // Robot will stay in the same cell after calling turnLeft/turnRight.
+ *     // Each turn will be 90 degrees.
+ *     public void turnLeft();
+ *     public void turnRight();
+ *
+ *     // Clean the current cell.
+ *     public void clean();
+ * }
+ */
+class Solution {
+    // we either do dfs or bfs, main question is when to stop and when to not visit a node again??
+    // we need to do backtrack
+    public void cleanRoom(Robot robot) {
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        
+        int[] cur = new int[]{0,0};
+        visited.add("0-0");
+        dfs(robot, cur, 0, visited);
+    }
+    // note, the order here matters, it must matches with the direction change?
+    private int[][] dirs = new int[][]{{0,1}, {1,0},  {0,-1}, {-1,0}};
+    //private int[][] dirs = new int[][]{{0,1},   {0,-1},{1,0}, {-1,0}};
+    void dfs(Robot robot, int[] cur, int dir, Set&lt;String&gt; visited) {
+        robot.clean();
+        visited.add(cur[0] + "-" + cur[1]);
+        for(int i = 0 ;i &lt; dirs.length; ++i) {
+            int ndir = (dir+i)%4;
+            int[] next = new int[] {cur[0] + dirs[ndir][0], cur[1]+dirs[ndir][1]};
+            if(!visited.contains(next[0] + "-" + next[1]) &amp;&amp; robot.move()) {
+                
+                dfs(robot, next, ndir, visited);    
+
+                robot.turnRight();
+                robot.turnRight();
+                robot.move();
+                robot.turnRight();
+                robot.turnRight();                
+            }
+            robot.turnRight();
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#java题解代码3" id="java题解代码3">java题解代码3</a></h3> 
+<pre><code>/**
+ * // This is the robot's control interface.
+ * // You should not implement it, or speculate about its implementation
+ * interface Robot {
+ *     // Returns true if the cell in front is open and robot moves into the cell.
+ *     // Returns false if the cell in front is blocked and robot stays in the current cell.
+ *     public boolean move();
+ *
+ *     // Robot will stay in the same cell after calling turnLeft/turnRight.
+ *     // Each turn will be 90 degrees.
+ *     public void turnLeft();
+ *     public void turnRight();
+ *
+ *     // Clean the current cell.
+ *     public void clean();
+ * }
+ */
+class Solution {
+    // we either do dfs or bfs, main question is when to stop and when to not visit a node again??
+    // we need to do backtrack
+    public void cleanRoom(Robot robot) {
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        
+        int[] cur = new int[]{0,0};
+        visited.add("0-0");
+        dfs(robot, cur, 0, visited);
+    }
+    // note, the order here matters, it must matches with the direction change?
+    private int[][] dirs = new int[][]{{0,1}, {1,0},  {0,-1}, {-1,0}};
+    //private int[][] dirs = new int[][]{{0,1},   {0,-1},{1,0}, {-1,0}};
+    void dfs(Robot robot, int[] cur, int dir, Set&lt;String&gt; visited) {
+        robot.clean();
+        for(int i = 0 ;i &lt; dirs.length; ++i) {
+            int ndir = (dir+i)%4;
+            int[] next = new int[] {cur[0] + dirs[ndir][0], cur[1]+dirs[ndir][1]};
+            if(!visited.contains(next[0] + "-" + next[1]) &amp;&amp; robot.move()) {
+                visited.add(next[0] + "-" + next[1]);
+                dfs(robot, next, ndir, visited);    
+
+                robot.turnRight();
+                robot.turnRight();
+                robot.move();
+                robot.turnRight();
+                robot.turnRight();                
+            }
+            robot.turnRight();
+        }
+    }
+}
+
+</code></pre> 
+<h3><a href="#java题解代码4" id="java题解代码4">java题解代码4</a></h3> 
+<pre><code>/**
+ * // This is the robot's control interface.
+ * // You should not implement it, or speculate about its implementation
+ * interface Robot {
+ *     // Returns true if the cell in front is open and robot moves into the cell.
+ *     // Returns false if the cell in front is blocked and robot stays in the current cell.
+ *     public boolean move();
+ *
+ *     // Robot will stay in the same cell after calling turnLeft/turnRight.
+ *     // Each turn will be 90 degrees.
+ *     public void turnLeft();
+ *     public void turnRight();
+ *
+ *     // Clean the current cell.
+ *     public void clean();
+ * }
+ */
+class Solution {
+    // we either do dfs or bfs, main question is when to stop and when to not visit a node again??
+    // we need to do backtrack
+    public void cleanRoom(Robot robot) {
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        
+        int[] cur = new int[]{0,0};
+        visited.add("0-0");
+        dfs(robot, cur, 0, visited);
+    }
+    private int[][] dirs = new int[][]{{0,1}, {1,0},  {0,-1}, {-1,0}};
+    void dfs(Robot robot, int[] cur, int dir, Set&lt;String&gt; visited) {
+        robot.clean();
+        for(int i = 0 ;i &lt; dirs.length; ++i) {
+            int ndir = (dir+i)%4;
+            int[] next = new int[] {cur[0] + dirs[ndir][0], cur[1]+dirs[ndir][1]};
+            if(!visited.contains(next[0] + "-" + next[1]) &amp;&amp; robot.move()) {
+                visited.add(next[0] + "-" + next[1]);
+                dfs(robot, next, ndir, visited);    
+            }
+            robot.turnRight();
+        }
+        robot.turnRight();
+        robot.turnRight();
+        robot.move();
+        robot.turnRight();
+        robot.turnRight();
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
