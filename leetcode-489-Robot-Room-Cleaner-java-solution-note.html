@@ -303,6 +303,38 @@ class Solution {
     }
 }
 
+</code></pre> 
+<h2><a href="#一个错误的代码" id="一个错误的代码">一个错误的代码</a></h2> 
+<p>居然在dfs里面忘记clean了。。。</p> 
+<pre><code>class Solution {
+    public void cleanRoom(Robot robot) {
+        Set&lt;String&gt; visited = new HashSet&lt;&gt;();
+        dfs(robot, 0, 0, 0, visited);
+    }
+    private int[][] dirs = {{0,1}, {1,0}, {0,-1}, {-1,0}};
+    
+    void dfs(Robot robot, int x, int y, int dir, Set&lt;String&gt; visited) {
+        visited.add(x + "-" + y);
+        for(int i = 0; i &lt; dirs.length; ++i) {
+            int nextdir = (dir + i)%4;
+            int nextx = x + dirs[nextdir][0];
+            int nexty = y + dirs[nextdir][1];
+            String nextpos = nextx + "-" + nexty;
+            if(!visited.contains(nextpos) &amp;&amp; robot.move()) {
+                dfs(robot, nextx, nexty, nextdir, visited);
+                
+                robot.turnRight();
+                robot.turnRight();
+                robot.move();
+                robot.turnLeft();
+            }
+            else {
+                robot.turnRight();
+            }
+        }
+    }
+}
+
 </code></pre></p>
 	</div>		
 
