@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1074 Number of Submatrices That Sum to Target解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1074 Number of Submatrices That Sum to Target解题笔记</h1>
+			</div>
+
+			<p><em>01 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1074-number-of-submatrices-that-sum-to-target" id="题目-leetcode-1074-number-of-submatrices-that-sum-to-target">题目 leetcode 1074. Number of Submatrices That Sum to Target</a></h2> 
+<p>输入一个矩阵，问有多少个sub-matrix的和是一个target数</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>首先对每一行，计算一个presum</li> 
+ <li>然后对任意两个列， [j,k], 计算j和k之间的所有数的和， 因为对于每一行，我们已经计算了presum, 所以，<br> 对于[j,k]之间的树，可以通过presum[i][k] - (j == 0 ? 0 : presum[i][j-1])得到某一行在[j,k]之间的值</li> 
+ <li>这样， 对于任意两列[j,k]之间的数， 我们可以形成一个临时的一维数组， 表示从第0行到最后一行的数，<br> 那么， 问题就转换成在这个一维数组里面，找一个连续子数组， 使得这些数的和是target，<br> 那么，后面这个问题就转换成 leetcode 560<br> <a href="http://www.noteanddata.com/leetcode-560-Subarray-Sum-Equals-K-java-solution-note.html">http://www.noteanddata.com/leetcode-560-Subarray-Sum-Equals-K-java-solution-note.html</a></li> 
+ <li>所以， 这个是presum思想的2d版, 类似的题目还有leetcode 304 Range Sum Query 2D - Immutable</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int numSubmatrixSumTarget(int[][] matrix, int target) {
+        int[][] presum = new int[matrix.length][matrix[0].length];
+        for(int i = 0; i &lt; matrix.length; ++i) {
+            int sum = 0;
+            for(int j = 0; j &lt; matrix[i].length; ++j) {
+                sum += matrix[i][j];
+                presum[i][j] = sum;
+            }
+        }    
+        
+        int count = 0;
+        
+        // for every two columns, calculate the sum between columns=[j,k] and rows = any two, 
+        for(int j = 0; j &lt; matrix[0].length; ++j) {
+            for(int k = j; k &lt; matrix[0].length; ++k) {
+                
+                int[] temp = new int[matrix.length];
+                for(int i = 0; i &lt; matrix.length; ++i) {
+                    temp[i] = presum[i][k] - (j == 0 ? 0 : presum[i][j-1]);
+                }
+                
+                int onecount = countTarget(temp, target);        
+                count += onecount;
+            }
+        }
+        return count;
+    }
+    
+    int countTarget(int[] temp, int target) {
+        int count = 0;
+        int sum = 0;
+        
+        Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+        countMap.put(0, 1);
+        
+        for(int i = 0; i &lt; temp.length; ++i) {
+            sum += temp[i];
+            
+            count += countMap.getOrDefault(sum-target, 0);
+            
+            countMap.compute(sum, (k,v)-&gt;{
+                if(null == v) v = 0;
+                return v+1;
+            });
+        }
+        return count;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^3)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N^2)</p> 
+<h2><a href="#写错的代码" id="写错的代码">写错的代码</a></h2> 
+<p>这行写错了<br> count += countMap.getOrDefault(target-sum, 0);</p> 
+<p>因为我们是A-B = target,<br> 现在遇到A， 所以B=A-target</p> 
+<pre><code>class Solution {
+    public int numSubmatrixSumTarget(int[][] matrix, int target) {
+        int[][] presum = new int[matrix.length][matrix[0].length];
+        for(int i = 0; i &lt; matrix.length; ++i) {
+            int sum = 0;
+            for(int j = 0; j &lt; matrix[i].length; ++j) {
+                sum += matrix[i][j];
+                presum[i][j] = sum;
+            }
+        }    
+        
+        int count = 0;
+        
+        // for every two columns, calculate the sum between columns=[j,k] and rows = any two, 
+        for(int j = 0; j &lt; matrix[0].length; ++j) {
+            for(int k = j; k &lt; matrix[0].length; ++k) {
+                
+                int[] temp = new int[matrix.length];
+                for(int i = 0; i &lt; matrix.length; ++i) {
+                    temp[i] = presum[i][k] - (j == 0 ? 0 : presum[i][j-1]);
+                }
+                
+                int onecount = countTarget(temp, target);        
+                count += onecount;
+            }
+        }
+        return count;
+    }
+    
+    int countTarget(int[] temp, int target) {
+        int count = 0;
+        int sum = 0;
+        
+        Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+        countMap.put(0, 1);
+        
+        for(int i = 0; i &lt; temp.length; ++i) {
+            sum += temp[i];
+            
+            count += countMap.getOrDefault(target-sum, 0);
+            
+            countMap.compute(sum, (k,v)-&gt;{
+                if(null == v) v = 0;
+                return v+1;
+            });
+        }
+        return count;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
