@@ -129,6 +129,59 @@ var _hmt = _hmt || [];
 <p>O(N*lgN)到O(N^2)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
 <p>O(N)</p> 
+<h2><a href="#错误的代码" id="错误的代码">错误的代码</a></h2> 
+<p>val &lt; node.val的时候， 忘记更新node.leftCount了<br> 因为这个解法的核心点一是从后向前构造树， 所以每次遇到一个新的数的时候， 构造的树都是完整的信息。<br> 第二点是leftCount和dupCount在遍历树的时候会更新到准确的值， 这样后面的数加进来的话就有准确的信息了。<br> 第三点就是递归的过程， 因为leftCount和dupCount都是针对当前节点的， 所以无论左右， 递归都可以利用准确的信息</p> 
+<pre><code>class Solution {
+    static class Node {
+        Node left, right; 
+        int val, leftCount, dupCount;
+        public Node(int val) {
+            this.val = val;
+            this.leftCount = 0;
+            this.dupCount = 1;
+        }
+    }
+    public List&lt;Integer&gt; countSmaller(int[] nums) {
+        Node root = null;
+        LinkedList&lt;Integer&gt; list = new LinkedList&lt;&gt;();
+        for(int i = nums.length-1; i &gt;= 0; --i) {
+            if(i == nums.length-1) {
+                root = new Node(nums[i]);
+                list.addFirst(0);
+            }
+            else {
+                list.addFirst(insert(root, nums[i]));
+            }
+        }
+        return list;
+    }
+    int insert(Node node, int val) {
+        if(val == node.val) {
+            node.dupCount++;
+            return node.leftCount;
+        }
+        else if(val &gt; node.val) {
+            if(null == node.right) {
+                node.right = new Node(val);
+                return node.leftCount + node.dupCount;
+            }
+            else {
+                return node.leftCount + node.dupCount + insert(node.right, val);
+            }
+        }
+        else { // val &lt; node.val
+            if(null == node.left) {
+                node.left = new Node(val);
+                return 0;
+            }
+            else {
+                return insert(node.left, val);
+            }
+        }
+    }
+}
+
+</code></pre> 
 <h2><a href="#暴力解代码" id="暴力解代码">暴力解代码</a></h2> 
 <p>暴力解也可以过oj， 不过没有意义</p> 
 <pre><code>public List&lt;Integer&gt; countSmaller(int[] nums) {
