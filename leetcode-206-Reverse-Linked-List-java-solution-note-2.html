@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>leetcode 206 Reverse Linked List解题笔记</title>
+    <title>leetcode 206 Reverse Linked List解题笔记2</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Le styles -->
@@ -56,18 +56,17 @@ var _hmt = _hmt || [];
 		<div class="col-sm-8">
 
 			<div class="page-header">
-				<h1>leetcode 206 Reverse Linked List解题笔记</h1>
+				<h1>leetcode 206 Reverse Linked List解题笔记2</h1>
 			</div>
 
 			<p><em>02 June 2019</em></p>
 
 			<p><h2><a href="#题目-leetcode-206-reverse-linked-list" id="题目-leetcode-206-reverse-linked-list">题目 leetcode 206 Reverse Linked List</a></h2> 
-<p>反转一个链表</p> 
+<p>反转链表</p> 
 <h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
 <ol> 
- <li>这是一个简单题， 可以递归做，也可以不递归做</li> 
- <li>但是我今天第一次写居然写错了， 虽然在提交前认识到自己的错误， 但是没有一遍流写对，还是不应该，所以记录一下笔记</li> 
- <li>这里记录一下递归的代码<br> a. 递归的边界条件判断<br> b. 对第二个节点开始做递归<br> c. 把第二个节点指向头节点， 注意这里要把head.next设置成null (bug就在这里 )</li> 
+ <li>前面写了递归的代码,<a href="http://www.noteanddata.com/leetcode-206-Reverse-Linked-List-java-solution-note-1.html">http://www.noteanddata.com/leetcode-206-Reverse-Linked-List-java-solution-note-1.html</a>， 写错一次， 现在写循环的代码， 又写错， 真是悲催</li> 
+ <li>设置3个指针, prev, cur, next， 然后每次向前移动三个指针； 主要是要注意循环移动的时候第一注意指针是如何覆盖的， 第二开始和结束的边界条件要注意</li> 
 </ol> 
 <h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
 <pre><code>/**
@@ -81,11 +80,18 @@ var _hmt = _hmt || [];
 class Solution {
     public ListNode reverseList(ListNode head) {
         if(null == head || null == head.next) return head;
+        
+        ListNode prev = null;
+        ListNode cur = head;
         ListNode next = head.next;
-        ListNode nhead  = reverseList(head.next);
-        next.next = head;
-        head.next = null;
-        return nhead;
+        while(next != null) {
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+            next = next.next;
+        }
+        cur.next = prev;
+        return cur;
     }
 }
 
@@ -93,9 +99,10 @@ class Solution {
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
 <p>O(N)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>之前认为这个空间复杂度是O(1), 实际上想了一下应该是O(N), 因为这个递归的深度就是N</p> 
+<p>O(1)</p> 
 <h2><a href="#错误的代码" id="错误的代码">错误的代码</a></h2> 
-<p>忘记把head.next设置成null了，导致out of memory</p> 
+<p>最后一个cur的时候没有把next指针更新一下?</p> 
+<p>Input: [1,2,3,4,5]<br> Output: [5]<br> Expected: [5,4,3,2,1]</p> 
 <pre><code>/**
  * Definition for singly-linked list.
  * public class ListNode {
@@ -107,10 +114,17 @@ class Solution {
 class Solution {
     public ListNode reverseList(ListNode head) {
         if(null == head || null == head.next) return head;
+        
+        ListNode prev = null;
+        ListNode cur = head;
         ListNode next = head.next;
-        ListNode nhead  = reverseList(head.next);
-        next.next = head;
-        return nhead;
+        while(next != null) {
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+            next = next.next;
+        }
+        return cur;
     }
 }
 
