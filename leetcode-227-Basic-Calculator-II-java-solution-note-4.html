@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 227 Basic Calculator II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 227 Basic Calculator II解题笔记</h1>
+			</div>
+
+			<p><em>03 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-227-basic-calculator-ii" id="题目-leetcode-227-basic-calculator-ii">题目 leetcode 227 Basic Calculator II</a></h2> 
+<p>基本计算器，有整数和+-* / 和空格</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这个题目刷过很多次了， 今天想用stack来写个保险的， 还是出错不少</li> 
+ <li>计算器类的题目，总是感觉坑很多，然后几种不同的实现都非常繁琐，还没有总结出一个很好的规律可以写的很简洁又不容易出错的，还需要继续学习和领悟</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>用一个stack保存当前的值， 如果前面的操作符是加号或者减号， 那么就push； 如果前面的操作符是乘号或者除号， 那么就用stack.pop()和当前数做计算</li> 
+ <li>取当前数，一般有两种， 一个是在同一个for循环里面做， 还有一个是for循环里面套一个while循环，<br> 现在觉得， 在for循环里面套一个while循环更加直观，容易理解， 因为遇到一个数字，后面就肯定要循环把当前的数字取完。<br> 如果直接在for循环里面取， 那么for循环的状态变化就会更加复杂</li> 
+ <li> <p>当然， 里面套一个while循环的坑在于， while循环结束的时候，当前i已经不是一个数字了，<br> 那么，这时候可能需要判断当前的符号。 如果直接什么都不做， 就会漏掉一个符号。 具体见后面我的错误代码</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int calculate(String s) {
+        Stack&lt;Integer&gt; stack = new Stack&lt;&gt;();
+        char lastop = '+';
+        for(int i = 0; i &lt; s.length(); ++i) {
+            if(Character.isDigit(s.charAt(i))) {
+                int cur = 0;
+                while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                    cur = cur * 10 + (int)(s.charAt(i) - '0');
+                    i++;
+                }
+                if(lastop == '+') {
+                    stack.push(cur);
+                }
+                else if(lastop == '-') {
+                    stack.push(-cur);
+                }
+                else if(lastop == '*') {
+                    stack.push(stack.pop() * cur);
+                }
+                else if(lastop == '/') {
+                    stack.push(stack.pop() / cur);
+                }
+            }
+            
+            if(i &lt; s.length() &amp;&amp; s.charAt(i) != ' ') {
+                lastop = s.charAt(i);    
+            }
+        }
+        int value = 0;
+        while(!stack.isEmpty()) {
+            value += stack.pop();
+        }
+        return value;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>低级错误， 内层while循环没有对i++</p> 
+<pre><code>class Solution {
+    public int calculate(String s) {
+        Stack&lt;Integer&gt; stack = new Stack&lt;&gt;();
+        char lastop = '+';
+        for(int i = 0; i &lt; s.length(); ++i) {
+            if(s.charAt(i) == ' ') continue;
+            
+            if(Character.isDigit(s.charAt(i))) {
+                int cur = 0;
+                while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                    cur = cur * 10 + (int)(s.charAt(i) - '0');
+                }
+                if(lastop == '+') {
+                    stack.push(cur);
+                }
+                else if(lastop == '-') {
+                    stack.push(-cur);
+                }
+                else if(lastop == '*') {
+                    stack.push(stack.pop() * cur);
+                }
+                else if(lastop == '/') {
+                    stack.push(stack.pop() / cur);
+                }
+            }
+            else {
+                lastop = s.charAt(i);
+            }
+        }
+        int value = 0;
+        while(!stack.isEmpty()) {
+            value += stack.pop();
+        }
+        return value;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>这里的问题在于， 在内层的while循环里面， 取完数字以后， i可能已经到一个符号了， 但是我们这时候没有更新lastop,<br> 然后到for循环的时候，又做了i++, 导致漏掉了一个符号</p> 
+<p>Input: " 3/2 "<br> Output: 5<br> Expected: 1</p> 
+<pre><code>class Solution {
+    public int calculate(String s) {
+        Stack&lt;Integer&gt; stack = new Stack&lt;&gt;();
+        char lastop = '+';
+        for(int i = 0; i &lt; s.length(); ++i) {
+            if(s.charAt(i) == ' ') continue;
+            
+            if(Character.isDigit(s.charAt(i))) {
+                int cur = 0;
+                while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                    cur = cur * 10 + (int)(s.charAt(i) - '0');
+                    i++;
+                }
+                if(lastop == '+') {
+                    stack.push(cur);
+                }
+                else if(lastop == '-') {
+                    stack.push(-cur);
+                }
+                else if(lastop == '*') {
+                    stack.push(stack.pop() * cur);
+                }
+                else if(lastop == '/') {
+                    stack.push(stack.pop() / cur);
+                }
+            }
+            else {
+                lastop = s.charAt(i);
+            }
+        }
+        int value = 0;
+        while(!stack.isEmpty()) {
+            value += stack.pop();
+        }
+        return value;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
