@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 227 Basic Calculator II解题笔记5</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 227 Basic Calculator II解题笔记5</h1>
+			</div>
+
+			<p><em>03 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-227-basic-calculator-ii" id="题目-leetcode-227-basic-calculator-ii">题目 leetcode 227 Basic Calculator II</a></h2> 
+<p>计算器， 可以做四则运算， 没有括号</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<p>这个题目写了很多很多次， 感觉现在这个逻辑，应该是比较清晰的. 而且和用stack的做法是一致的。</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本的思路和用stack的思路是一样的， <a href="http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note-4.html">http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note-4.html</a>, 也就是说， 如果是加号和减号的话，需要把当前的数保存起来，因为后面可能有更高优先级的操作，也就是乘号和除号，</li> 
+ <li>如果遇到乘号和除号，既然用stack的时候是每次和stack顶端的数做计算，那么， 我们其实只用了一个变量保存当前的计算结果</li> 
+ <li>如果再次遇到加号和减号，那么，一个或者一些高优先级的连续操作已经结束了, 前面的计算结果就可以保存起来</li> 
+ <li>而所有的计算结果，最后放到stack里面，只是把这些值加起来， 那么直接用一个变量保存这些已经计算好的和就好了。</li> 
+ <li>这里的核心点， 应该是说整个逻辑和用stack的逻辑是完全对应的<br> 而之前的做法， 现在看代码， 对加号和减号的处理， 感觉还是不太直观， 看上去更多的像是正好因为prev在加号和减号的时候reset到0了<br> <a href="http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note2.html">http://www.noteanddata.com/leetcode-227-Basic-Calculator-II-java-solution-note2.html</a></li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int calculate(String s) {
+    int total = 0;
+    char op = '+';
+    int prev = 0;
+    for(int i = 0; i &lt; s.length(); ++i) {
+        if(Character.isDigit(s.charAt(i))) {
+            int cur = 0;
+            while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                cur = cur * 10 + (int)(s.charAt(i) - '0');
+                i++;
+            }
+            if(op == '+') prev = cur;
+            if(op == '-') prev =- cur;
+            if(op == '*') prev *= cur;
+            if(op == '/') prev /= cur;
+        }
+        if(i &lt; s.length() &amp;&amp; s.charAt(i) != ' ') {
+            if(s.charAt(i) == '+' || s.charAt(i) == '-') {
+                total += prev;
+            }
+            op = s.charAt(i);
+        }
+    }    
+    return total + prev;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#原始的o1空间复杂度的代码" id="原始的o1空间复杂度的代码">原始的O(1)空间复杂度的代码</a></h2> 
+<pre><code>public int calculate(String s) {
+    int total = 0;
+    char op = '+';
+    int prev = 0;
+    for(int i = 0; i &lt; s.length(); ++i) {
+        if(Character.isDigit(s.charAt(i))) {
+            int cur = 0;
+            while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                cur = cur * 10 + (int)(s.charAt(i) - '0');
+                i++;
+            }
+            if(op == '+') prev += cur;
+            if(op == '-') prev -= cur;
+            if(op == '*') prev *= cur;
+            if(op == '/') prev /= cur;
+        }
+        if(i &lt; s.length() &amp;&amp; s.charAt(i) != ' ') {
+            if(s.charAt(i) == '+' || s.charAt(i) == '-') {
+                total += prev;
+                prev = 0;
+            }
+            op = s.charAt(i);
+        }
+    }    
+    return total + prev;
+}
+
+</code></pre> 
+<h2><a href="#改进的o1空间复杂度的代码" id="改进的o1空间复杂度的代码">改进的O(1)空间复杂度的代码</a></h2> 
+<pre><code>public int calculate(String s) {
+    int total = 0;
+    char op = '+';
+    int prev = 0;
+    for(int i = 0; i &lt; s.length(); ++i) {
+        if(Character.isDigit(s.charAt(i))) {
+            int cur = 0;
+            while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                cur = cur * 10 + (int)(s.charAt(i) - '0');
+                i++;
+            }
+            if(op == '+') prev = cur;
+            if(op == '-') prev =- cur;
+            if(op == '*') prev *= cur;
+            if(op == '/') prev /= cur;
+        }
+        if(i &lt; s.length() &amp;&amp; s.charAt(i) != ' ') {
+            if(s.charAt(i) == '+' || s.charAt(i) == '-') {
+                total += prev;
+                prev = 0;
+            }
+            op = s.charAt(i);
+        }
+    }    
+    return total + prev;
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
