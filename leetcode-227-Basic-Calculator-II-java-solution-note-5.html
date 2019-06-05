@@ -161,6 +161,68 @@ var _hmt = _hmt || [];
     }    
     return total + prev;
 }
+</code></pre> 
+<h2><a href="#错误的代码" id="错误的代码">错误的代码</a></h2> 
+<p>好， 前面写了一轮以后， 以为自己写的很稳了， 再写， 结果又挂</p> 
+<p>Input: “3+2*2”<br> Output: 3<br> Expected: 7</p> 
+<p>这里主要最后一个prev没有机会加到ret上， 因为我们每次都是遇到一个操作符才决定是否要加到ret上，因为后面可能会有更高优先级的操作符， 所以当前的暂时没有做。 所以这样遇到最后的数字，最后的prev就没有加到ret上</p> 
+<pre><code>public int calculate(String s) {
+    int ret = 0;
+    int prev = 0;
+    char lastop = '+';
+    for(int i = 0; i &lt; s.length(); ++i) {
+        if(Character.isDigit(s.charAt(i))) {
+            int cur = 0;
+            while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                cur = cur * 10 + (int)(s.charAt(i) - '0');
+                i++;
+            }
+            if(lastop == '+') prev = cur;
+            if(lastop == '-') prev = -cur;
+            if(lastop == '*') prev *= cur;
+            if(lastop == '/') prev /= cur;
+        }
+        if(i &lt; s.length() &amp;&amp; s.charAt(i) != ' ') {
+            lastop = s.charAt(i);
+            if(lastop == '+' || lastop == '-') {
+                ret += prev;
+            }
+        }
+    }
+    return ret;
+}
+
+</code></pre> 
+<h2><a href="#修正bug的代码" id="修正bug的代码">修正bug的代码</a></h2> 
+<p>所以这里重点是return的时候要加上prev， 还加了一句reset prev=0， 但是这个其实不重要</p> 
+<pre><code>public int calculate(String s) {
+    int ret = 0;
+    int prev = 0;
+    char lastop = '+';
+    for(int i = 0; i &lt; s.length(); ++i) {
+        if(Character.isDigit(s.charAt(i))) {
+            int cur = 0;
+            while(i &lt; s.length() &amp;&amp; Character.isDigit(s.charAt(i))) {
+                cur = cur * 10 + (int)(s.charAt(i) - '0');
+                i++;
+            }
+            if(lastop == '+') prev = cur;
+            if(lastop == '-') prev = -cur;
+            if(lastop == '*') prev *= cur;
+            if(lastop == '/') prev /= cur;
+        }
+        if(i &lt; s.length() &amp;&amp; s.charAt(i) != ' ') {
+            lastop = s.charAt(i);
+            if(lastop == '+' || lastop == '-') {
+                ret += prev;
+                prev = 0;
+            }
+        }
+    }
+    return ret + prev;
+}
+
+
 </code></pre></p>
 	</div>		
 
