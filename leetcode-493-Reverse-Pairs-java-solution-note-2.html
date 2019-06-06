@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 493 Reverse Pairs解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 493 Reverse Pairs解题笔记</h1>
+			</div>
+
+			<p><em>06 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-493-reverse-pairs" id="题目-leetcode-493-reverse-pairs">题目 leetcode 493 Reverse Pairs</a></h2> 
+<p>输入一个数组里面的的reverse pair,<br> reverse的定义是if i &lt; j and nums[i] &gt; 2*nums[j]</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本的思路还是和前面写的笔记一样，就是merge sort的思路 <a href="http://www.noteanddata.com/leetcode-493-Reverse-Pairs-java-solution-note.html">http://www.noteanddata.com/leetcode-493-Reverse-Pairs-java-solution-note.html</a></li> 
+ <li>区别是这里做merge sort的时候，没有对整个[from, to]进行排序， 而是直接做了merge， 因为按照merge sort的做法，左边和右边都已经排序了， 所以这时候只要做merge就好了</li> 
+ <li>当然， 这个merge的过程每次都要开辟一个新的数组， 其实可以不需要怎么做， 直接在最开始的时候开辟一个， 然后重复使用， 但是这个做法还需要再回顾一下， 下次有空再写</li> 
+ <li>今天再理解了一下这个思路， 感觉确实非常巧妙， 用divide &amp; conquer的思路， 先把数组分成两部分， 然后求出左边和右边各自的reverse pairs, 最后把跨左右两边的reverse pairs找出来. 因为要找跨两边的时候， 左右两边内部的顺序已经不重要了， 那么就可以再每次做完以后， 把自己排序。 而且把自己排序有一个好处就是， 下一层判断的时候，可以比较容易的做左右两边的判断</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int reversePairs(int[] nums) {
+    return mergeCount(nums, 0, nums.length-1);
+}
+int mergeCount(int[] nums, int from, int to) {
+    if(from &gt;= to) return 0;
+    int mid = from + (to-from)/2;
+    int count = mergeCount(nums, from, mid) + mergeCount(nums, mid+1, to);
+    for(int i = from, j = mid+1; i &lt;= mid; ++i) {
+        while(j &lt;= to &amp;&amp; nums[i]/2.0 &gt; nums[j]) {
+            j++;
+        }
+        count += j - mid -1;
+    }
+    //Arrays.sort(nums, from, to+1);
+    int[] temp = new int[to-from+1];
+    int l = from, r = mid+1;
+    for(int k = 0; k &lt; temp.length; ++k) {
+        if(l &lt;= mid &amp;&amp; (r &gt; to || nums[l] &lt;= nums[r])) {
+            temp[k] = nums[l++];
+        }
+        else {
+            temp[k] = nums[r++];
+        }
+    }
+    System.arraycopy(temp, 0, nums, from, to-from+1);
+    
+    return count;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN)?</p> 
+<h2><a href="#错误的代码" id="错误的代码">错误的代码</a></h2> 
+<p>temp数组合并的时候， k应该是从0开始，而不是从from到to</p> 
+<pre><code>public int reversePairs(int[] nums) {
+    return mergeCount(nums, 0, nums.length-1);
+}
+int mergeCount(int[] nums, int from, int to) {
+    if(from &gt;= to) return 0;
+    int mid = from + (to-from)/2;
+    int count = mergeCount(nums, from, mid) + mergeCount(nums, mid+1, to);
+    for(int i = from, j = mid+1; i &lt;= mid; ++i) {
+        while(j &lt;= to &amp;&amp; nums[i]/2.0 &gt; nums[j]) {
+            j++;
+        }
+        count += j - mid -1;
+    }
+    //Arrays.sort(nums, from, to+1);
+    int[] temp = new int[to-from+1];
+    int l = from, r = mid+1;
+    for(int k = from; k &lt;= to; ++k) {
+        if(l &lt;= mid &amp;&amp; (r &gt; to || nums[l] &lt;= nums[r])) {
+            temp[k] = nums[l++];
+        }
+        else {
+            temp[k] = nums[r++];
+        }
+    }
+    System.arraycopy(temp, 0, nums, from, to-from+1);
+    
+    return count;
+}
+</code></pre> 
+<h2><a href="#错误的代码2" id="错误的代码2">错误的代码2</a></h2> 
+<p>判断的时候如果不用除法，会溢出</p> 
+<p>Input: [2147483647,2147483647,2147483647,2147483647,2147483647,2147483647]<br> Output: 15<br> Expected: 0</p> 
+<pre><code>public int reversePairs(int[] nums) {
+    return mergeCount(nums, 0, nums.length-1);
+}
+int mergeCount(int[] nums, int from, int to) {
+    if(from &gt;= to) return 0;
+    int mid = from + (to-from)/2;
+    int count = mergeCount(nums, from, mid) + mergeCount(nums, mid+1, to);
+    for(int i = from, j = mid+1; i &lt;= mid; ++i) {
+        while(j &lt;= to &amp;&amp; nums[i] &gt; nums[j] * 2) {
+            j++;
+        }
+        count += j - mid -1;
+    }
+    //Arrays.sort(nums, from, to+1);
+    int[] temp = new int[to-from+1];
+    int l = from, r = mid+1;
+    for(int k = 0; k &lt; temp.length; ++k) {
+        if(l &lt;= mid &amp;&amp; (r &gt; to || nums[l] &lt;= nums[r])) {
+            temp[k] = nums[l++];
+        }
+        else {
+            temp[k] = nums[r++];
+        }
+    }
+    System.arraycopy(temp, 0, nums, from, to-from+1);
+    
+    return count;
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
