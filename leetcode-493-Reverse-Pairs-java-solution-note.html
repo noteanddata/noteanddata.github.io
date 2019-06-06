@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 493 Reverse Pairs解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 493 Reverse Pairs解题笔记</h1>
+			</div>
+
+			<p><em>05 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-493-reverse-pairs" id="题目-leetcode-493-reverse-pairs">题目 leetcode 493 Reverse Pairs</a></h2> 
+<p>输入一个数组里面的的reverse pair,<br> reverse的定义是if i &lt; j and nums[i] &gt; 2*nums[j]</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>题目好像是刷不完的。。。各种套路非常之多， 各种解法也令人叹为观止！看各种代码看的让人醉。</li> 
+ <li>而且很多时候直接输入一个数组的题目经常会很难，经常一点思路都没有，然后解法经常会很精妙</li> 
+ <li>问题的关键在于， 如何总结这类题目的特点？ 然后用一个general的方法解决这类问题?</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目和 <a href="http://www.noteanddata.com/leetcode-315-Count-of-Smaller-Numbers-After-Self-java-binary-search-tree-solution-note.html">http://www.noteanddata.com/leetcode-315-Count-of-Smaller-Numbers-After-Self-java-binary-search-tree-solution-note.html</a>有点类似， 但是我用binary search tree都方法写了一个以后， 现在已经过不了oj了，看讨论以前是可以的</li> 
+ <li>然后还剩下merge sort和树状数组(BIT)的做法， 树状数组之前看了一点已经全部都忘记了， 所以这里学习一下merge sort的做法</li> 
+ <li>merge sort的思路是对数组分成两部分然后各自排序, 然后如果说左边和右边都已经排序了， 那么只要把左右两边里面的reverse pair找出来加上就可以了。</li> 
+ <li>当然， 下面的代码有一个问题是， 调用排序的时候，没有真正的用上merge， 而是直接整个排序了， 可以通过oj， 但是不好。 后面再改进</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int reversePairs(int[] nums) {
+    return mergeCount(nums, 0, nums.length-1);
+}
+int mergeCount(int[] nums, int from, int to) {
+    if(from &gt;= to) return 0;
+    int mid = from + (to-from)/2;
+    int count = mergeCount(nums, from, mid) + mergeCount(nums, mid+1, to);
+    for(int i = from, j = mid+1; i &lt;= mid; i++) {
+        while(j &lt;= to &amp;&amp; nums[i]/2.0 &gt;   nums[j]) {
+            j++;
+        }
+        count += j-mid-1;
+    }
+    // here we are not doing merge-sort here???
+    Arrays.sort(nums, from, to+1);
+    return count;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(NlgN) ？</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN) ?</p> 
+<h2><a href="#超时的binary-search-tree的做法" id="超时的binary-search-tree的做法">超时的binary search tree的做法</a></h2> 
+<pre><code>class Solution {
+    static class Node {
+        Node left, right;
+        int val, leftCount, dupCount;
+        public Node(int val) {
+            this.val = val;
+            this.leftCount = 0;
+            this.dupCount = 1;
+        }
+    }
+    public int reversePairs(int[] nums) {
+        if(null == nums || nums.length &lt;=1 ) return 0;
+        int count = 0;
+        Node root = new Node(nums[nums.length-1]);
+        for(int i = nums.length-2; i &gt;= 0; --i) {
+            count += search(root, nums[i]/2.0);    
+            insert(root, nums[i]);
+        }
+        return count;
+    }
+    int search(Node node, double val) {
+        if(null == node) return 0;
+        
+        if((double)node.val == val) {
+            return node.leftCount;
+        }
+        else if(val &gt; (double)node.val ) {
+            return node.leftCount + node.dupCount + search(node.right, val);
+        }
+        else { // val &lt; node.val
+            return search(node.left, val);
+        }
+        
+    }
+    
+    void insert(Node node, int val) {
+        if(node.val == val) {
+            node.dupCount++;
+        }
+        else if(val &gt; node.val) {
+            if(node.right == null) {
+                node.right = new Node(val);
+            }
+            else {
+                insert(node.right, val);    
+            }
+        }
+        else { // val &lt; node.val
+            node.leftCount++;
+            if(node.left == null) {
+                node.left = new Node(val);
+            }
+            else {
+                insert(node.left, val);
+            }
+        }
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
