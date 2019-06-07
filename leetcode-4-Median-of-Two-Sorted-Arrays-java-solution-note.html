@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 4 Median of Two Sorted Arrays解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 4 Median of Two Sorted Arrays解题笔记</h1>
+			</div>
+
+			<p><em>06 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-4-median-of-two-sorted-arrays" id="题目-leetcode-4-median-of-two-sorted-arrays">题目 leetcode 4 Median of Two Sorted Arrays</a></h2> 
+<p>输入两个数组，各自都是已经排序过的， 求两个数组的中位数</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<p>这个题目还有更好的解法， 但是暂时写到这里， 另外的写法还不太会写。</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>如果直接合并或者遍历做，当然是没什么用， 所以需要一个lg的做法， 一个比较直观的做法是二分的思想</li> 
+ <li>二分的重点是每次可以排除一半， 所以排除了以后， 数就少了一半， 那么我们就需要findK函数</li> 
+ <li>假设总共有12个数， 那么我们需要K=6, 那么如果我们第一个数组选k/2个， 第二个数组选k/2个，<br> 也就是分别选3个， 这时候我们可以比较大小num1[mid1]和num2[mid2]</li> 
+</ol> 
+<pre><code>1,2,3,4
+3,4,5,6,7,8,9,10
+</code></pre> 
+<p>这时候， 中间数比较小的那个， 那左边一半就可以仍掉了， 为什么？<br> 因为nums1[from1:mid1] + nums2[from2:mid2]一共是k个， 假设nums1[mid1] &lt; num2[mid2],<br> 那么， 这个小的这个一定不是我们要找的第k个数， 那么左边的所有的都不是， 所以可以直接仍掉了。</p> 
+<ol> 
+ <li>如果有一个数组长度不到k/2个， 那么， 较长的数组的左边k/2个也可以直接扔掉了, 具体可以参考下面的例子，<br> 因为nums2[from2:mid2] + num1 的长度还不到k, 所以， 还需要补上nums2的部分数才可以到k个，那么左边的k/2个就可以仍掉了</li> 
+</ol> 
+<pre><code>1,2
+3,4,5,6,7,8,9,10
+</code></pre> 
+<ol> 
+ <li>注意一个细节是在递归的过程中，k可能会是奇数， 所以， 剩下的需要k-k/2</li> 
+ <li>还有就是如果k=1, 那么也是个边界情况</li> 
+ <li>当然，对于长度是2的数组来说, 还有个问题是mid+1的时候，可能会越界</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+    double v1 = findK(nums1, 0, nums2, 0, (nums1.length+nums2.length+1)/2);
+    double v2 = findK(nums1, 0, nums2, 0, (nums1.length+nums2.length+2)/2);
+    return (v1+v2)/2.0;
+}
+
+double findK(int[] nums1, int from1, int[] nums2, int from2, int k) {
+    if(from1 &gt;= nums1.length) return nums2[from2+k-1];
+    if(from2 &gt;= nums2.length) return nums1[from1+k-1];
+    if(k == 1) return Math.min(nums1[from1], nums2[from2]);
+    
+    int mid1 = from1 + k/2 -1;
+    int mid2 = from2 + k/2 -1;
+    if(mid1 &gt;= nums1.length) {
+        return findK(nums1, from1, nums2, mid2+1, k-k/2);
+    }
+    if(mid2 &gt;= nums2.length) {
+        return findK(nums1, mid1+1, nums2, from2, k-k/2);
+    }
+    if(nums1[mid1] &gt; nums2[mid2]) {
+        return findK(nums1, from1, nums2, mid2+1, k-k/2);
+    }
+    else {
+        return findK(nums1, mid1+1, nums2, from2, k-k/2);
+    }
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lg(M+N))</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lg(M+N))</p> 
+<h2><a href="#之前写的代码" id="之前写的代码">之前写的代码</a></h2> 
+<p>感觉逻辑有点绕，还是直接分情况讨论比较简单</p> 
+<pre><code>public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+    int total = nums1.length + nums2.length;
+    double v1 = findKthSortedArrays(nums1, 0,  nums2, 0,  (total+1)/2);
+    double v2 = findKthSortedArrays(nums1, 0,  nums2, 0, (total+2)/2);
+    return (v1 + v2) / 2.0;
+}
+
+
+
+public double findKthSortedArrays(int[] nums1, int from1, int[] nums2, int from2, int k) {
+    if(from1 &gt;= nums1.length) return nums2[from2 + k -1];
+    if(from2 &gt;= nums2.length) return nums1[from1 + k - 1];
+    if(k == 1) return Math.min(nums1[from1], nums2[from2]);
+
+    int h1 = from1 + k/2 -1 ; // this is very important, because we want to skip by k/2 numbers (diff)
+    int h2 = from2 + k/2 -1 ;
+    int mid1 = (h1 &lt; nums1.length) ? nums1[h1] : Integer.MAX_VALUE; // if remaining less than k/2, do not reduce it because the result may be here
+    int mid2 = (h2 &lt; nums2.length) ? nums2[h2] : Integer.MAX_VALUE;
+
+    if(mid1 &gt; mid2) {
+        return findKthSortedArrays(nums1, from1 , nums2, from2 + k/2,  k - k/2);
+    }
+    else { // nums1[h1] &lt; nums2[h2]
+        return findKthSortedArrays(nums1, from1 + k/2, nums2, from2,  k - k/2);
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>对k=1的情况没有判断</p> 
+<p>Runtime Error Message: Line 19: java.lang.ArrayIndexOutOfBoundsException: -1<br> Last executed input: [1,3]<br> [2]</p> 
+<pre><code>class Solution {
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        double v1 = findK(nums1, 0, nums2, 0, (nums1.length+nums2.length+1)/2);
+        double v2 = findK(nums1, 0, nums2, 0, (nums1.length+nums2.length+2)/2);
+        return (v1+v2)/2.0;
+    }
+    
+    double findK(int[] nums1, int from1, int[] nums2, int from2, int k) {
+        if(from1 &gt;= nums1.length) return nums2[from2+k-1];
+        if(from2 &gt;= nums2.length) return nums1[from1+k-1];
+        int mid1 = from1 + k/2 -1;
+        int mid2 = from2 + k/2 -1;
+        if(mid1 &gt;= nums1.length) {
+            return findK(nums1, from1, nums2, mid2+1, k/2);
+        }
+        if(mid2 &gt;= nums2.length) {
+            return findK(nums1, mid1+1, nums2, from2, k/2);
+        }
+        if(nums1[mid1] &gt; nums2[mid2]) {
+            return findK(nums1, from1, nums2, mid2+1, k/2);
+        }
+        else {
+            return findK(nums1, mid1+1, nums2, from2, k/2);
+        }
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>k在递归的过程中会变成奇数</p> 
+<p>Input: [1,2]<br> [3,4]<br> Output: 2.0<br> Expected: 2.5</p> 
+<pre><code>class Solution {
+    public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+        double v1 = findK(nums1, 0, nums2, 0, (nums1.length+nums2.length+1)/2);
+        double v2 = findK(nums1, 0, nums2, 0, (nums1.length+nums2.length+2)/2);
+        return (v1+v2)/2.0;
+    }
+    
+    double findK(int[] nums1, int from1, int[] nums2, int from2, int k) {
+        if(from1 &gt;= nums1.length) return nums2[from2+k-1];
+        if(from2 &gt;= nums2.length) return nums1[from1+k-1];
+        if(k == 1) return Math.min(nums1[from1], nums2[from2]);
+        
+        int mid1 = from1 + k/2 -1;
+        int mid2 = from2 + k/2 -1;
+        if(mid1 &gt;= nums1.length) {
+            return findK(nums1, from1, nums2, mid2+1, k/2);
+        }
+        if(mid2 &gt;= nums2.length) {
+            return findK(nums1, mid1+1, nums2, from2, k/2);
+        }
+        if(nums1[mid1] &gt; nums2[mid2]) {
+            return findK(nums1, from1, nums2, mid2+1, k/2);
+        }
+        else {
+            return findK(nums1, mid1+1, nums2, from2, k/2);
+        }
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
