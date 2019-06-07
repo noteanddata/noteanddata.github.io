@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 493 Reverse Pairs解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 493 Reverse Pairs解题笔记2</h1>
+			</div>
+
+			<p><em>06 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-493-reverse-pairs" id="题目-leetcode-493-reverse-pairs">题目 leetcode 493 Reverse Pairs</a></h2> 
+<p>输入一个数组里面的的reverse pair,<br> reverse的定义是if i &lt; j and nums[i] &gt; 2*nums[j]</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>思路就是merge sort的思路， 具体笔记在这里<a href="http://www.noteanddata.com/leetcode-493-Reverse-Pairs-java-solution-note-2.html">http://www.noteanddata.com/leetcode-493-Reverse-Pairs-java-solution-note-2.html</a>, <a href="http://www.noteanddata.com/leetcode-493-Reverse-Pairs-java-solution-note.html">http://www.noteanddata.com/leetcode-493-Reverse-Pairs-java-solution-note.html</a></li> 
+ <li>这里主要记录一下再写的过程中的一些错误</li> 
+</ol> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>merge的时候index越界了<br> Runtime Error Message: Line 19: java.lang.ArrayIndexOutOfBoundsException: 5<br> Last executed input: [1,3,2,3,1]</p> 
+<pre><code>class Solution {
+    public int reversePairs(int[] nums) {
+        return mergecount(nums, 0, nums.length-1);
+    }
+    int mergecount(int[] nums, int from, int to) {
+        if(from &gt;= to) return 0;
+        
+        int mid = from + (to-from)/2;
+        int count = mergecount(nums, from, mid) + mergecount(nums, mid+1, to);
+        for(int i = from, j = mid+1; i &lt;= mid; ++i) {
+            while(j &lt;= to &amp;&amp; nums[i]/2.0 &gt; nums[j]) {
+                j++;
+            }
+            count += j - mid -1;
+        }
+        
+        int[] temp = new int[to - from + 1];
+        for(int k = 0, i = from, j = mid+1; k &lt; temp.length; ++k) {
+            if(nums[i] &lt; nums[j]) {
+                temp[k] = nums[i++];
+            }
+            else {
+                temp[k] = nums[j++];
+            }
+        }
+        System.arraycopy(temp, 0, nums, from, temp.length);
+        
+        return count;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>merge的时候i其实越界了， 但是因为i在左边， 没有直接抛异常， 但是结果是错的</p> 
+<pre><code>class Solution {
+    public int reversePairs(int[] nums) {
+        return mergecount(nums, 0, nums.length-1);
+    }
+    int mergecount(int[] nums, int from, int to) {
+        if(from &gt;= to) return 0;
+        
+        int mid = from + (to-from)/2;
+        int count = mergecount(nums, from, mid) + mergecount(nums, mid+1, to);
+        for(int i = from, j = mid+1; i &lt;= mid; ++i) {
+            while(j &lt;= to &amp;&amp; nums[i]/2.0 &gt; nums[j]) {
+                j++;
+            }
+            count += j - mid -1;
+        }
+        
+        int[] temp = new int[to - from + 1];
+        for(int k = 0, i = from, j = mid+1; k &lt; temp.length; ++k) {
+            if(j &gt; to || nums[i] &lt; nums[j]) {
+                temp[k] = nums[i++];
+            }
+            else {
+                temp[k] = nums[j++];
+            }
+        }
+        System.arraycopy(temp, 0, nums, from, temp.length);
+        
+        return count;
+    }
+}
+
+</code></pre> 
+<h2><a href="#正确代码" id="正确代码">正确代码</a></h2> 
+<p>修正后的代码, 分情况完整讨论</p> 
+<pre><code>class Solution {
+    public int reversePairs(int[] nums) {
+        return mergecount(nums, 0, nums.length-1);
+    }
+    int mergecount(int[] nums, int from, int to) {
+        if(from &gt;= to) return 0;
+        
+        int mid = from + (to-from)/2;
+        int count = mergecount(nums, from, mid) + mergecount(nums, mid+1, to);
+        for(int i = from, j = mid+1; i &lt;= mid; ++i) {
+            while(j &lt;= to &amp;&amp; nums[i]/2.0 &gt; nums[j]) {
+                j++;
+            }
+            count += j - mid -1;
+        }
+        
+        int[] temp = new int[to - from + 1];
+        for(int k = 0, i = from, j = mid+1; k &lt; temp.length; ++k) {
+            if(j &gt; to) {
+                temp[k] = nums[i++];
+            }
+            else if(i &gt; mid) {
+                temp[k] = nums[j++];
+            }
+            else if(nums[i] &lt; nums[j]) {
+                temp[k] = nums[i++];
+            }
+            else {
+                temp[k] = nums[j++];
+            }
+            // if(j &gt; to || nums[i] &lt; nums[j]) {
+            //     temp[k] = nums[i++];
+            // }
+            // else {
+            //     temp[k] = nums[j++];
+            // }
+        }
+        System.arraycopy(temp, 0, nums, from, temp.length);
+        
+        return count;
+    }
+}
+
+</code></pre> 
+<h2><a href="#正确代码2" id="正确代码2">正确代码2</a></h2> 
+<p>当然， 把两个条件合并起来更好</p> 
+<pre><code>class Solution {
+    public int reversePairs(int[] nums) {
+        return mergecount(nums, 0, nums.length-1);
+    }
+    int mergecount(int[] nums, int from, int to) {
+        if(from &gt;= to) return 0;
+        
+        int mid = from + (to-from)/2;
+        int count = mergecount(nums, from, mid) + mergecount(nums, mid+1, to);
+        for(int i = from, j = mid+1; i &lt;= mid; ++i) {
+            while(j &lt;= to &amp;&amp; nums[i]/2.0 &gt; nums[j]) {
+                j++;
+            }
+            count += j - mid -1;
+        }
+        
+        int[] temp = new int[to - from + 1];
+        for(int k = 0, i = from, j = mid+1; k &lt; temp.length; ++k) {
+            if(j &gt; to || (i &lt;= mid &amp;&amp; nums[i] &lt; nums[j])) {
+                temp[k] = nums[i++];
+            }
+            else  {
+                temp[k] = nums[j++];
+            }
+        }
+        System.arraycopy(temp, 0, nums, from, temp.length);
+        
+        return count;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
