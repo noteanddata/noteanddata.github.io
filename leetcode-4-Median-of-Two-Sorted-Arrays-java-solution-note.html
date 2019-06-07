@@ -213,6 +213,39 @@ public double findKthSortedArrays(int[] nums1, int from1, int[] nums2, int from2
     }
 }
 
+</code></pre> 
+<h2><a href="#错误代码3" id="错误代码3">错误代码3</a></h2> 
+<p>切分一半的时候， 对if(mid2 &gt;= nums2.length)这种情况处理错了</p> 
+<pre><code>public double findMedianSortedArrays(int[] nums1, int[] nums2) {
+    if((nums1.length + nums2.length)%2 == 1) {
+        return findk(nums1, 0, nums2, 0, (nums1.length + nums2.length + 1)/2);
+    }
+    else {
+        int v1 = findk(nums1, 0, nums2, 0, (nums1.length + nums2.length + 1)/2);
+        int v2 = findk(nums1, 0, nums2, 0, (nums1.length + nums2.length + 2)/2);
+        return (v1 + v2) / 2.0;
+    }
+}
+int findk(int[] nums1, int from1, int[] nums2, int from2, int k) {
+    if(from1 &gt;= nums1.length) return nums2[from2+k-1];
+    if(from2 &gt;= nums2.length) return nums1[from1+k-1];
+    if(k == 1) return Math.min(nums1[from1], nums2[from2]);
+    int mid1 = from1 + k/2 - 1;
+    int mid2 = from2 + k/2 - 1;
+    if(mid1 &gt;= nums1.length) {
+        return findk(nums1, from1, nums2, mid2+1, k - k/2);
+    }
+    if(mid2 &gt;= nums2.length) {
+        return findk(nums1, mid1+1, nums2, mid2, k - k/2);
+    }
+    if(nums1[mid1] &lt; nums2[mid2]) {
+        return findk(nums1, mid1+1, nums2, from2, k - k/2);
+    }
+    else {
+        return findk(nums1, from1, nums2, mid2+1, k - k/2);
+    }
+}
+
 </code></pre></p>
 	</div>		
 
