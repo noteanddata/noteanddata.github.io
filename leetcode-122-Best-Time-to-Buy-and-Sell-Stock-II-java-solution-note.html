@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 122 Best Time to Buy and Sell Stock II解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 122 Best Time to Buy and Sell Stock II解题笔记</h1>
+			</div>
+
+			<p><em>09 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-122-best-time-to-buy-and-sell-stock-ii" id="题目-leetcode-122-best-time-to-buy-and-sell-stock-ii">题目 leetcode 122 Best Time to Buy and Sell Stock II</a></h2> 
+<ol> 
+ <li> <p>输入一个数组，里面表示每天股票的价格， 可以做任意多次交易， 问最大可以获取多少利润。<br> 当然， 在一个时间只能hold一个股票， 就是买了以后必须卖出以后才可以再买入.</p> </li> 
+ <li> <p>这个题目和前面一个题目的区别是前面是只能做一次交易， 现在可以做多次交易<br> 前面的解题报告在这里<a href="http://www.noteanddata.com/leetcode-121-Best-Time-to-Buy-and-Sell-Stock-java-solution-note.html">http://www.noteanddata.com/leetcode-121-Best-Time-to-Buy-and-Sell-Stock-java-solution-note.html</a></p> </li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>从左向右扫描，<br> a. 假设第一天的价格是buy， 然后如果遇到高的，就进行一次交易， 把利润加上. 同时更新buy为当前价格。<br> 这个对横跨多天的交易也是可以的， 因为(b-a) + (c-b) = c-a</li> 
+</ol> 
+<p>b. 如果遇到价格低的, 就更新buy为当前价格</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int maxProfit(int[] prices) {
+    if(prices.length &lt;= 1) return 0;
+    int max = 0;
+    int buy = prices[0];
+    for(int i = 1; i &lt; prices.length; ++i) {
+        if(prices[i] &gt; buy) {
+            max += prices[i]-buy;
+            buy = prices[i];
+        }
+        else if(prices[i] &lt; buy) {
+            buy = prices[i];
+        }
+    }
+    return max;
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#之前写的另外一个代码" id="之前写的另外一个代码">之前写的另外一个代码</a></h2> 
+<p>以前的提交记录， 现在看之前的代码更简洁一些, 但是可能理解起来要稍微绕一点。<br> 这里的思路是把任何相邻数据的正的差加上就可以了</p> 
+<pre><code>public int maxProfit(int[] prices) {
+    int max = 0;
+    for(int i = 1; i &lt; prices.length; ++i) {
+        if(prices[i] &gt; prices[i-1]) {
+            max += prices[i] - prices[i-1];
+        }
+    }
+    return max;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
