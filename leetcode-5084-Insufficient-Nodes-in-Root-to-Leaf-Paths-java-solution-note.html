@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 5084 Insufficient Nodes in Root to Leaf Paths解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 5084 Insufficient Nodes in Root to Leaf Paths解题笔记</h1>
+			</div>
+
+			<p><em>08 June 2019</em></p>
+
+			<p><h2><a href="#题目leetcode-5084-insufficient-nodes-in-root-to-leaf-paths" id="题目leetcode-5084-insufficient-nodes-in-root-to-leaf-paths">题目leetcode 5084 Insufficient Nodes in Root to Leaf Paths</a></h2> 
+<ol> 
+ <li>输入一个二叉树和一个整数limit</li> 
+ <li>从根节点到叶节点会形成一条路径</li> 
+ <li>如果对于一个节点来说， 如果所有到叶节点的路径的和都是小于limit， 那么这个节点应该被删除</li> 
+ <li>求删除所有这些节点以后的二叉树</li> 
+</ol> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这个题目比赛的时候leetcode的test case出错了， 把很多正确的代码判成错误的代码。这个题目也造成了leetcode评论区的巨大争议， 大家看了ac的代码以后纷纷表示那是不对的。 包括我的代码也是， 我第一次提交的代码也是正确的， 本来名次可以再提高一点， 结果这里看了好一会儿都看不出问题， 郁闷。</li> 
+ <li>本周比赛我前两题状态特别好， 8分组就一次ac了两题， 当时排名30多名，很是激动。 写到这题的时候思路也非常清晰，觉得很简单， 但是有一个地方typo了，调试了20分钟， 当时非常遗憾， 结果提交的时候又遇到oj出错，比赛的时候只是觉得看来看去都觉得自己是对的，出错的case数据又特别大，几乎没有办法调试。 当然， 这次第4题是真的没有写出来， 看着非常简单，结果一跑test case各种错。。。自闭。。。</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>整个思路是递归的， 从根节点开始， 然后每次可以把limit-node.val传下去做判断，</li> 
+ <li>到叶节点的时候， 就可以直接判断当前叶节点是否需要删除</li> 
+ <li>每个节点对子节点进行判断， 如果子节点不符合要求， 就删除子节点</li> 
+ <li>对普通当前节点来说， 主要是看子节点是否是空或者应该删除</li> 
+ <li>一个自然的判断是， 如果一个节点被删除， 他的子节点一定都是被删除的</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode sufficientSubset(TreeNode root, int limit) {
+        if(null == root || dfs(root, limit)) return null;
+        return root;
+    }
+    
+    boolean dfs(TreeNode node, int limit) {
+        if(null == node.left &amp;&amp; null == node.right) {
+            return node.val &lt; limit;
+        }
+        boolean leftless = false;
+        if(null != node.left) {
+            if(dfs(node.left, limit - node.val)) {
+                node.left = null;
+                leftless = true;
+            }
+        }
+        boolean rightless = false;
+        if(null != node.right) {
+            if(dfs(node.right, limit - node.val)) {
+                node.right = null;
+                rightless = true;
+            }
+        }
+        return (null == node.left || leftless) &amp;&amp; (null == node.right || rightless);
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h2><a href="#错误的test-case和对应的代码" id="错误的test-case和对应的代码">错误的test case和对应的代码</a></h2> 
+<p>针对这个test case<br> [1,100, null, -10000]<br> 1</p> 
+<p>比赛的时候期望的输出是[1,100]<br> 实际正确的输出应该是[]</p> 
+<p>对应的代码, 关键的两行是，<br> if(root == null) return pathSum;<br> 和最后那步Math.max(left, right),<br> 会把只有一个子节点的节点也当成是叶节点来处理， 这样就不对了.</p> 
+<p>当然， 这个代码也非常值得思考， 如何在递归的时候把值传下去然后处理</p> 
+<pre><code>public TreeNode sufficientSubset(TreeNode root, int limit) {
+     return getSum(root, limit, 0) &lt; limit ? null : root;
+ }
+ 
+ private int getSum(TreeNode root, int limit, int pathSum){
+     if(root == null) return pathSum;
+     
+     pathSum += root.val;
+     int left = getSum(root.left, limit, pathSum);
+     int right = getSum(root.right, limit, pathSum);
+     
+     if(left&lt;limit) root.left = null;
+     if(right &lt; limit) root.right = null;
+     
+     return Math.max(left, right);
+ }
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
