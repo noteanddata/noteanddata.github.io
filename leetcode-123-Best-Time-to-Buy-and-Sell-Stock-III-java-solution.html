@@ -75,6 +75,7 @@ var _hmt = _hmt || [];
  <li> <p>然后我们想如果做两次交易怎么获得最大利润？ 如果两次，一定会有一个分割点， 然后左边做一次，右边做一次。<br> 如果对左边和右边单独做， 那么可以用同样的做法。 但是如果要对每个分割点硬做，就是要O(N^2)</p> </li> 
  <li> <p>但是， 如果只考虑左边的话，我们只需要一次遍历就可以的。 就像leetcode 121一样，在遍历的过程中，可以得到最大值。<br> 那么，剩下的问题就是， 是不是有类似的方法可以计算右边的值？<br> 我们从左到右扫描的时候， 我们是保存目前遇到的最小值， 然后通过当前值减去最小值，可以得到最大利润。<br> 类似的，我们可以从右向左扫描，保存目前遇到的最大值，然后通过最大值减去当前值，就是右边的最大利润。</p> </li> 
  <li> <p>但是要求两个交易的最大值，我们需要一个数组保存这个中间结果， 然后得到最大值</p> </li> 
+ <li> <p>这个从左向右扫描和从右向左扫描的思路，和leetcode 238 Product of Array Except Self这个题目有那么一点类似<br> <a href="http://www.noteanddata.com/leetcode-238-Product-of-Array-Except-Self-java-solution-note.html">http://www.noteanddata.com/leetcode-238-Product-of-Array-Except-Self-java-solution-note.html</a></p> </li> 
 </ol> 
 <h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
 <pre><code>public int maxProfit(int[] prices) {
