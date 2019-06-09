@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 123 Best Time to Buy and Sell Stock III 解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 123 Best Time to Buy and Sell Stock III 解题笔记</h1>
+			</div>
+
+			<p><em>09 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-123-best-time-to-buy-and-sell-stock-iii" id="题目-leetcode-123-best-time-to-buy-and-sell-stock-iii">题目 leetcode 123 Best Time to Buy and Sell Stock III</a></h2> 
+<p>输入一个整数数组，里面每个元素表示某一天的股票价格，然后要求在最多做两次交易的情况下， 返回最大的利润。</p> 
+<h2><a href="#刷题感悟" id="刷题感悟">刷题感悟</a></h2> 
+<ol> 
+ <li>这个题目还有一个通用的dp做法， 下次再学习</li> 
+ <li>同样， 还可以把遍历的次数从3次改成两次， 数组也可以只用一个数组， 后序再改进</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li> <p>基本思路是从左到右扫一遍， 然后从右到左扫一遍, 然后把两个结果综合一下。 可惜这个题目之前刷过，思路也记得， 这次写的时候又写的一塌糊涂， 最近睡眠不足（又找借口了），脑子感觉很糊。</p> </li> 
+ <li> <p>首先先看下只做一次交易的思路 <a href="http://www.noteanddata.com/leetcode-121-Best-Time-to-Buy-and-Sell-Stock-java-solution-note.html">http://www.noteanddata.com/leetcode-121-Best-Time-to-Buy-and-Sell-Stock-java-solution-note.html</a>, 核心思路是在从左到右遍历的时候， 保存当前遇到过的最小值， 然后计算当前可能的最大利润。</p> </li> 
+ <li> <p>然后我们想如果做两次交易怎么获得最大利润？ 如果两次，一定会有一个分割点， 然后左边做一次，右边做一次。<br> 如果对左边和右边单独做， 那么可以用同样的做法。 但是如果要对每个分割点硬做，就是要O(N^2)</p> </li> 
+ <li> <p>但是， 如果只考虑左边的话，我们只需要一次遍历就可以的。 就像leetcode 121一样，在遍历的过程中，可以得到最大值。<br> 那么，剩下的问题就是， 是不是有类似的方法可以计算右边的值？<br> 我们从左到右扫描的时候， 我们是保存目前遇到的最小值， 然后通过当前值减去最小值，可以得到最大利润。<br> 类似的，我们可以从右向左扫描，保存目前遇到的最大值，然后通过最大值减去当前值，就是右边的最大利润。</p> </li> 
+ <li> <p>但是要求两个交易的最大值，我们需要一个数组保存这个中间结果， 然后得到最大值</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int maxProfit(int[] prices) {
+    if(prices.length &lt;= 1) return 0;
+    
+    int[] left = new int[prices.length];
+    int min = prices[0];
+    for(int i = 1; i &lt; prices.length; ++i) {
+        left[i] = Math.max(left[i-1], prices[i]-min);
+        min = Math.min(min, prices[i]);
+    }
+    
+    int[] right = new int[prices.length];
+    int max = prices[prices.length-1];
+    for(int i = prices.length-2; i &gt;= 0; --i) {
+        right[i] = Math.max(right[i+1], max - prices[i]);
+        max = Math.max(max, prices[i]);
+    }        
+    
+    int ret = 0;
+    for(int i = 0; i &lt; prices.length; ++i) {
+        int transaction2 = (i == prices.length-1) ? 0 : right[i+1];
+        ret = Math.max(ret, left[i] + transaction2);
+    }
+    return ret;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>由于错误的提交了三次， 所以这里有3个错误， 第一个错误是右边应该记录max而不是min，</p> 
+<pre><code>public int maxProfit(int[] prices) {
+    if(prices.length &lt;= 1) return 0;
+    
+    int[] left = new int[prices.length];
+    int min = prices[0];
+    for(int i = 1; i &lt; prices.length; ++i) {
+        left[i] = Math.max(0, prices[i]-min);
+        min = Math.min(min, prices[i]);
+    }
+    
+    int[] right = new int[prices.length];
+    min = prices[prices.length-1];
+    for(int i = prices.length-2; i &gt;= 0; --i) {
+        right[i] = Math.max(0, prices[i] - min);
+        min = Math.min(min, prices[i]);
+    }
+    int max = 0;
+    for(int i = 0; i &lt; prices.length-1; ++i) {
+        max = Math.max(max, left[i] + right[i+1]);
+    }
+    return max;
+}
+
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>这里还有两个bug， 比如这个case不能通过， 因为最后遍历的时候， 最后一个数没有取到</p> 
+<p>Input: [1,2,3,4,5]<br> Output: 3<br> Expected: 4</p> 
+<pre><code>public int maxProfit(int[] prices) {
+    if(prices.length &lt;= 1) return 0;
+    
+    int[] left = new int[prices.length];
+    int min = prices[0];
+    for(int i = 1; i &lt; prices.length; ++i) {
+        left[i] = Math.max(0, prices[i]-min);
+        min = Math.min(min, prices[i]);
+    }
+    
+    int[] right = new int[prices.length];
+    int max = prices[prices.length-1];
+    for(int i = prices.length-2; i &gt;= 0; --i) {
+        right[i] = Math.max(0, max - prices[i]);
+        max = Math.max(max, prices[i]);
+    }
+    int ret = 0;
+    for(int i = 0; i &lt; prices.length-1; ++i) {
+        ret = Math.max(ret, left[i] + right[i+1]);
+    }
+    return ret;
+}
+
+
+</code></pre> 
+<h2><a href="#错误代码3" id="错误代码3">错误代码3</a></h2> 
+<p>Input: [3,2,6,5,0,3]<br> Output: 6<br> Expected: 7</p> 
+<pre><code>public int maxProfit(int[] prices) {
+    if(prices.length &lt;= 1) return 0;
+    
+    int[] left = new int[prices.length];
+    int min = prices[0];
+    for(int i = 1; i &lt; prices.length; ++i) {
+        left[i] = Math.max(0, prices[i]-min);
+        min = Math.min(min, prices[i]);
+    }
+    
+    int[] right = new int[prices.length];
+    int max = prices[prices.length-1];
+    for(int i = prices.length-2; i &gt;= 0; --i) {
+        right[i] = Math.max(0, max - prices[i]);
+        max = Math.max(max, prices[i]);
+    }
+    int ret = 0;
+    for(int i = 0; i &lt; prices.length; ++i) {
+        int transaction2 = (i == prices.length-1) ? 0 : right[i+1];
+        ret = Math.max(ret, left[i] + transaction2);
+    }
+    return ret;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
