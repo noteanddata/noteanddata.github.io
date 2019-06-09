@@ -103,6 +103,32 @@ var _hmt = _hmt || [];
     return ret;
 }
 </code></pre> 
+<h2><a href="#java题解代码2" id="java题解代码2">java题解代码2</a></h2> 
+<p>把从左向右的两次循环合并成一次</p> 
+<pre><code>public int maxProfit(int[] prices) {
+    if(prices.length &lt;= 1) return 0;
+    
+    int[] right = new int[prices.length];
+    int max = prices[prices.length-1];
+    for(int i = prices.length-2; i &gt;= 0; --i) {
+        right[i] = Math.max(right[i+1], max-prices[i]);
+        max = Math.max(max, prices[i]);
+    }
+    
+    int ret = 0;
+    int min = prices[0];        
+    int leftprofit = 0;
+    for(int i = 0; i &lt; prices.length; ++i) {
+        int rightprofit = (i == prices.length-1) ? 0 : right[i+1];
+        leftprofit = Math.max(leftprofit, prices[i] - min);
+        ret = Math.max(ret, leftprofit + rightprofit);
+        
+        min = Math.min(min, prices[i]);
+    }
+    return ret;
+}
+
+</code></pre> 
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
 <p>O(N)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
