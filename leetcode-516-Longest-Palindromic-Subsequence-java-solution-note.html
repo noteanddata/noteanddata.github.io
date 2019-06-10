@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 516 Longest Palindromic Subsequence解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 516 Longest Palindromic Subsequence解题笔记</h1>
+			</div>
+
+			<p><em>09 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-516-longest-palindromic-subsequence" id="题目-leetcode-516-longest-palindromic-subsequence">题目 leetcode 516 Longest Palindromic Subsequence</a></h2> 
+<p>输入一个字符串， 问子序列里面最长的回文的长度是多少？</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li> <p>这里， 需要判断的是最长子序列， 这个和最长的子字符串有所不同<br> 关于最长子字符串的， 之前写过解题报告， 可以考虑重叠子问题，然后从dp入手， 也可以考虑双指针，从中间开始往两边走的双指针<br> <a href="http://www.noteanddata.com/leetcode-5-Longest-Palindromic-Substring-java-solution-note.html">http://www.noteanddata.com/leetcode-5-Longest-Palindromic-Substring-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-5-Longest-Palindromic-Substring-java-solution-note-2.html">http://www.noteanddata.com/leetcode-5-Longest-Palindromic-Substring-java-solution-note-2.html</a><br> <a href="http://www.noteanddata.com/leetcode-5-Longest-Palindromic-Substring-java-solution-note-3.html">http://www.noteanddata.com/leetcode-5-Longest-Palindromic-Substring-java-solution-note-3.html</a></p> </li> 
+ <li> <p>对于最长子序列， 双指针肯定就不能用了， 因为子序列是不连续的。 那么仍然考虑dp<br> dp[i][j] 有下面几种情况<br> dp[i][i] = 1<br> dp[i][j] = 2 + dp[i+1][j-1]; // if s.charAt(i) == s.charAt(j)<br> dp[i][j] = Math.max(dp[i][j-1], dp[i+1][j]); // else</p> </li> 
+ <li> <p>另外， 动态规划依赖于子问题已经求解， 所以， 这个时候我们通常可以对len进行循环 。<br> 当然， 也可以从后向前循环（其实本质上都是为了保证子问题已经求解， 所以其实也是把长度比较小的先求解)</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int longestPalindromeSubseq(String s) {
+    int[][] dp = new int[s.length()][s.length()];
+    // dp[i][j] is the max one from i to j (inclusive)
+    int len = 0;
+    while(len &lt; s.length()) {
+        for(int i = 0; i+len &lt; s.length(); ++i) {
+            int j = i + len;
+            if(j == i) {
+                dp[i][j] = 1;
+            }
+            else { 
+                if(s.charAt(i) == s.charAt(j)) {
+                    dp[i][j] = 2 + dp[i+1][j-1];
+                }
+                else {
+                    dp[i][j] = Math.max(dp[i][j-1], dp[i+1][j]);
+                }
+            }
+        }
+        len++;
+    }
+    return dp[0][s.length()-1];
+}
+
+</code></pre> 
+<p>或者是从后向前循环</p> 
+<pre><code>public int longestPalindromeSubseq1(String s) {
+    int[][] dp = new int[s.length()][s.length()];
+    
+    for (int i = s.length() - 1; i &gt;= 0; i--) {
+        dp[i][i] = 1;
+        for (int j = i+1; j &lt; s.length(); j++) {
+            if (s.charAt(i) == s.charAt(j)) {
+                dp[i][j] = dp[i+1][j-1] + 2;
+            } else {
+                dp[i][j] = Math.max(dp[i+1][j], dp[i][j-1]);
+            }
+        }
+    }
+    return dp[0][s.length()-1];
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N^2)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N^2)</p> 
+<h2><a href="#一些比较繁琐的代码" id="一些比较繁琐的代码">一些比较繁琐的代码</a></h2> 
+<p>这个是之前写的代码， 其实这里很多逻辑也是对的， 但是其实很多情况不需要单独处理，<br> – 比如j = i+1的情况， 和后面的并没有区别， dp[i+1][j-1]因为从来不会被赋值，所以是0；<br> – 然后dp[i+1][j]和dp[i][j-1]一定比dp[i-1][j-1]大, 所以也可以简化一点</p> 
+<pre><code>public int longestPalindromeSubseq(String s) {
+    int[][] dp = new int[s.length()][s.length()];
+    // dp[i][j] is the max one from i to j (inclusive)
+    int len = 0;
+    while(len &lt; s.length()) {
+        for(int i = 0; i &lt; s.length(); ++i) {
+            int j = i + len;
+            if(j &gt;= s.length()) {
+                continue;
+            }
+            if(j == i) {
+                dp[i][j] = 1;
+            }
+            else if(j == i+1) {
+                if(s.charAt(j) == s.charAt(i)) {
+                    dp[i][j] = 2;
+                }    
+                else {
+                    dp[i][j] = 1;
+                }
+            }
+            else { // j &gt;= i+2
+                if(s.charAt(i) == s.charAt(j)) {
+                    dp[i][j] = 2 + dp[i+1][j-1];
+                    dp[i][j] = Math.max(dp[i][j], dp[i+1][j]);
+                    dp[i][j] = Math.max(dp[i][j], dp[i][j-1]);
+                }
+                else {
+                    dp[i][j] = dp[i+1][j-1];
+                    dp[i][j] = Math.max(dp[i][j], dp[i+1][j]);
+                    dp[i][j] = Math.max(dp[i][j], dp[i][j-1]);
+                }
+            }
+        }
+        len++;
+    }
+    return dp[0][s.length()-1];
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
