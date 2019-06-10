@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 69 Sqrt(x)解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 69 Sqrt(x)解题笔记</h1>
+			</div>
+
+			<p><em>09 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-69-sqrtx" id="题目-leetcode-69-sqrtx">题目 leetcode 69 Sqrt(x)</a></h2> 
+<p>求一个数的平方根</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>直接调用库函数当然是毫无意义， 数学上可以用牛顿法， 可惜当年学的数值分析已经全部忘记了</li> 
+ <li>比较不会忘记的方法是二分</li> 
+ <li>设置left和right， 然后每次计算mid*mid, 然后不断二分</li> 
+ <li>这里有个注意是我们需要的结果是向下取整的， 这里如果直接用整数比较麻烦， 向上和向下会容易搞错，<br> 改成用double来表示left/right， 然后对结果转换成long， 这样的话就可以计算到比较精确的double，<br> 然后结果向下取整就好</li> 
+ <li> <p>这个题目有一些注意的地方和边界条件</p> </li> 
+</ol> 
+<ul> 
+ <li>符合条件的结果要正确的更新</li> 
+ <li>0和最大值溢出需要考虑一下</li> 
+</ul> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int mySqrt(int x) {
+    
+    double left = 0.0, right = (double)x;
+    while(left &lt; right) {
+        double mid = left + (right-left)/2.0;
+        long t = (long)(mid * mid);
+        if(t == (long)x) {
+            left = (int)mid;
+            break;
+        }
+        else if(t &gt; x) {
+            right = mid;
+        }
+        else {
+            left = mid;
+        }
+    }
+    return (int)left;
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>这里有3个错误， 第一个错误是t==x的时候，需要修正一下left, 否则结果不对</p> 
+<pre><code>public int mySqrt(int x) {
+    double left = 1.0, right = (double)x;
+    while(left &lt; right) {
+        double mid = left + (right-left)/2.0;
+        int t = (int)(mid * mid);
+        if(t == x) {
+            break;
+        }
+        else if(t &gt; x) {
+            right = mid;
+        }
+        else {
+            left = mid;
+        }
+    }
+    return (int)left;
+}
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>输入可能是从0开始的</p> 
+<pre><code>public int mySqrt(int x) {
+    double left = 1.0, right = (double)x;
+    while(left &lt; right) {
+        double mid = left + (right-left)/2.0;
+        int t = (int)(mid * mid);
+        if(t == x) {
+            left = (int)mid;
+            break;
+        }
+        else if(t &gt; x) {
+            right = mid;
+        }
+        else {
+            left = mid;
+        }
+    }
+    return (int)left;
+}
+
+
+</code></pre> 
+<h2><a href="#错误代码3" id="错误代码3">错误代码3</a></h2> 
+<p>这里修正了前面两个错误， 但是对于溢出的问题还是没有解决</p> 
+<pre><code>public int mySqrt(int x) {
+    
+    double left = 0.0, right = (double)x;
+    while(left &lt; right) {
+        double mid = left + (right-left)/2.0;
+        int t = (int)(mid * mid);
+        if(t == x) {
+            left = (int)mid;
+            break;
+        }
+        else if(t &gt; x) {
+            right = mid;
+        }
+        else {
+            left = mid;
+        }
+    }
+    return (int)left;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
