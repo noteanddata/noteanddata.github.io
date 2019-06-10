@@ -189,6 +189,7 @@ left=0.99993896484375, right=1.0, mid=0.999969482421875
 
 </code></pre> 
 <h2><a href="#手动控制精度的代码" id="手动控制精度的代码">手动控制精度的代码</a></h2> 
+<p>这里感觉重点是要取right， 这样就可以避免向下取0的问题。<br> 同时， 因为是double，已经迭代到一个比较高的精度了， 所以取了right， 然后向下取整， 那就没有问题</p> 
 <pre><code>public int mySqrt(int x) {
 
     double left = 0.0, right = (double)x;
