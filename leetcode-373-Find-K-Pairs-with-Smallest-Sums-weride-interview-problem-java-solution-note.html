@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>WeRide面试题-leetcode 373 Find K Pairs with Smallest Sums</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>WeRide面试题-leetcode 373 Find K Pairs with Smallest Sums</h1>
+			</div>
+
+			<p><em>14 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-373-find-k-pairs-with-smallest-sums" id="题目-leetcode-373-find-k-pairs-with-smallest-sums">题目-leetcode 373 Find K Pairs with Smallest Sums</a></h2> 
+<p>输入两个已经排序的整数数组，然后从每个数组里面取一个数成为一个pair， 然后取这个pair的和最小的k个pair</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>第一个思路就数遍历两个数组，然后把所有pair里面取和最小的k个， 这时候可以用一个PriorityQueue取最小的k个,<br> 那么就需要设置一个最大堆， 每次剔除最大的那个元素</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; kSmallestPairs(int[] nums1, int[] nums2, int k) {
+    PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;&gt;(new Comparator&lt;int[]&gt;() {
+        public int compare(int[] a, int[] b) {
+            return b[0] + b[1] - a[0] - a[1];
+        }
+    });
+    
+    for(int i = 0; i &lt; nums1.length; ++i) {
+        for(int j = 0; j &lt; nums2.length; ++j) {
+            
+            pq.add(new int[] {nums1[i], nums2[j]});
+            if(pq.size() &gt; k) {
+                pq.poll();
+            }
+        }
+    }
+    LinkedList&lt;List&lt;Integer&gt;&gt; all = new LinkedList&lt;&gt;();
+    while(pq.size() &gt; 0) {
+        int[] item = pq.poll();
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        list.add(item[0]);
+        list.add(item[1]);
+        all.addFirst(list);
+    }
+    return all;
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>两层循环遍历， 然后每次需要lgK的复杂度添加一个数, O(M<em>N</em>lgK)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(K)</p> 
+<h2><a href="#java题解2" id="java题解2">java题解2</a></h2> 
+<p>对于里面一层循环，如果j &gt;= k， 那就不需要再继续向后了， 因为对于i固定的情况下，后面的数都比nums2[k]大，<br> 所以循环可以提前终止. 当然， 这个对于复杂度来说， 最差情况下仍然没有变化</p> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; kSmallestPairs(int[] nums1, int[] nums2, int k) {
+    PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;&gt;(new Comparator&lt;int[]&gt;() {
+        public int compare(int[] a, int[] b) {
+            return b[0] + b[1] - a[0] - a[1];
+        }
+    });
+    
+    for(int i = 0; i &lt; nums1.length; ++i) {
+        for(int j = 0; j &lt; nums2.length; ++j) {
+            if(j &gt;= k) {
+                break;
+            }
+            
+            pq.add(new int[] {nums1[i], nums2[j]});
+            if(pq.size() &gt; k) {
+                pq.poll();
+            }
+        }
+    }
+    LinkedList&lt;List&lt;Integer&gt;&gt; all = new LinkedList&lt;&gt;();
+    while(pq.size() &gt; 0) {
+        int[] item = pq.poll();
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        list.add(item[0]);
+        list.add(item[1]);
+        all.addFirst(list);
+    }
+    return all;
+}
+
+
+</code></pre> 
+<h2><a href="#java题解3" id="java题解3">java题解3</a></h2> 
+<p>前面两个做法，基本上对两个数组已经排序的特征没有太好利用,<br> 下面这个解法比较巧妙, 假设我们有两个数组[1,3,5] 和[2,4,6]<br> 那么，所有的pair就是一个完整的矩阵<br> 1 3 5<br> 2 3 5 7<br> 4 5 7 9<br> 6 7 9 11</p> 
+<p>这时候， 矩阵的每一行都是一个已经排序好的list， 那这个问题就转换成合并k个已经排序的list了。<br> <a href="http://www.noteanddata.com/leetcode-23-Merge-k-Sorted-Lists-facebook-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-23-Merge-k-Sorted-Lists-facebook-interview-problem-java-solution-note.html</a></p> 
+<p>也就是用一个prirityqueue取每一行的第一个， 然后每次弹出一个最小值的时候， 只取这行的下一个数放进来就可以， 后面不需要再处理了</p> 
+<p>所以时间复杂度降低到O(K*lgK)</p> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; kSmallestPairs(int[] nums1, int[] nums2, int k) {
+    if(nums1.length == 0 || nums2.length == 0) return new ArrayList&lt;&gt;();
+    
+    PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;&gt;(new Comparator&lt;int[]&gt;() {
+        public int compare(int[] a, int[] b) {
+            return nums1[a[0]] + nums2[a[1]] - nums1[b[0]] - nums2[b[1]];
+        }
+    });
+    
+    for(int j = 0; j &lt; nums2.length; ++j) {
+        pq.add(new int[]{0, j});
+    }
+    
+    List&lt;List&lt;Integer&gt;&gt; all = new ArrayList&lt;&gt;();
+    while(k &gt; 0 &amp;&amp; pq.size() &gt; 0) {
+        int[] item = pq.poll();
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        list.add(nums1[item[0]]);
+        list.add(nums2[item[1]]);
+        all.add(list);
+        
+        if(item[0]+1 &lt; nums1.length) {
+            pq.add(new int[]{item[0]+1, item[1]});
+        }
+        k--;
+    }
+    
+    return all;
+}
+</code></pre> 
+<h2><a href="#java题解代码4" id="java题解代码4">java题解代码4</a></h2> 
+<ol> 
+ <li> <p>下面这个思路更清奇， 第一次干脆只取第一个， 然后每次弹出一个最小值以后， 默认取右边这个；<br> 只有当是第一列，并且行还没有到最后的时候， 再取下一行的元素.</p> </li> 
+ <li> <p>这里，每次取右边这个，主要是利用了每行是排序的这个特点。</p> </li> 
+ <li>对于什么时候取下一行， 因为我们每列也是排序的， 所以， 我们可以再第一列的一个元素弹出以后,取下一行。</li> 
+ <li>如果只看这个解法， 这里逻辑可能有点奇怪， 为什么只需要再第一列的时候取下一行？会不会少取了数据？<br> 但是如果看了下面的解法， 那这个逻辑就好理解了。 因为前面的做法是先把第一列都放进去， 也就是每一行取第一个，<br> 然后后面只需要取当前行的下一个就可以了。<br> 那么， 现在这个解法和前面的区别只是， 开始的时候没有把第一列都放进去。 只是第一列每次弹出一个一行一行，<br> 再放下一行的这个元素。</li> 
+</ol> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; kSmallestPairs(int[] nums1, int[] nums2, int k) {
+    if(nums1.length == 0 || nums2.length == 0) return new ArrayList&lt;&gt;();
+    
+    PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;&gt;(new Comparator&lt;int[]&gt;() {
+        public int compare(int[] a, int[] b) {
+            return nums1[a[0]] + nums2[a[1]] - nums1[b[0]] - nums2[b[1]];
+        }
+    });
+    pq.add(new int[] {0, 0});
+    
+    List&lt;List&lt;Integer&gt;&gt; all = new ArrayList&lt;&gt;();
+    while(k &gt; 0 &amp;&amp; pq.size() &gt; 0) {
+        int[] item = pq.poll();
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        list.add(nums1[item[0]]);
+        list.add(nums2[item[1]]);
+        all.add(list);
+        
+        if(item[1]+1 &lt; nums2.length) {
+            pq.add(new int[]{item[0], item[1]+1});
+        }
+        if(item[1] == 0 &amp;&amp; item[0] + 1 &lt; nums1.length) {
+            pq.add(new int[]{item[0]+1, item[1]});
+        }
+        k--;
+    }
+    
+    return all;
+}
+
+</code></pre> 
+<h2><a href="#错误代码" id="错误代码">错误代码</a></h2> 
+<p>如果每次都取两个方向， 那么问题就是会重复放,<br> 比如前面放了[1,0]和[0,1], 那么[1,1]会被放两次</p> 
+<pre><code>public List&lt;List&lt;Integer&gt;&gt; kSmallestPairs(int[] nums1, int[] nums2, int k) {
+    if(nums1.length == 0 || nums2.length == 0) return new ArrayList&lt;&gt;();
+    
+    PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;&gt;(new Comparator&lt;int[]&gt;() {
+        public int compare(int[] a, int[] b) {
+            return nums1[a[0]] + nums2[a[1]] - nums1[b[0]] - nums2[b[1]];
+        }
+    });
+    pq.add(new int[] {0, 0});
+    
+    List&lt;List&lt;Integer&gt;&gt; all = new ArrayList&lt;&gt;();
+    while(k &gt; 0 &amp;&amp; pq.size() &gt; 0) {
+        int[] item = pq.poll();
+        List&lt;Integer&gt; list = new ArrayList&lt;&gt;();
+        list.add(nums1[item[0]]);
+        list.add(nums2[item[1]]);
+        all.add(list);
+        
+        if(item[1]+1 &lt; nums2.length) {
+            pq.add(new int[]{item[0], item[1]+1});
+        }
+        if(item[0]+1 &lt; nums1.length) {
+            pq.add(new int[]{item[0]+1, item[1]});
+        }
+        k--;
+    }
+    
+    return all;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
