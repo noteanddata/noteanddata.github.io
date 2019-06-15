@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode Kth Smallest Element in a Sorted Matrix</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode Kth Smallest Element in a Sorted Matrix</h1>
+			</div>
+
+			<p><em>14 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-kth-smallest-element-in-a-sorted-matrix" id="题目-leetcode-kth-smallest-element-in-a-sorted-matrix">题目 - leetcode Kth Smallest Element in a Sorted Matrix</a></h2> 
+<p>输入一个矩阵， 其中每一行和每一列都是已经排序的， 取第k大的元素</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>最小的元素在[0,0], 然后每次下一个的时候，只需要取右边和下面的元素就可以， 为了避免重复，可以用一个visited[][]矩阵来表示已经取过的元素</li> 
+ <li>然后用一个priorityqueue就可以找到第k个元素</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int kthSmallest(int[][] matrix, int k) {
+    PriorityQueue&lt;Node&gt; pq = new PriorityQueue&lt;Node&gt;();
+    boolean[][] visited = new boolean[matrix.length][matrix[0].length];
+    
+    pq.add(new Node(new int[]{0,0}, matrix[0][0]));
+    visited[0][0] = true;
+    
+    int count = 1;
+    while(count &lt; k) {
+        Node node = pq.poll();
+        
+        List&lt;int[]&gt; list = getNext(node.pos, matrix.length, visited);
+        for(int[] pos: list) {
+            pq.add(new Node(pos, matrix[pos[0]][pos[1]]));
+            visited[pos[0]][pos[1]] = true;
+        }
+        count++;
+    }
+    return pq.peek().val;
+}
+
+static class Node implements Comparable&lt;Node&gt;{
+    int[] pos;
+    int val;
+    public Node(int[] pos, int val) {
+        this.pos = pos;
+        this.val = val;
+    }
+    
+    public int compareTo(Node o) {
+        return val-o.val;
+    }
+}
+
+List&lt;int[]&gt; getNext(int[] pos, int n, boolean[][] visited) {
+    List&lt;int[]&gt; list = new ArrayList&lt;&gt;();
+    int x = pos[0], y = pos[1];
+    if(x+1 &lt; n &amp;&amp; !visited[x+1][y]) {
+        list.add(new int[]{x+1, y});
+    }
+    if(y+1 &lt; n &amp;&amp; !visited[x][y+1]) {
+        list.add(new int[]{x, y+1});
+    }
+    return list;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(K*lgK)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M*N)</p> 
+<h2><a href="#java题解代码2" id="java题解代码2">java题解代码2</a></h2> 
+<p>当然， 这个题目也可以把每一行看成是一个已经排序的list， 然后我们要merge n个已经排序的list，取第k个元素，<br> 所以，我们可以先把每一行的第一个元素放到PriorityQueue里面， 然后每次弹出一个以后，就把这行的下一个放到pq里面</p> 
+<p>整个思路和这两个题目是类似的， 这样， 只需要O(K)的空间<br> <a href="http://www.noteanddata.com/leetcode-373-Find-K-Pairs-with-Smallest-Sums-weride-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-373-Find-K-Pairs-with-Smallest-Sums-weride-interview-problem-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-23-Merge-k-Sorted-Lists-facebook-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-23-Merge-k-Sorted-Lists-facebook-interview-problem-java-solution-note.html</a></p> 
+<pre><code>public int kthSmallest(int[][] matrix, int k) {
+    PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;int[]&gt;(new Comparator&lt;int[]&gt;() {
+        public int compare(int[] a, int[] b) {
+            return matrix[a[0]][a[1]] - matrix[b[0]][b[1]];
+        }
+    });
+    for(int i = 0; i &lt; matrix.length; ++i) {
+        pq.add(new int[]{i, 0});
+    }
+    
+    while(k &gt; 1) {
+        int[] pos = pq.poll();
+        if(pos[1] + 1 &lt; matrix[0].length) {
+            pq.add(new int[]{pos[0], pos[1]+1});
+        }
+        k--;
+    }
+    return matrix[pq.peek()[0]][pq.peek()[1]];
+}
+
+
+</code></pre> 
+<h2><a href="#java题解代码3" id="java题解代码3">java题解代码3</a></h2> 
+<p>当然， 由于这个题目其实和373这个是一样的，甚至比373还要简单， 因为373还需要自己思考然后把这个二维矩阵画出来， 但是这个已经直接是矩阵了， 由于每行每列都是排序的，所以可以开始只放[0,0], 然后根据情况选择放一个还是两个<br> <a href="http://www.noteanddata.com/leetcode-373-Find-K-Pairs-with-Smallest-Sums-weride-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-373-Find-K-Pairs-with-Smallest-Sums-weride-interview-problem-java-solution-note.html</a></p> 
+<pre><code>public int kthSmallest(int[][] matrix, int k) {
+    PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;int[]&gt;(new Comparator&lt;int[]&gt;() {
+        public int compare(int[] a, int[] b) {
+            return matrix[a[0]][a[1]] - matrix[b[0]][b[1]];    
+        }
+    });
+    pq.add(new int[]{0,0});
+    while(k &gt; 1) {
+        int[] pos = pq.poll();
+        
+        if(pos[1]+1 &lt; matrix[0].length) {
+            pq.add(new int[]{pos[0], pos[1]+1});
+        }
+        if(pos[1] == 0 &amp;&amp; pos[0]+1 &lt; matrix.length) {
+            pq.add(new int[]{pos[0]+1, pos[1]});
+        }
+        k--;
+    }
+    return matrix[pq.peek()[0]][pq.peek()[1]];
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
