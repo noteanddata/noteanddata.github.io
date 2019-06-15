@@ -121,7 +121,105 @@ class Solution {
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
 <p>O(N)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>O(lgN)</p></p>
+<p>O(lgN)</p> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>这个代码有两个错误， 第一个是对输入是空的没有进行判断， 导致tail可能是null；</p> 
+<pre><code>/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public Node left;
+    public Node right;
+
+    public Node() {}
+
+    public Node(int _val,Node _left,Node _right) {
+        val = _val;
+        left = _left;
+        right = _right;
+    }
+};
+*/
+class Solution {
+    private Node head;
+    private Node tail;
+    private Node prev;
+    public Node treeToDoublyList(Node root) {
+        tail = head = prev = null;
+        dfs(root);
+        tail.right = head;
+        head.left = tail;
+        
+        return head;
+    }
+    void dfs(Node node) {
+        if(null == node) return;
+        dfs(node.left);
+        
+        Node cur = new Node(node.val);
+        if(null == head) {
+            head = cur;
+        }
+        if(null != prev) {
+            prev.right = cur;
+            cur.left = prev;
+        }
+        tail = cur;
+        dfs(node.right);
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>修正了前面的错误以后， 还有一个错误是没有对prev进行更新</p> 
+<pre><code>/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public Node left;
+    public Node right;
+
+    public Node() {}
+
+    public Node(int _val,Node _left,Node _right) {
+        val = _val;
+        left = _left;
+        right = _right;
+    }
+};
+*/
+class Solution {
+    private Node head;
+    private Node tail;
+    private Node prev;
+    public Node treeToDoublyList(Node root) {
+        if(null == root) return null;
+        
+        tail = head = prev = null;
+        dfs(root);
+        tail.right = head;
+        head.left = tail;
+        
+        return head;
+    }
+    void dfs(Node node) {
+        if(null == node) return;
+        dfs(node.left);
+        
+        Node cur = new Node(node.val);
+        if(null == head) {
+            head = cur;
+        }
+        if(null != prev) {
+            prev.right = cur;
+            cur.left = prev;
+        }
+        tail = cur;
+        dfs(node.right);
+    }
+}
+
+</code></pre></p>
 	</div>		
 
 <div class="col-sm-4">
