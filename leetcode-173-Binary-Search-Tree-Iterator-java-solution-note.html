@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 173 Binary Search Tree Iterator题二分解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 173 Binary Search Tree Iterator题二分解题笔记</h1>
+			</div>
+
+			<p><em>14 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-173-binary-search-tree-iterator" id="题目-leetcode-173-binary-search-tree-iterator">题目 - leetcode 173 Binary Search Tree Iterator</a></h2> 
+<ol> 
+ <li>输入一个binary search tree的根节点， 构造一个Iterator， 有hasNext()和next()函数</li> 
+ <li>要求时间复杂度平均是O(1), 空间复杂度是O(lgN)</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>如果直接在构造函数的时候把这个binary search tree展开成一个数组或者list， 肯定不是题目的要求， 而且这样空间复杂度是O(N), 也不符合题目的要求</li> 
+ <li>对于一个binary search tree的任何一个节点来说，左边的节点一定比这个节点小，右边的节点一定比这个节点大</li> 
+ <li>那么，遇到任何一个节点，我们都可以一直想左遍历，把左边的节点都放入的数据结构， 这样，next的时候直接取最后放入节点就好</li> 
+ <li>每次取出一个节点以后，如果存在右边的节点， 那么右边的节点更大，这个右边的节点可能是next节点，可以先放入数据结构。<br> 同样， 因为每次我们放入一个节点的时候，都需要遍历所有的左子树，所以继续前面的循环放入左节点</li> 
+ <li>由于这个数据结构需要先入后出， 所以用一个stack</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class BSTIterator {
+    private Stack&lt;TreeNode&gt; stack;
+    public BSTIterator(TreeNode root) {
+        this.stack = new Stack&lt;&gt;();
+        
+        TreeNode node = root;
+        while(null != node) {
+            stack.push(node);
+            node = node.left;
+        }
+    }
+    
+    /** @return the next smallest number */
+    public int next() {
+        if(!hasNext()) {
+            throw new RuntimeException();
+        }
+        TreeNode node = stack.pop();
+        int val = node.val;
+        node = node.right;
+        
+        while(null != node) {
+            stack.push(node);
+            node = node.left;
+        }
+        
+        
+        return val;
+    }
+    
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return stack.size() &gt; 0;
+    }
+}
+
+/**
+ * Your BSTIterator object will be instantiated and called as such:
+ * BSTIterator obj = new BSTIterator(root);
+ * int param_1 = obj.next();
+ * boolean param_2 = obj.hasNext();
+ */
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>平均是O(1), 因为平均下来每个节点push一次，pop一次</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN), 其中N是节点的个数</p> 
+<h2><a href="#之前写的一个代码" id="之前写的一个代码">之前写的一个代码</a></h2> 
+<p>基本类似，可能略简洁一点</p> 
+<pre><code>/**
+ * Definition for binary tree
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+
+public class BSTIterator {
+
+    
+    private Stack&lt;TreeNode&gt; stack;
+
+
+    public BSTIterator(TreeNode root) {
+
+        this.stack = new Stack&lt;&gt;();
+        addToStack(root);
+    }
+
+    private void addToStack(TreeNode node) {
+        while(null != node) {
+            stack.push(node);
+            node = node.left;
+        }
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return stack.size() &gt; 0;
+    }
+
+    /** @return the next smallest number */
+      public int next() {
+        TreeNode top = stack.pop();
+        addToStack(top.right);
+        return top.val;
+    }
+}
+
+/**
+ * Your BSTIterator will be called like this:
+ * BSTIterator i = new BSTIterator(root);
+ * while (i.hasNext()) v[f()] = i.next();
+ */
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
