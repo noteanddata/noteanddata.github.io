@@ -182,6 +182,61 @@ public class BSTIterator {
  * while (i.hasNext()) v[f()] = i.next();
  */
 
+</code></pre> 
+<h2><a href="#错误的代码" id="错误的代码">错误的代码</a></h2> 
+<p>画蛇添足了， 不需要对parent再处理， 每次处理当前节点就可以了</p> 
+<pre><code>/**
+ * Definition for binary tree
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+
+public class BSTIterator {
+
+    
+    private Stack&lt;TreeNode&gt; stack;
+
+
+    public BSTIterator(TreeNode root) {
+
+        this.stack = new Stack&lt;&gt;();
+        addToStack(root);
+    }
+
+    private void addToStack(TreeNode node) {
+        while(null != node) {
+            stack.push(node);
+            node = node.left;
+        }
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return stack.size() &gt; 0;
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        TreeNode top = stack.pop();
+        if(stack.size() &gt; 0) {
+            TreeNode parent = stack.pop();
+            addToStack(parent.right);
+            stack.push(parent);
+        }
+        return top.val;
+    }
+}
+
+/**
+ * Your BSTIterator will be called like this:
+ * BSTIterator i = new BSTIterator(root);
+ * while (i.hasNext()) v[f()] = i.next();
+ */
+
 </code></pre></p>
 	</div>		
 
