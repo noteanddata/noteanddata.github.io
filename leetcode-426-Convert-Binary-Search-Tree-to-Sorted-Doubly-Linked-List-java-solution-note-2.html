@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 426 Convert Binary Search Tree to Sorted Doubly Linked List解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 426 Convert Binary Search Tree to Sorted Doubly Linked List解题笔记2</h1>
+			</div>
+
+			<p><em>14 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-426-convert-binary-search-tree-to-sorted-doubly-linked-list" id="题目-leetcode-426-convert-binary-search-tree-to-sorted-doubly-linked-list">题目 – leetcode 426 Convert Binary Search Tree to Sorted Doubly Linked List</a></h2> 
+<p>输入一个二叉搜索树， 转换成一个双向链表</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>基本思路是in order 遍历， 这个题目前两天写过， 具体在<a href="http://www.noteanddata.com/leetcode-426-Convert-Binary-Search-Tree-to-Sorted-Doubly-Linked-List-java-solution-note.html">http://www.noteanddata.com/leetcode-426-Convert-Binary-Search-Tree-to-Sorted-Doubly-Linked-List-java-solution-note.html</a></li> 
+ <li>今天再写一次，感觉代码还可以略简洁一点, tail其实不需要， prev就是tail</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public Node left;
+    public Node right;
+
+    public Node() {}
+
+    public Node(int _val,Node _left,Node _right) {
+        val = _val;
+        left = _left;
+        right = _right;
+    }
+};
+*/
+class Solution {
+    private Node head, prev;
+    public Node treeToDoublyList(Node root) {
+        if(null == root) return null;
+        head = prev = null;
+        dfs(root);
+        prev.right = head;
+        head.left = prev;
+        return head;
+    }
+    private void dfs(Node node) {
+        if(null == node) return;
+        dfs(node.left);
+        Node cur = new Node(node.val, null, null);
+        if(null == head) {
+            head = cur;
+        }
+        if(null != prev) {
+            prev.right = cur;
+            cur.left = prev;
+        }
+        prev = cur;
+        dfs(node.right);
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h2><a href="#java题解代码2" id="java题解代码2">java题解代码2</a></h2> 
+<p>前面用了全局的变量, 其中head是必须的， prev其实可以通过参数传入</p> 
+<pre><code>/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public Node left;
+    public Node right;
+
+    public Node() {}
+
+    public Node(int _val,Node _left,Node _right) {
+        val = _val;
+        left = _left;
+        right = _right;
+    }
+};
+*/
+class Solution {
+    private Node head;
+    public Node treeToDoublyList(Node root) {
+        if(null == root) return null;
+        Node last = dfs(root, null);
+        
+        last.right = head;
+        head.left = last;
+        return head;
+    }
+    private Node dfs(Node node, Node prev) {
+        if(null == node) return null;
+        
+        Node leftRet = dfs(node.left, prev);    
+        if(null != leftRet) {
+            prev = leftRet;
+        }
+        
+        Node cur = new Node(node.val, null, null);
+        if(null != prev) {
+            cur.left = prev;
+            prev.right = cur;            
+        }
+        
+        if(null == head) {
+            head = cur;
+        }
+        
+        Node rightRet = dfs(node.right, cur);
+        return (null != rightRet) ? rightRet : cur;
+    }
+}
+
+</code></pre> 
+<h2><a href="#java题解代码3" id="java题解代码3">java题解代码3</a></h2> 
+<p>前面对于null的处理，可以更加简洁一点， 如果最开始null判断的时候， 直接return prev的话，中间一些地方可以更加简洁一点</p> 
+<pre><code>/*
+// Definition for a Node.
+class Node {
+    public int val;
+    public Node left;
+    public Node right;
+
+    public Node() {}
+
+    public Node(int _val,Node _left,Node _right) {
+        val = _val;
+        left = _left;
+        right = _right;
+    }
+};
+*/
+class Solution {
+    private Node head;
+    public Node treeToDoublyList(Node root) {
+        if(null == root) return null;
+        Node last = dfs(root, null);
+        
+        last.right = head;
+        head.left = last;
+        return head;
+    }
+    private Node dfs(Node node, Node prev) {
+        if(null == node) return prev;
+        
+        prev = dfs(node.left, prev);    
+        
+        Node cur = new Node(node.val, null, null);
+        if(null != prev) {
+            cur.left = prev;
+            prev.right = cur;            
+        }
+        
+        if(null == head) {
+            head = cur;
+        }
+        
+        Node rightRet = dfs(node.right, cur);
+        return rightRet;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
