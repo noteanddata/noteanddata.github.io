@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 104 Maximum Depth of Binary Tree解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 104 Maximum Depth of Binary Tree解题笔记</h1>
+			</div>
+
+			<p><em>15 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-104-maximum-depth-of-binary-tree" id="题目-leetcode-104-maximum-depth-of-binary-tree">题目 leetcode 104 Maximum Depth of Binary Tree</a></h2> 
+<p>一个二叉树的最大深度</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>这个题目递归版本非常简单， bfs也不难， 但是迭代的dfs版本也可以练习一下</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public int maxDepth(TreeNode root) {
+        if(null == root) return 0;
+        int left = maxDepth(root.left);
+        int right = maxDepth(root.right);
+        return 1 + Math.max(left, right);
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h2><a href="#迭代版本的代码" id="迭代版本的代码">迭代版本的代码</a></h2> 
+<p>整个代码和二叉树的inorder遍历是一样的, 核心逻辑是遇到一个新节点就循环压栈node.left, 弹出一个节点就把新节点设置成node.right<br> <a href="http://www.noteanddata.com/leetcode-94-Binary-Tree-Inorder-Traversal-java-solution-note.html">http://www.noteanddata.com/leetcode-94-Binary-Tree-Inorder-Traversal-java-solution-note.html</a></p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    static class Item {
+        TreeNode node;
+        int depth;
+        public Item(TreeNode node, int depth) {
+            this.node = node;
+            this.depth = depth;
+        }
+    }
+    public int maxDepth(TreeNode root) {
+        if(null == root) return 0;
+        
+        Stack&lt;Item&gt; stack = new Stack&lt;&gt;();
+        int max = 0;
+        
+        Item cur = new Item(root, 1);
+        while(null != cur || stack.size() &gt; 0) {
+            while(null != cur) {
+                stack.push(cur);
+                if(null != cur.node.left) {
+                    cur = new Item(cur.node.left, cur.depth+1);
+                }
+                else {
+                    cur = null;
+                }
+            }
+            
+            cur = stack.pop();
+            max = Math.max(max, cur.depth);
+            
+            if(null != cur.node.right) {
+                cur = new Item(cur.node.right, cur.depth+1);
+            }
+            else {
+                cur = null;
+            }
+        }
+
+        
+        return max;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h2><a href="#bfs-版本的代码" id="bfs-版本的代码">BFS 版本的代码</a></h2> 
+<p>level order BFS, 对每一层进行遍历</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public int maxDepth(TreeNode root) {
+        int max = 0;
+        Queue&lt;TreeNode&gt; queue = new LinkedList&lt;&gt;();
+        if(null != root) {
+            queue.add(root);
+        }
+        while(queue.size() &gt; 0) {
+            Queue&lt;TreeNode&gt; nextQueue = new LinkedList&lt;&gt;();
+            while(queue.size() &gt; 0) {
+                TreeNode node = queue.poll();
+                if(null != node.left) {
+                    nextQueue.add(node.left);
+                }
+                if(null != node.right) {
+                    nextQueue.add(node.right);
+                }
+            }
+            max++;
+            queue = nextQueue;
+        }
+        
+        return max;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>queue最大的长度是N/2, O(N/2)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
