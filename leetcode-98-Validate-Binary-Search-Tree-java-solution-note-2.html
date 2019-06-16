@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 98 Validate Binary Search Tree解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 98 Validate Binary Search Tree解题笔记2</h1>
+			</div>
+
+			<p><em>15 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-98-validate-binary-search-tree" id="题目-leetcode-98-validate-binary-search-tree">题目 leetcode 98 Validate Binary Search Tree</a></h2> 
+<p>输入一个树， 验证是否是binary search tree</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>之前写过一次， 今天再写了一下, 递归的方法比较简单， 但是还要练习的是用stack的方法</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    private TreeNode prev;
+    public boolean isValidBST(TreeNode root) {
+        prev = null;
+        return dfs(root);
+    }
+    
+    boolean dfs(TreeNode node) {
+        if(null == node) return true;
+        
+        if(!dfs(node.left)) return false;
+        if(null != prev &amp;&amp; node.val &lt;= prev.val) return false;
+        prev = node;
+        
+        return dfs(node.right);
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN)</p> 
+<h2><a href="#迭代版本java代码" id="迭代版本java代码">迭代版本java代码</a></h2> 
+<p>代码结构如下， 我写了好一会儿都没有写出来, 还是看别人的代码的.<br> 1. 遇到一个新节点的时候，就要反复循环把当前节点的所有左节点压栈</p> 
+<pre><code>while(null != cur) {
+    stack.push(cur);
+    cur = cur.left;
+}
+
+</code></pre> 
+<ol> 
+ <li> <p>弹出一个节点的时候，就要考虑当前节点的右节点<br> cur = cur.right</p> </li> 
+ <li> <p>因为第一步不能对栈里面的元素再操作，所以需要一个变量表示每次遇到的新节点</p> </li> 
+</ol> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public boolean isValidBST(TreeNode root) {
+        
+        Stack&lt;TreeNode&gt; stack = new Stack&lt;&gt;();
+        TreeNode cur = root;
+        
+        TreeNode prev = null;
+        while(null != cur || stack.size() &gt; 0) {
+            while(null != cur) {
+                stack.push(cur);
+                cur = cur.left;
+            }
+            cur = stack.pop();
+            if(null != prev &amp;&amp; cur.val &lt;= prev.val) {
+                return false;
+            }
+            prev = cur;
+            cur = cur.right;
+        }
+        return true;
+    }
+}
+
+</code></pre> 
+<h2><a href="#迭代版本错误代码" id="迭代版本错误代码">迭代版本错误代码</a></h2> 
+<p>这里， 只用一个stack， 而不使用一个cur变量，是不行的。<br> 原因在于我们会有一个操作是， 遇到一个新节点， 就把这个节点的所有左子节点放到stack里面去，<br> 如果我们只用stack而没有其他变量的话， 下面这个逻辑就有问题， 因为stack.peek()的节点是已经在stack里面的，<br> 也就是第一次压栈的时候已经执行过这个操作了， 再遇到这个的时候又循环执行了一次，所以就不对了。<br> 需要有一个额外的变量表示每次新遇到的节点</p> 
+<pre><code>TreeNode node = stack.peek();
+while(node.left != null) {
+    node = node.left;
+    stack.push(node);
+}
+</code></pre> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    // 1. dfs to all left
+    // 2. 
+    public boolean isValidBST(TreeNode root) {
+        if(null == root) return false;
+        
+        Stack&lt;TreeNode&gt; stack = new Stack&lt;&gt;();
+        stack.push(root);
+        
+        TreeNode prev = null;
+        while(stack.size() &gt; 0) {
+            TreeNode node = stack.peek();
+            while(node.left != null) {
+                node = node.left;
+                stack.push(node);
+            }
+            node = stack.pop();
+            if(null != prev &amp;&amp; node.val &lt;= prev.val) {
+                System.out.println("prev=" + prev.val + ", node.val=" + node.val);
+                return false;
+            }
+            prev = node;
+            if(null != node.right) {
+                stack.push(node.right);
+            }
+        }
+        return true;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
