@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 158 Read N Characters Given Read4 II - Call multiple times解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 158 Read N Characters Given Read4 II - Call multiple times解题笔记</h1>
+			</div>
+
+			<p><em>16 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-158-read-n-characters-given-read4-ii-call-multiple-times" id="题目-leetcode-158-read-n-characters-given-read4-ii-call-multiple-times">题目 leetcode 158 Read N Characters Given Read4 II - Call multiple times</a></h2> 
+<p>现在有一个read4的api， 每次会读4个字符到buf里面， （当然，如果剩下的个数小于4， 那就把剩下的全部读出来）<br> 返回的值是读到的字符个数<br> int read4(char[] buf);</p> 
+<p>现在要求实现一个类似readn的函数<br> public int read(char[] buf, int n) {</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li> <p>常规情况就是<br> a. 先读n/4次， 如果返回值等于4， 那么拷贝全部； 如果返回值小于4, 那么就是数据全部都读完了， 拷贝返回的个数， 同时return整个函数<br> b. 然后再读1次，对于最后一次， 拷贝Math.min(ret, n%4)</p> </li> 
+ <li> <p>但是， 由于读取是连续的， 如果调用了read(buf, 2), 里面调用read4返回了4个， 那么要把剩下的这两个保存起来；<br> 下次调用read(buf, 1)的时候， 直接从缓存里面读，不需要再调用read4了<br> 所以需要这样一个数据结构保存当前的缓存</p> </li> 
+</ol> 
+<pre><code>private char[] cur;
+private int curIndex; // current pointer
+private int curCount; // current total
+
+</code></pre> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * The read4 API is defined in the parent class Reader4.
+ *     int read4(char[] buf); 
+ */
+public class Solution extends Reader4 {
+    
+    private char[] cur;
+    private int curIndex; // current pointer
+    private int curCount; // current total
+    public Solution() {
+        this.cur = new char[4];
+        this.curIndex = 0;
+        this.curCount = 0;
+    }
+    
+    /**
+     * @param buf Destination buffer
+     * @param n   Number of characters to read
+     * @return    The number of actual characters read
+     */
+    public int read(char[] buf, int n) {
+        // 1. loop until total count = n or there is no char available, return total count
+        // 2. how to loop until total count?
+        //    a. if there's still available in buf 
+        int total = 0;
+        
+        if(curIndex &lt; curCount) { // current is not used up
+            int remain = curCount - curIndex;
+            for(int i = 0; i &lt; Math.min(remain, n); ++i) {
+                buf[total++] = cur[curIndex++];
+            }
+            n -= remain;
+        }       
+        return readFrom(buf, total, n);
+    }
+    
+    int readFrom(char[] buf, int total, int toReadCount) {
+        if(toReadCount &lt;= 0) return total;
+        
+        // call read4 enough times
+        for(int i = 0; i &lt; toReadCount/4; ++i) {
+            int count = read4(cur);
+            for(int j = 0; j &lt; count; ++j) {
+                buf[total++] = cur[j];
+            }
+            if(count &lt; 4) { // not enough
+                curCount = curIndex = 0; 
+                return total;
+            }
+        }
+
+        // check if we should still read4 one more time?
+        if(toReadCount%4 &gt; 0) {
+            int last = toReadCount%4;
+            int count = read4(cur);
+            int j = 0;
+            for(;j &lt; Math.min(last, count); ++j) {
+                buf[total++] = cur[j];
+            }
+            curCount = count;
+            curIndex = j; 
+        }
+        return total;        
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
