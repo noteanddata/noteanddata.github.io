@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1090 Largest Values From Labels解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1090 Largest Values From Labels解题笔记</h1>
+			</div>
+
+			<p><em>18 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1090-largest-values-from-labels" id="题目-leetcode-1090-largest-values-from-labels">题目 leetcode 1090 Largest Values From Labels</a></h2> 
+<ol> 
+ <li>输入两个数组， int[] values 和int[] labels， 每个value会对应一个label</li> 
+ <li>然后再输入num_wanted， 表示总共需要取多少个数，</li> 
+ <li>use_limit表示每个label最多可以取多少个数</li> 
+</ol> 
+<p>问， 能够取的最大的value的和是多少?</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>假设只取一个， 那么一定是取value最大的，</li> 
+ <li>如果接着再取， 就有两种情况， 一种是label已经到达use_limit了， 一种是没有<br> 如果到了， 那就取下面一个最大的value；<br> 如果没有， 那就取当前值。</li> 
+ <li>所以， 整个过程可以贪心做， 按values从大到下排序， 然后遍历的时候检查是否符合约束条件就好</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int largestValsFromLabels(int[] values, int[] labels, int num_wanted, int use_limit) {
+    List&lt;int[]&gt; list = new ArrayList&lt;&gt;();
+    for(int i = 0; i &lt; values.length; ++i) {
+        list.add(new int[]{values[i], labels[i]});
+    }
+    Collections.sort(list, new Comparator&lt;int[]&gt;() {
+        public int compare(int[] a, int[] b) {
+            return b[0] - a[0];
+        }
+    });
+    
+    Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;();
+    int sum = 0;
+    for(int i = 0; i &lt; list.size() &amp;&amp; num_wanted &gt; 0; ++i) {
+        int[] item = list.get(i);
+        int value = item[0];
+        int label = item[1];
+        int labelCount = map.getOrDefault(label, 0);
+        if(labelCount &lt; use_limit) {
+            sum += value;
+            num_wanted--;
+            map.put(label, labelCount+1);
+        }
+    }
+    return sum;
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
