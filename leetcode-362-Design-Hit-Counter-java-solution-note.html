@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 362 Design Hit Counter解题报告</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 362 Design Hit Counter解题报告</h1>
+			</div>
+
+			<p><em>17 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-362-design-hit-counter" id="题目-leetcode-362-design-hit-counter">题目 leetcode 362 Design Hit Counter</a></h2> 
+<p>设计一个hit counter, 统计过去5分钟的hit counter, 主要的两个api都会传入当前的timestamp<br> – void hit(int timestamp)<br> – int getHits(int timestamp)</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>可以用一个map表示timestamp–&gt;count, 然后用一个queue表示timestamp的顺序（因为题目保证了调用顺序是增序的，<br> 然后每次把过期的时间去掉</li> 
+ <li>如果这个窗口比较小的话，也可以用一个环形数组， 每次把count放到timestamp%300的位置。<br> 那么这时候还有一个问题要处理的就是如何处理过期时间， 这时候可以再用一个int[] ts保存每个位置的timestamp,<br> 如果和当前的不一样，那就是已经在窗口之外的timestamp， 所以需要清理一下</li> 
+ <li>get的时候， 需要遍历整个窗口， 然后看每个位置的时间是否是在窗口之内</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class HitCounter {
+    
+    private int[] count;
+    private int[] ts;
+    private int n;
+
+    /** Initialize your data structure here. */
+    public HitCounter() {
+        n = 300;
+        count = new int[n];
+        ts = new int[n];
+    }
+    
+    /** Record a hit.
+        @param timestamp - The current timestamp (in seconds granularity). */
+    public void hit(int timestamp) {
+        int index = timestamp%n;
+        if(ts[index] != timestamp) {
+            ts[index] = timestamp;
+            count[index] = 0;
+        }
+        count[index]++;
+    }
+    
+    /** Return the number of hits in the past 5 minutes.
+        @param timestamp - The current timestamp (in seconds granularity). */
+    public int getHits(int timestamp) {
+        int total = 0;
+        for(int i = 0; i &lt; n; ++i) {
+            if(timestamp-ts[i] &lt; n) {
+                total += count[i];
+            }
+        }
+        return total;
+    }
+}
+
+/**
+ * Your HitCounter object will be instantiated and called as such:
+ * HitCounter obj = new HitCounter();
+ * obj.hit(timestamp);
+ * int param_2 = obj.getHits(timestamp);
+ */
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>hit–&gt;O(1)<br> getHits–&gt;O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#用一个queue来保存之前的数据-然后每次remove-old的做法" id="用一个queue来保存之前的数据-然后每次remove-old的做法">用一个queue来保存之前的数据， 然后每次remove old的做法</a></h2> 
+<pre><code>class HitCounter {
+    private static class Node {
+        int timestamp;
+        int count;
+        public Node(int timestamp, int count) {
+            this.timestamp = timestamp;
+            this.count = count;
+        }
+    }
+    
+    private Queue&lt;Node&gt; queue;
+    private Map&lt;Integer, Node&gt; map;
+    
+    /** Initialize your data structure here. */
+    public HitCounter() {
+        queue = new LinkedList&lt;&gt;();
+        map = new HashMap&lt;&gt;();
+    }
+    
+    /** Record a hit.
+        @param timestamp - The current timestamp (in seconds granularity). */
+    public void hit(int timestamp) {
+        Node node = map.get(timestamp);
+        if(null != node) {
+            node.count++;
+        }
+        else {
+            node = new Node(timestamp, 1);
+            queue.add(node);
+            map.put(timestamp, node);
+        }
+        
+        removeOld(timestamp);        
+    }
+    void removeOld(int timestamp) {
+        while(queue.size() &gt; 0) {
+            Node peek = queue.peek();
+            if(timestamp - peek.timestamp &gt;= 300) {
+                queue.poll();
+                map.remove(peek.timestamp);
+            }
+            else {
+                break;
+            }
+        }
+        
+    }
+    
+    /** Return the number of hits in the past 5 minutes.
+        @param timestamp - The current timestamp (in seconds granularity). */
+    public int getHits(int timestamp) {
+        removeOld(timestamp);        
+        int sum = 0;
+        for(Node node: queue) {
+            sum += node.count;
+        }
+        return sum;
+    }
+}
+
+/**
+ * Your HitCounter object will be instantiated and called as such:
+ * HitCounter obj = new HitCounter();
+ * obj.hit(timestamp);
+ * int param_2 = obj.getHits(timestamp);
+ */
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
