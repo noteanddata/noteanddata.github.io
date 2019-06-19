@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 32 Longest Valid Parentheses解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 32 Longest Valid Parentheses解题笔记</h1>
+			</div>
+
+			<p><em>17 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-32-longest-valid-parentheses" id="题目-leetcode-32-longest-valid-parentheses">题目 leetcode 32 Longest Valid Parentheses</a></h2> 
+<p>输入一个字符串，里面是左括号和右括号， 返回最长的合法的括号的子字符串的长度</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>暴力判断所有的子字符串是否合法可以判断， 但是没有意义</li> 
+ <li>参考前面判断括号是否合法的做法, 我们需要用一个stack， 然后每次遇到一个右括号， 判断前面stack.peek()里面的是否和当前的括号匹配， 如果匹配就pop，如果不匹配就非法<br> <a href="http://www.noteanddata.com/leetcode-20-Valid-Parentheses-java-solution-note.html">http://www.noteanddata.com/leetcode-20-Valid-Parentheses-java-solution-note.html</a></li> 
+ <li>那么对于这个题目来说， 遇到右括号，<br> – 如果stack是空的， 那当前这个右括号是一个非法的，不存在一个以当前index结束的合法字符串<br> – 如果stack里面有一个左括号， 那么就需要pop， 这时候，一定遇到了一个以当前index为结束的合法子字符串， 主要的问题是这个合法的子字符串的开始的index是那个, 考虑下面两种情况， 对index=3或者4的情况<br> “)(())”<br> “)()()”<br> 如果我们在stack里面存index，也就是每次遇到左括号的时候存一个当前index， 那么pop右括号的时候，可能会有一个思路是是不是对应左括号的index就是最大的合法字符串的开始？但是从第二个例子可以看到，对应index=4的情况， 对应的左括号的index不是子字符串的最大开始， 因为前面已经有一个完整的字符串也是合法的。</li> 
+ <li>其实我们可以看到， 开始的index有两种可能， 一种是stack里面还有左括号， 那么就是左括号的index，<br> 一种是stack是空的， 那么就是前面一个非法的括号的index<br> 所以， 针对这两种情况分别处理就好<br> – 对于非法括号的index，我们需要每次遇到非法的括号的时候保存当前的index （最开始的时候初始化成1）<br> – 对于stack不是空的， stack里面保存index就好</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int longestValidParentheses(String s) {
+  Stack&lt;Integer&gt; stack = new Stack&lt;Integer&gt;();
+  int max=0;
+  int left = -1;
+  for(int j=0;j&lt;s.length();j++){
+      if(s.charAt(j)=='(') stack.push(j);
+      else {
+          if (stack.isEmpty()) left=j;
+          else{
+              stack.pop();
+              if(stack.isEmpty()) max=Math.max(max,j-left);
+              else max=Math.max(max,j-stack.peek());
+          }
+      }
+  }
+  return max;
+}
+
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
