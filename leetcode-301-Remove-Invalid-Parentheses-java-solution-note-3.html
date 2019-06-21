@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 301 Remove Invalid Parentheses解题笔记3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 301 Remove Invalid Parentheses解题笔记3</h1>
+			</div>
+
+			<p><em>20 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-301-remove-invalid-parentheses" id="题目-leetcode-301-remove-invalid-parentheses">题目 leetcode 301 Remove Invalid Parentheses</a></h2> 
+<p>输入一个字符串， 里面有左括弧，右括弧， 还有其他字符， 但是括弧可能不匹配， 要求删除一些括弧，使得左右匹配，<br> 问最后有哪些合法的字符串？</p> 
+<h2><a href="#解题思路" id="解题思路">解题思路</a></h2> 
+<p>需要搜索所有的可能， 所以需要backtrack, 具体解题思路在前面的文章里面有写<br> <a href="http://www.noteanddata.com/leetcode-301-Remove-Invalid-Parentheses-java-solution-note2.html">http://www.noteanddata.com/leetcode-301-Remove-Invalid-Parentheses-java-solution-note2.html</a></p> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<p>主要是没有注意到输入到字符串里面有除了括号以外的其他字符， 所以在递归的函数里面要分3种情况讨论</p> 
+<pre><code>class Solution {
+    public List&lt;String&gt; removeInvalidParentheses(String s) {
+        int leftRemoveCount = 0, rightRemoveCount = 0;
+        for(int i = 0; i &lt; s.length(); ++i) {
+            if(s.charAt(i) == '(') {
+                leftRemoveCount++;
+            }
+            else {
+                if(leftRemoveCount &gt; 0) {
+                    leftRemoveCount--;
+                }
+                else {
+                    rightRemoveCount++;
+                }
+            }
+        }
+        Set&lt;String&gt; set = new HashSet&lt;&gt;();
+        backtrack(s, 0, leftRemoveCount, rightRemoveCount, 0, "", set);
+        return new ArrayList&lt;&gt;(set);
+    }
+    
+    void backtrack(String s, int from ,int leftRemoveCount, int rightRemoveCount, int leftOpenCount, 
+                   String cur, Set&lt;String&gt; set) {
+        if(leftRemoveCount &lt; 0 || rightRemoveCount &lt; 0 || leftOpenCount &lt; 0 || from &gt; s.length()) {
+            return;
+        }
+        if(from == s.length()) {
+            if(leftOpenCount == 0 &amp;&amp; leftRemoveCount == 0 &amp;&amp; rightRemoveCount == 0) {
+                set.add(cur);
+            }
+            return;
+        }
+        if(s.charAt(from) == '(') {
+            if(leftRemoveCount &gt; 0) {
+                // remove left
+                backtrack(s, from+1, leftRemoveCount-1, rightRemoveCount, leftOpenCount, cur, set);
+            }
+            
+            // do not remove left
+            backtrack(s, from+1, leftRemoveCount, rightRemoveCount, leftOpenCount+1, cur + "(", set); 
+        }
+        else {
+            if(rightRemoveCount &gt; 0) {
+                // remove right
+                backtrack(s, from+1, leftRemoveCount, rightRemoveCount-1, leftOpenCount, cur, set); 
+            }
+            
+            // do not remove right
+            backtrack(s, from+1, leftRemoveCount, rightRemoveCount, leftOpenCount-1, cur + ")", set); 
+        }
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<p>还是同样的原因， 输入到字符串里面有除了括号以外的其他字符，<br> 前面统计leftRemoveCount和rightRemoveCount的时候也要分3种情况</p> 
+<pre><code>class Solution {
+    public List&lt;String&gt; removeInvalidParentheses(String s) {
+        int leftRemoveCount = 0, rightRemoveCount = 0;
+        for(int i = 0; i &lt; s.length(); ++i) {
+            if(s.charAt(i) == '(') {
+                leftRemoveCount++;
+            }
+            else {
+                if(leftRemoveCount &gt; 0) {
+                    leftRemoveCount--;
+                }
+                else {
+                    rightRemoveCount++;
+                }
+            }
+        }
+        Set&lt;String&gt; set = new HashSet&lt;&gt;();
+        backtrack(s, 0, leftRemoveCount, rightRemoveCount, 0, "", set);
+        return new ArrayList&lt;&gt;(set);
+    }
+    
+    void backtrack(String s, int from ,int leftRemoveCount, int rightRemoveCount, int leftOpenCount, 
+                   String cur, Set&lt;String&gt; set) {
+        if(leftRemoveCount &lt; 0 || rightRemoveCount &lt; 0 || leftOpenCount &lt; 0 || from &gt; s.length()) {
+            return;
+        }
+        if(from == s.length()) {
+            if(leftOpenCount == 0 &amp;&amp; leftRemoveCount == 0 &amp;&amp; rightRemoveCount == 0) {
+                set.add(cur);
+            }
+            return;
+        }
+        if(s.charAt(from) == '(') {
+            if(leftRemoveCount &gt; 0) {
+                // remove left
+                backtrack(s, from+1, leftRemoveCount-1, rightRemoveCount, leftOpenCount, cur, set);
+            }
+            
+            // do not remove left
+            backtrack(s, from+1, leftRemoveCount, rightRemoveCount, leftOpenCount+1, cur + "(", set); 
+        }
+        else if(s.charAt(from) == ')') {
+            if(rightRemoveCount &gt; 0) {
+                // remove right
+                backtrack(s, from+1, leftRemoveCount, rightRemoveCount-1, leftOpenCount, cur, set); 
+            }
+            
+            // do not remove right
+            backtrack(s, from+1, leftRemoveCount, rightRemoveCount, leftOpenCount-1, cur + ")", set); 
+        }
+        else {
+            backtrack(s, from+1, leftRemoveCount, rightRemoveCount, leftOpenCount, cur + s.charAt(from), set); 
+        }
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
