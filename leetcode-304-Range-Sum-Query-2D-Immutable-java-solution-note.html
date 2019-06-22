@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 304 Range Sum Query 2D - Immutable解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 304 Range Sum Query 2D - Immutable解题笔记</h1>
+			</div>
+
+			<p><em>21 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-304-range-sum-query-2d-immutable" id="题目-leetcode-304-range-sum-query-2d-immutable">题目 leetcode 304 Range Sum Query 2D - Immutable</a></h2> 
+<p>输入一个二维矩阵， 里面都是整数， 然后求从(row1,col1)到(row2, col2)之间的数的和</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>动态规划的思想， 开一个dp[row+1][col+1]的矩阵, 然后在遍历的过程中， 把[0,0]到[i,j]的和记录下来， 那么最后的结果就是</li> 
+</ol> 
+<pre><code>dp[row2+1][col2+1] - dp[row1][col2+1] - dp[row2+1][col1] + dp[row1][col1]
+</code></pre> 
+<ol> 
+ <li>开始dp矩阵的长度多开一个的时候， 最好先把长度记录下来， 不要在用matrix[i].length这样的遍历方式，容易越界</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class NumMatrix {
+    
+    private int[][] dp;
+
+    public NumMatrix(int[][] matrix) {
+        if(null == matrix || 0 == matrix.length || 0 == matrix[0].length) return ;
+        int row = matrix.length;
+        int col = matrix[0].length;
+        dp = new int[row+1][col+1];
+        for(int i = 1; i &lt;= row; ++i) {
+            for(int j = 1; j &lt;= col; ++j) {
+                dp[i][j] = dp[i-1][j] + dp[i][j-1] + matrix[i-1][j-1] - dp[i-1][j-1];
+            }
+        }
+    }
+    
+    public int sumRegion(int row1, int col1, int row2, int col2) {
+        if(null == dp) return 0;
+        return dp[row2+1][col2+1] - dp[row1][col2+1] - dp[row2+1][col1] + dp[row1][col1];
+        
+    }
+}
+
+/**
+ * Your NumMatrix object will be instantiated and called as such:
+ * NumMatrix obj = new NumMatrix(matrix);
+ * int param_1 = obj.sumRegion(row1,col1,row2,col2);
+ */
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(M*N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(M*N)</p> 
+<h2><a href="#错误代码" id="错误代码">错误代码</a></h2> 
+<p>但是细节还是容易弄错的， 比如下面这个， 因为矩阵多开了一个长度， 然后循环的时候用了matrix[i].length, 就越界了</p> 
+<pre><code>class NumMatrix {
+    
+    private int[][] dp;
+
+    public NumMatrix(int[][] matrix) {
+        if(null == matrix || 0 == matrix.length || 0 == matrix[0].length) return ;
+        dp = new int[matrix.length+1][matrix[0].length+1];
+        for(int i = 1; i &lt;= matrix.length; ++i) {
+            for(int j = 1; j &lt;= matrix[i].length; ++j) {
+                dp[i][j] = dp[i-1][j] + dp[i][j-1] + matrix[i-1][j-1] - dp[i-1][j-1];
+            }
+        }
+    }
+    
+    public int sumRegion(int row1, int col1, int row2, int col2) {
+        if(null == dp) return 0;
+        return dp[row2+1][col2+1] - dp[row1][col2+1] - dp[row2+1][col1] + dp[row1][col1];
+        
+    }
+}
+
+/**
+ * Your NumMatrix object will be instantiated and called as such:
+ * NumMatrix obj = new NumMatrix(matrix);
+ * int param_1 = obj.sumRegion(row1,col1,row2,col2);
+ */
+
+</code></pre> 
+<h2><a href="#正确代码2" id="正确代码2">正确代码2</a></h2> 
+<p>当然还有一种做法是dp矩阵的长度和实际矩阵的长度一样， 这样不容易越界，但是麻烦的地方是需要对0的时候做一下特殊处理，<br> 因为不能直接用i-1或者j-1了</p> 
+<pre><code>class NumMatrix {
+    
+    private int[][] dp;
+
+    public NumMatrix(int[][] matrix) {
+        if(null == matrix || 0 == matrix.length || 0 == matrix[0].length) return ;
+        dp = new int[matrix.length][matrix[0].length];
+        for(int i = 0; i &lt; matrix.length; ++i) {
+            for(int j = 0; j &lt; matrix[i].length; ++j) {
+                if(i == 0) {
+                    if(j == 0) {
+                        dp[i][j] = matrix[i][j];
+                    }
+                    else {
+                        dp[i][j] = dp[i][j-1] + matrix[i][j];
+                    }
+                }
+                else {
+                    if(j == 0) {
+                        dp[i][j] = dp[i-1][j] + matrix[i][j];
+                    }
+                    else {
+                        dp[i][j] = dp[i-1][j] + dp[i][j-1] + matrix[i][j] - dp[i-1][j-1];
+                    }
+                }
+            }
+        }
+    }
+    
+    public int sumRegion(int row1, int col1, int row2, int col2) {
+        if(null == dp) return 0;
+        
+        int partup = row1-1 &gt;= 0 ? dp[row1-1][col2] : 0;
+        int partleft = col1-1 &gt;= 0 ? dp[row2][col1-1] :0;
+        int partcorner = (row1-1 &gt;= 0 &amp;&amp; col1-1 &gt;= 0) ? dp[row1-1][col1-1] : 0;
+        return dp[row2][col2] - partup - partleft + partcorner;
+    }
+}
+
+/**
+ * Your NumMatrix object will be instantiated and called as such:
+ * NumMatrix obj = new NumMatrix(matrix);
+ * int param_1 = obj.sumRegion(row1,col1,row2,col2);
+ */
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
