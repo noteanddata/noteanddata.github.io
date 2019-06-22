@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 36 Valid Sudoku解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 36 Valid Sudoku解题笔记2</h1>
+			</div>
+
+			<p><em>21 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-36-valid-sudoku" id="题目-leetcode-36-valid-sudoku">题目 leetcode 36 Valid Sudoku</a></h2> 
+<ol> 
+ <li>输入一个9*9的数独表格，每一格里面可能是.或者是数字1到9， 判断这个数独表格本身是否合法。</li> 
+ <li>这里的合法判断非常简单， 就是看每一行， 每一列， 然后每一个3*3的cube里面是否有重复的数字</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>在前面的文章里面,<a href="http://www.noteanddata.com/leetcode-36-Valid-Sudoku-java-solution-note.html">http://www.noteanddata.com/leetcode-36-Valid-Sudoku-java-solution-note.html</a>， 针对每行， 每列， 每个cube建立了一个set， 而且， 针对三种情况分别建了三个map</li> 
+ <li>实际上， 我们需要回答的是，<br> – 针对第i行，是否有重复的？ 那么可以把i和字符拼接起来放到一个set里面<br> – 针对第j列，是否有重复的？ 那么可以把j和字符拼接起来放到一个set里面<br> – 针对第x个cube，是否有重复的？ 那么可以把x和字符拼接起来放到一个set里面<br> 这样，针对每种情况都可以用一个set来处理</li> 
+ <li> <p>同理，上面三种情况， 也可以把信息编码到字符串里面，加上row/col/cube就好， 这样，只需要用一个set，一次遍历，就可以解决所有的情况, 代码就会非常简洁</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public boolean isValidSudoku(char[][] board) {
+    Set&lt;String&gt; set = new HashSet&lt;&gt;();
+    for(int i = 0; i &lt; board.length; ++i) {
+        for(int j = 0; j &lt; board[i].length; ++j) {
+            if(board[i][j] == '.') continue;
+            
+            String rowkey = "row" + i + "-" + board[i][j];
+            String colkey = "col" + j + "-" + board[i][j];
+            int cubeindex = i/3*3 + j/3;
+            String cubekey = "cube" + cubeindex + "-" + board[i][j];
+            if(!set.add(rowkey) || !set.add(colkey) || !set.add(cubekey)) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
