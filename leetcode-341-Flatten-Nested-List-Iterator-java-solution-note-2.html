@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 341 Flatten Nested List Iterator解题笔记2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 341 Flatten Nested List Iterator解题笔记2</h1>
+			</div>
+
+			<p><em>22 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-341-flatten-nested-list-iterator" id="题目-leetcode-341-flatten-nested-list-iterator">题目 leetcode 341 Flatten Nested List Iterator</a></h2> 
+<p>Given a nested list of integers, implement an iterator to flatten it.</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>在之前的解题笔记里面写到， <a href="http://www.noteanddata.com/leetcode-341-Flatten-Nested-List-Iterator-java-solution-note.html">http://www.noteanddata.com/leetcode-341-Flatten-Nested-List-Iterator-java-solution-note.html</a>， 这个题目可以用stack来做，而自己最开始并没有想到。</li> 
+ <li>所以这里的问题是， 为什么这个题目可以用stack来做？ 是题目的那些特征决定了这个题目可以用stack来做？<br> 下次遇到什么样的特征可以用stack来做？ 当然，还有非常重要的一点是， 如何使用stack实现这样的功能</li> 
+ <li>首先， 有一个非常明确的特点是， 这个是一个递归的过程， 每个NestedInteger都可能包含一个List
+  <nestedinteger>
+   <br> 这里面都有可能是Integer或者是NestedInteger, 然后这个过程可以不断递归的展开。
+   <br> 所以， 递归的过程本身就很可能用到堆栈
+  </nestedinteger></li> 
+ <li>第二， 这里的特点是， 如果考虑第一层， 对于list里面的每个NestedInteger, 需要首先输出第一个NestedInteger.<br> 而对第一个NestedInteger的时候，如果又是一个List, 那么也需要先输出第一个。 所以， 整个过程是，对于每个level， 如果从后往前压栈， 那么，每次都把stack的peek给pop出来的话，可以继续针对这个list进行逆序的压栈</li> 
+ <li> <p>还有一个问题在讨论区讨论的比较多的是， 这里hasNext()修改了内部数据结构， 实现是否有问题？<br> 因为Iterator的约定是，<br> a. hasNext()可以调用多次，<br> b. 调用next()的时候可能并没有调用hasNext()</p> </li> 
+</ol> 
+<p>这里的实现是：<br> a. 虽然hasNext()会调用多次， 但是只有一次会改变数据， 而且后面的数据在调用过next()之前是不会再改动的<br> b. 如果调用next()的时候外面没有调用hasNext(), 我们在里面调用了hasNext()<br> 所以， 这两个问题这里不是问题。</p> 
+<p>当然， 如果改进一下代码能够提前消除误解，就会更好</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * // This is the interface that allows for creating nested lists.
+ * // You should not implement it, or speculate about its implementation
+ * public interface NestedInteger {
+ *
+ *     // @return true if this NestedInteger holds a single integer, rather than a nested list.
+ *     public boolean isInteger();
+ *
+ *     // @return the single integer that this NestedInteger holds, if it holds a single integer
+ *     // Return null if this NestedInteger holds a nested list
+ *     public Integer getInteger();
+ *
+ *     // @return the nested list that this NestedInteger holds, if it holds a nested list
+ *     // Return null if this NestedInteger holds a single integer
+ *     public List&lt;NestedInteger&gt; getList();
+ * }
+ */
+public class NestedIterator implements Iterator&lt;Integer&gt; {
+    private Stack&lt;NestedInteger&gt; stack;
+    
+    public NestedIterator(List&lt;NestedInteger&gt; nestedList) {
+        this.stack = new Stack&lt;&gt;();
+        flatten(nestedList, stack);
+    }
+
+    @Override
+    public Integer next() {        
+        return hasNext() ? stack.pop().getInteger() : null;
+    }
+
+    @Override
+    public boolean hasNext() {
+        while(!stack.isEmpty()) {
+            if(stack.peek().isInteger()) {
+                return true;
+            }
+            flatten(stack.pop().getList(), stack);
+        }
+
+        return false;
+    }
+    
+    void flatten(List&lt;NestedInteger&gt; nestedList, Stack&lt;NestedInteger&gt; stack) {
+        if(null == nestedList) return;
+            
+        for(int i = nestedList.size()-1; i &gt;= 0; --i) {
+            stack.push(nestedList.get(i));
+        }
+    }
+}
+
+/**
+ * Your NestedIterator object will be instantiated and called as such:
+ * NestedIterator i = new NestedIterator(nestedList);
+ * while (i.hasNext()) v[f()] = i.next();
+ */
+
+</code></pre> 
+<h2><a href="#值得商榷的代码" id="值得商榷的代码">值得商榷的代码</a></h2> 
+<p>下面这个代码我认为是值得商榷的， 因为next()之前如果没有调用hasNext(), 其实是有问题的</p> 
+<pre><code>public class NestedIterator implements Iterator&lt;Integer&gt; {
+    Stack&lt;NestedInteger&gt; stack = new Stack&lt;&gt;();
+    public NestedIterator(List&lt;NestedInteger&gt; nestedList) {
+        for(int i = nestedList.size() - 1; i &gt;= 0; i--) {
+            stack.push(nestedList.get(i));
+        }
+    }
+
+    @Override
+    public Integer next() {
+        return stack.pop().getInteger();
+    }
+
+    @Override
+    public boolean hasNext() {
+        while(!stack.isEmpty()) {
+            NestedInteger curr = stack.peek();
+            if(curr.isInteger()) {
+                return true;
+            }
+            stack.pop();
+            for(int i = curr.getList().size() - 1; i &gt;= 0; i--) {
+                stack.push(curr.getList().get(i));
+            }
+        }
+        return false;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
