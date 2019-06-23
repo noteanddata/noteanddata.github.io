@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 238 Product of Array Except Self解题报告2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 238 Product of Array Except Self解题报告2</h1>
+			</div>
+
+			<p><em>22 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-238-product-of-array-except-self" id="题目-leetcode-238-product-of-array-except-self">题目 leetcode 238 Product of Array Except Self</a></h2> 
+<ol> 
+ <li>输入一个整数数组，要求输出同样大小的一个整数数组，其中每个值是数组中所有值的积除以当前的值</li> 
+ <li>要求不使用除法来做这个题目</li> 
+ <li>最好能够使用O(1)空间的复杂度来做这个</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>虽然写过很多次，不过现在来写， 还是只想到O(N)空间复杂度的代码， 同时还写错了一次<br> product[i] = left[i] * right[i];<br> left[i] = curprod;</li> 
+ <li>如果要O(1), 需要把right[i]改成第二次遍历<br> 具体实现可以参考以前的记录 <a href="http://www.noteanddata.com/leetcode-238-Product-of-Array-Except-Self-java-solution-note.html">http://www.noteanddata.com/leetcode-238-Product-of-Array-Except-Self-java-solution-note.html</a></li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    // product[i] = left[i] * right[i];
+    // left[i] = curprod;
+    public int[] productExceptSelf(int[] nums) {
+        int[] right = new int[nums.length];
+        right[nums.length-1] = 1;
+        for(int i = nums.length-2; i &gt;= 0; --i) {
+            right[i] = right[i+1] * nums[i+1];
+        }
+        int[] product = new int[nums.length];
+        int cur = 1;
+        for(int i = 0; i &lt; nums.length; ++i) {
+            product[i]  = right[i] * cur;
+            cur *= nums[i];
+        }
+        return product;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(N)</p> 
+<h2><a href="#错误的代码" id="错误的代码">错误的代码</a></h2> 
+<p>虽然这个题目写过好多次了， 不过很可惜， 还是写错了</p> 
+<pre><code>class Solution {
+    // product[i] = left[i] * right[i];
+    // left[i] = curprod;
+    public int[] productExceptSelf(int[] nums) {
+        int[] right = new int[nums.length];
+        right[nums.length-1] = 1;
+        for(int i = nums.length-2; i &gt;= 0; --i) {
+            right[i] = right[i+1] * nums[i+1];
+        }
+        int[] product = new int[nums.length];
+        int cur = 1;
+        for(int i = 0; i &lt; nums.length; ++i) {
+            if(i &lt; nums.length-1) {
+                product[i]  = right[i+1] * cur;
+                cur *= nums[i];
+            }
+            else {
+                product[i] = cur;
+            }
+        }
+        return product;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
