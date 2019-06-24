@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 480 Sliding Window Median解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 480 Sliding Window Median解题笔记</h1>
+			</div>
+
+			<p><em>23 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-480-sliding-window-median" id="题目-leetcode-480-sliding-window-median">题目 leetcode 480 Sliding Window Median</a></h2> 
+<ol> 
+ <li>输入一个数组nums和一个长度k， 求每个长度为k的windows的数的中位数</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目和之前的一个题目有点类似 <a href="http://www.noteanddata.com/leetcode-295-Find-Median-from-Data-Stream-Amazon-interview-problem-java-solution-note.html">http://www.noteanddata.com/leetcode-295-Find-Median-from-Data-Stream-Amazon-interview-problem-java-solution-note.html</a></li> 
+ <li>求median，就是需要把数字分成两部分， 然后求中间的那个</li> 
+ <li>所以， 也是类似的取两个heap， 然后保持两个heap的个数最多差一个</li> 
+ <li>当然， sliding windows里面的个数调整有一些细节，是需要注意的.<br> a. 首先来一个数， 不能随意加到任何一个heap里面，<br> 需要先看大小， 因为两个heap的目的是一半大，一半小， 然后各自排序， 才可以方便调整；<br> b. 然后是不停调整大小， 把多余的数去掉， 去掉的时候也要考虑究竟去哪个<br> c. 然后要保持两个heap大小平衡</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public double[] medianSlidingWindow(int[] nums, int k) {
+        
+        PriorityQueue&lt;Integer&gt; minheap = new PriorityQueue&lt;Integer&gt;();
+        PriorityQueue&lt;Integer&gt; maxheap = new PriorityQueue&lt;Integer&gt;(k/2+1, Comparator.reverseOrder());
+        
+        double[] ret = new double[nums.length-k+1];
+        int retindex = 0;
+        for(int i = 0; i &lt; nums.length; ++i) {
+            if(minheap.size() &gt; 0 &amp;&amp; nums[i] &gt;= minheap.peek()) {
+                maxheap.add(minheap.poll());
+                minheap.add(nums[i]);
+            }
+            else {
+                maxheap.add(nums[i]);
+            }
+            
+
+            if(minheap.size() + maxheap.size() &gt; k) {
+                if(!minheap.remove(nums[i-k])) {
+                    maxheap.remove(nums[i-k]);    
+                }
+            }
+
+            if(minheap.size() &gt;=  maxheap.size() + 2 ) {
+                maxheap.add(minheap.poll());    
+            }
+            else if(maxheap.size() &gt;= minheap.size() + 2){
+                minheap.add(maxheap.poll());
+            }
+
+
+            if(minheap.size() + maxheap.size() == k) {
+                if(k%2 == 0) {
+                    ret[retindex++] = ((double)minheap.peek() + (double)maxheap.peek())/2.0;    
+                }
+                else {
+                    if(minheap.size() &gt; maxheap.size()) {
+                        ret[retindex++] = minheap.peek();
+                    }
+                    else {
+                        ret[retindex++] = maxheap.peek();
+                    }
+                }
+
+            }
+        }
+        return ret;
+    }
+    
+    
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N*lgK)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(K)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
