@@ -68,6 +68,7 @@ var _hmt = _hmt || [];
  <li>第一步先求树的深度</li> 
  <li>然后做postorder遍历，把深度传入，<br> – 对于叶节点， 如果当前节点是最深的节点，那么返回当前节点，否则返回null<br> – 对其他节点， 如果左子树和右子树都返回一个非空节点， 那么返回当前节点；<br> 如果左子树和右子树里面有一个节点是空的，那么返回另外一个非空的节点</li> 
  <li> <p>类似题目<br> <a href="http://www.noteanddata.com/leetcode-236-Lowest-Common-Ancestor-of-a-Binary-Tree-java-solution-note.html">http://www.noteanddata.com/leetcode-236-Lowest-Common-Ancestor-of-a-Binary-Tree-java-solution-note.html</a><br> 对于树的题目，很多时候递归的核心思想是，对当前节点做局部判断，只判断左节点和右节点</p> </li> 
+ <li> <p>这个题目的代码可以通过一次遍历来得到，也就是每次直接返回当前的深度， 然后通过递归计算当前的深度；<br> 同时也判断当前节点是否是需要返回的节点， 这个一次遍历的做法后面再学习</p> </li> 
 </ol> 
 <h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
 <pre><code>/**
@@ -130,7 +131,272 @@ class Solution {
 <h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
 <p>O(N)</p> 
 <h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
-<p>O(lgN)</p></p>
+<p>O(lgN)</p> 
+<h2><a href="#简化一点的代码" id="简化一点的代码">简化一点的代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode subtreeWithAllDeepest(TreeNode root) {
+        // 1. get height of tree, so that we can pass index down an
+        // 2. postorder travesal, pass index down, 
+        //    if current is leaf and index == maxheight--&gt; return node
+        //    if current is leaf and index != maxheight --&gt; return null
+        //   if left != null and right != null ---&gt; return node
+        if(null == root) return null;
+        
+        int maxheight = dfsHeight(root);
+        return postOrderDfs(root, 1, maxheight);
+    }
+    
+    public TreeNode postOrderDfs(TreeNode node, int index, int maxheight) {
+        if(null == node) return null;
+        
+        TreeNode left = postOrderDfs(node.left, index+1, maxheight); ;
+        TreeNode right = postOrderDfs(node.right, index+1, maxheight);;
+
+        if(left != null &amp;&amp; right != null) {
+            return node;
+        }
+        else if(left == null &amp;&amp; right == null) {
+            return (index == maxheight) ? node : null;
+        }
+        else {
+            return left != null ? left: right;
+        }                    
+    }
+    
+    public int dfsHeight(TreeNode node) {
+        if(null == node) return 0;
+        return Math.max(dfsHeight(node.left), dfsHeight(node.right)) + 1;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误的代码1" id="错误的代码1">错误的代码1</a></h2> 
+<p>下面的代码会抛NullPointerException, 错误比较明显， 没有地方判断node是null， 自然会出错；<br> 可惜我也写了这样低级的错误</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode subtreeWithAllDeepest(TreeNode root) {
+        // 1. get height of tree, so that we can pass index down an
+        // 2. postorder travesal, pass index down, 
+        //    if current is leaf and index == maxheight--&gt; return node
+        //    if current is leaf and index != maxheight --&gt; return null
+        //   if left != null and right != null ---&gt; return node
+        if(null == root) return null;
+        
+        int maxheight = dfsHeight(root);
+        return postOrderDfs(root, 1, maxheight);
+    }
+    
+    public TreeNode postOrderDfs(TreeNode node, int index, int maxheight) {
+        if(node.left == null &amp;&amp; node.right == null) {            
+            return (index == maxheight) ? node : null;
+        }
+        else {
+            TreeNode left = postOrderDfs(node.left, index+1, maxheight); ;
+            TreeNode right = postOrderDfs(node.right, index+1, maxheight);;
+            
+            if(left != null &amp;&amp; right != null) {
+                return node;
+            }
+            else {
+                return left != null ? left: right;
+            }            
+        }
+    }
+    
+    public int dfsHeight(TreeNode node) {
+        if(null == node) return 0;
+        return Math.max(dfsHeight(node.left), dfsHeight(node.right)) + 1;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误的代码2" id="错误的代码2">错误的代码2</a></h2> 
+<p>试图修改一下， 结果还是NullPointerException</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode subtreeWithAllDeepest(TreeNode root) {
+        // 1. get height of tree, so that we can pass index down an
+        // 2. postorder travesal, pass index down, 
+        //    if current is leaf and index == maxheight--&gt; return node
+        //    if current is leaf and index != maxheight --&gt; return null
+        //   if left != null and right != null ---&gt; return node
+        if(null == root) return null;
+        
+        int maxheight = dfsHeight(root);
+        return postOrderDfs(root, 1, maxheight);
+    }
+    
+    public TreeNode postOrderDfs(TreeNode node, int index, int maxheight) {
+        TreeNode left = postOrderDfs(node.left, index+1, maxheight); ;
+        TreeNode right = postOrderDfs(node.right, index+1, maxheight);;
+
+        if(left != null &amp;&amp; right != null) {
+            return node;
+        }
+        else if(left == null &amp;&amp; right == null) {
+            return (index == maxheight) ? node : null;
+        }
+        else {
+            return left != null ? left: right;
+        }                    
+    }
+    
+    public int dfsHeight(TreeNode node) {
+        if(null == node) return 0;
+        return Math.max(dfsHeight(node.left), dfsHeight(node.right)) + 1;
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误的代码3" id="错误的代码3">错误的代码3</a></h2> 
+<p>之前写的有逻辑错误的代码， 如果left或者right里面有一个不是null的话，应该返回那个不是null的结果</p> 
+<p>Input: [3,5,1,6,2,0,8,null,null,7,4]<br> Output: []<br> Expected: [2,7,4]</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode subtreeWithAllDeepest(TreeNode root) {
+        // 1. get height of tree, so that we can pass index down an
+        // 2. postorder travesal, pass index down, 
+        //    if current is leaf and index == maxheight--&gt; return node
+        //    if current is leaf and index != maxheight --&gt; return null
+        //   if left != null and right != null ---&gt; return node
+        if(null == root) return null;
+        
+        int maxheight = dfsHeight(root);
+        return postOrderDfs(root, 1, maxheight);
+    }
+    
+    public TreeNode postOrderDfs(TreeNode node, int index, int maxheight) {
+        if(node.left == null &amp;&amp; node.right == null) {
+            if(index == maxheight) {
+                return node;
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            if(node.left != null &amp;&amp; node.right != null) {
+                TreeNode left = postOrderDfs(node.left, index+1, maxheight);    
+                TreeNode right = postOrderDfs(node.right, index+1, maxheight);
+                if(null != left &amp;&amp; null != right) {
+                    return node;
+                }
+                else {
+                    return null;
+                }                
+            }
+            else {
+                if(node.left != null) {
+                    return postOrderDfs(node.left, index+1, maxheight);
+                }
+                else { // node.right != null
+                    return postOrderDfs(node.right, index+1, maxheight);
+                }
+            }
+        }
+    }
+    
+    public int dfsHeight(TreeNode node) {
+        if(null == node) return 0;
+        return Math.max(dfsHeight(node.left), dfsHeight(node.right)) + 1;
+    }
+}
+
+</code></pre> 
+<p>当然， 这里的代码只要修改一行就可以通过</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode subtreeWithAllDeepest(TreeNode root) {
+        // 1. get height of tree, so that we can pass index down an
+        // 2. postorder travesal, pass index down, 
+        //    if current is leaf and index == maxheight--&gt; return node
+        //    if current is leaf and index != maxheight --&gt; return null
+        //   if left != null and right != null ---&gt; return node
+        if(null == root) return null;
+        
+        int maxheight = dfsHeight(root);
+        return postOrderDfs(root, 1, maxheight);
+    }
+    
+    public TreeNode postOrderDfs(TreeNode node, int index, int maxheight) {
+        if(node.left == null &amp;&amp; node.right == null) {
+            if(index == maxheight) {
+                return node;
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            if(node.left != null &amp;&amp; node.right != null) {
+                TreeNode left = postOrderDfs(node.left, index+1, maxheight);    
+                TreeNode right = postOrderDfs(node.right, index+1, maxheight);
+                if(null != left &amp;&amp; null != right) {
+                    return node;
+                }
+                else {
+                    return null != left ? left: right;
+                }                
+            }
+            else {
+                if(node.left != null) {
+                    return postOrderDfs(node.left, index+1, maxheight);
+                }
+                else { // node.right != null
+                    return postOrderDfs(node.right, index+1, maxheight);
+                }
+            }
+        }
+    }
+    
+    public int dfsHeight(TreeNode node) {
+        if(null == node) return 0;
+        return Math.max(dfsHeight(node.left), dfsHeight(node.right)) + 1;
+    }
+}
+
+</code></pre></p>
 	</div>		
 
 <div class="col-sm-4">
