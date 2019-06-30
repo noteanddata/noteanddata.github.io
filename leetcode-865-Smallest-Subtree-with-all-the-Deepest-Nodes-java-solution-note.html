@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>题目leetcode 865 Smallest Subtree with all the Deepest Nodes解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>题目leetcode 865 Smallest Subtree with all the Deepest Nodes解题笔记</h1>
+			</div>
+
+			<p><em>29 June 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-865-smallest-subtree-with-all-the-deepest-nodes" id="题目-leetcode-865-smallest-subtree-with-all-the-deepest-nodes">题目 leetcode 865 Smallest Subtree with all the Deepest Nodes</a></h2> 
+<p>输入一个二叉树， 求一个最小子树， 使得这个子树的根节点可以覆盖所有的最深的节点</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>第一步先求树的深度</li> 
+ <li>然后做postorder遍历，把深度传入，<br> – 对于叶节点， 如果当前节点是最深的节点，那么返回当前节点，否则返回null<br> – 对其他节点， 如果左子树和右子树都返回一个非空节点， 那么返回当前节点；<br> 如果左子树和右子树里面有一个节点是空的，那么返回另外一个非空的节点</li> 
+ <li> <p>类似题目<br> <a href="http://www.noteanddata.com/leetcode-236-Lowest-Common-Ancestor-of-a-Binary-Tree-java-solution-note.html">http://www.noteanddata.com/leetcode-236-Lowest-Common-Ancestor-of-a-Binary-Tree-java-solution-note.html</a><br> 对于树的题目，很多时候递归的核心思想是，对当前节点做局部判断，只判断左节点和右节点</p> </li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode subtreeWithAllDeepest(TreeNode root) {
+        // 1. get height of tree, so that we can pass index down an
+        // 2. postorder travesal, pass index down, 
+        //    if current is leaf and index == maxheight--&gt; return node
+        //    if current is leaf and index != maxheight --&gt; return null
+        //   if left != null and right != null ---&gt; return node
+        if(null == root) return null;
+        
+        int maxheight = dfsHeight(root);
+        return postOrderDfs(root, 1, maxheight);
+    }
+    
+    public TreeNode postOrderDfs(TreeNode node, int index, int maxheight) {
+        if(node.left == null &amp;&amp; node.right == null) {            
+            if(index == maxheight) {
+                return node;
+            }
+            else {
+                return null;
+            }
+        }
+        else {
+            TreeNode left = null;
+            if(node.left != null) {
+                left = postOrderDfs(node.left, index+1, maxheight);    
+            }
+            TreeNode right = null;
+            if(node.right != null) {
+                right = postOrderDfs(node.right, index+1, maxheight);
+            }
+            
+            if(left != null &amp;&amp; right != null) {
+                return node;
+            }
+            else {
+                return left != null ? left: right;
+            }            
+        }
+    }
+    
+    public int dfsHeight(TreeNode node) {
+        if(null == node) return 0;
+        return Math.max(dfsHeight(node.left), dfsHeight(node.right)) + 1;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(lgN)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
