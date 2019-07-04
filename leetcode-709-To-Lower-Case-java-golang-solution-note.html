@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>leetcode 771 Jewels and Stones解题笔记</title>
+    <title>leetcode 709 To Lower Case解题笔记</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Le styles -->
@@ -56,58 +56,55 @@ var _hmt = _hmt || [];
 		<div class="col-sm-8">
 
 			<div class="page-header">
-				<h1>leetcode 771 Jewels and Stones解题笔记</h1>
+				<h1>leetcode 709 To Lower Case解题笔记</h1>
 			</div>
 
 			<p><em>03 July 2019</em></p>
 
-			<p><h2><a href="#题目-leetcode-771-jewels-and-stones" id="题目-leetcode-771-jewels-and-stones">题目 leetcode 771 Jewels and Stones</a></h2> 
-<p>输入两个字符串， 一个字符串J里面的每个字符表示这个字符是珠宝， 统计另外一个字符串S里面有多少个珠宝</p> 
+			<p><h2><a href="#题目-leetcode-709-to-lower-case" id="题目-leetcode-709-to-lower-case">题目 leetcode 709 To Lower Case</a></h2> 
+<p>把一个字符串转换成全部是小写字母的字符串</p> 
 <h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
-<ol> 
- <li>题目非常简单， 用java的话，直接用一个hashset存储珠宝字符， 然后遍历S统计通过有多少个字符是珠宝就好</li> 
- <li>这里写一下这个笔记主要是现在需要学习go语言， 看了一天golang的基本语法，然后觉得最好的学习还是实际写一些基础代码， leetcode作为熟练掌握基础数据结构是非常合适的。</li> 
- <li>因为完全是新手，所以这里go的实现可能会比较烂。</li> 
-</ol> 
+<p>非常简单直接， 重新搞个字符串，然后判断一下如果是大写的话就转换成小写的</p> 
 <h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
-<pre><code>public int numJewelsInStones(String J, String S) {
-    Set&lt;Character&gt; set = new HashSet&lt;&gt;();
-    for(int i = 0; i &lt; J.length(); ++i) {
-        set.add(J.charAt(i));
-    }
-    int count = 0;
-    for(int i = 0; i &lt; S.length(); ++i) {
-        if(set.contains(S.charAt(i))) count++;
-    }
-    return count;
-}
-
-
-</code></pre> 
-<h2><a href="#go题解代码" id="go题解代码">go题解代码</a></h2> 
-<p>这里值得记录的笔记有两个<br> 1. map如果不用make进行初始化， 也可以声明成功， 但是不能写入数据， 否则会运行时报错panic: assignment to entry in nil map<br> 2. 判断map里面是否有key那行， 如果写成下面这样有变量名的， 会编译报错说变量已经声明但是没有使用，这在go里面是不行的。 只有用一个没有名字的变量（下划线），才是可以的<br> var ele, ok = m[ch]</p> 
-<pre><code>func numJewelsInStones(J string, S string) int {
-    var m = make(map[byte]bool)
-    for i := 0; i &lt; len(J); i++ {
-        var ch = J[i]
-        m[ch] = true
-    }
-    var count int = 0
-    for i := 0; i &lt; len(S); i++ {
-        var ch = S[i]
-        var _, ok = m[ch]
-        if ok {
-            count++
+<pre><code>public String toLowerCase(String str) {
+    StringBuilder sb = new StringBuilder();
+    for(int i = 0; i &lt; str.length(); ++i) {
+        char ch = str.charAt(i);
+        if(ch &gt;= 'A' &amp;&amp; ch &lt;= 'Z') {
+            sb.append((char)('a' + (int)(ch - 'A') ));
+        }
+        else {
+            sb.append(ch);
         }
     }
-    return count
+    return sb.toString();
+}
+
+</code></pre> 
+<h2><a href="#go语言题解代码和一些笔记" id="go语言题解代码和一些笔记">go语言题解代码和一些笔记</a></h2> 
+<ol> 
+ <li>else语句必须和大括号在同一行里面</li> 
+ <li>unicode.IsUpper和unicode.ToLower都需要int32, 但是strings.Builder.WriteByte又需要byte类型</li> 
+ <li>而且用range遍历string得到的是int32, 如果是str[0]得到的又是byte, 感觉很诡异</li> 
+</ol> 
+<pre><code>import "unicode"
+//import "fmt"
+func toLowerCase(str string) string {
+    var sb strings.Builder
+    for _, r := range str {
+        //fmt.Printf("%T", r)
+        if(unicode.IsUpper(r)) {
+            sb.WriteByte(byte(unicode.ToLower(r)))
+        } else {
+            sb.WriteByte(byte(r))
+        }
+    }
+    return sb.String()
 }
 
 </code></pre> 
 <h2><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h2> 
-<p>O(M+N)</p> 
-<h2><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h2> 
-<p>O(M)</p></p>
+<h2><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h2></p>
 	</div>		
 
 <div class="col-sm-4">
