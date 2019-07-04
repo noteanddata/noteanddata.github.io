@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 509 Fibonacci Number的java和go语言解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 509 Fibonacci Number的java和go语言解题笔记</h1>
+			</div>
+
+			<p><em>04 July 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-509-fibonacci-number" id="题目-leetcode-509-fibonacci-number">题目 leetcode 509 Fibonacci Number</a></h2> 
+<p>求解Fibonacci Number， 规则是<br> 1. fib(n) = fib(n-1) + fib(n-2)<br> 2. fib(0) = 0, fib(1) = 1</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>经典题， 可以递归暴力做， 也可以递归+记忆化表格， 也可以开辟一个dp数组动态规划做， 也可以把空间变到O(1)用滚动值来做动态规划</li> 
+</ol> 
+<h2><a href="#java题解代码1" id="java题解代码1">java题解代码1</a></h2> 
+<pre><code>class Solution {
+    public int fib(int n) {
+        if(n == 0) return 0;
+        if(n &lt;= 2) return 1;
+        int a = 1, b = 1;
+        for(int i = 3; i &lt;= n; ++i) {
+            int next = a+b;
+            a = b;
+            b = next;
+        }
+        return b;
+    }
+}
+
+</code></pre> 
+<h2><a href="#go题解代码1" id="go题解代码1">go题解代码1</a></h2> 
+<p>直接递归做， 也没有记忆表格， 效率比较低， 但是可以做</p> 
+<pre><code>func fib(N int) int {
+    if N == 0 {
+        return 0
+    } else if N == 1 {
+        return 1
+    } else {
+        return fib(N-1) + fib(N-2)
+    }    
+}
+
+</code></pre> 
+<h2><a href="#go题解代码2" id="go题解代码2">go题解代码2</a></h2> 
+<p>递归+记忆化表格， 这样可以存储结果.<br> 因为我们需要在递归过程中修改结果， 所以这里数组需要用指针来传递</p> 
+<pre><code>func fib(N int) int {
+    var table = make([]int, N+1)
+    return fibWithTable(N, &amp;table)
+}
+
+func fibWithTable(n int, table *[]int) int {
+    if n == 0 {
+        return 0
+    } else if n == 1 {
+        return 1
+    } else if (*table)[n] != 0 {
+        return (*table)[n]
+    } else {
+        var ret = fibWithTable(n-1, table) + fibWithTable(n-2, table)
+        (*table)[n] = ret
+        return ret
+    }
+}
+
+</code></pre> 
+<h2><a href="#go题解代码3" id="go题解代码3">go题解代码3</a></h2> 
+<pre><code>func fib(N int) int {
+    var table = make([]int, N+1)
+    table[0] = 0
+    table[1] = 1
+    for i := 2; i &lt;= N; i++ {
+        table[i] = table[i-1] + table[i-2]
+    }
+    return table[N]
+}
+
+</code></pre> 
+<h2><a href="#不能通过的go代码" id="不能通过的go代码">不能通过的go代码</a></h2> 
+<p>go语言里面不允许有同名的函数， 即使参数不一样也不可以， 比如下面的代码就会报错<br> “fib redeclared in this block (solution.go)”"</p> 
+<pre><code>func fib(N int) int {
+    var table = make([]int, N+1)
+    return fib(N, table)
+}
+
+func fib(n int, table []int) int {
+    if n == 0 {
+        return 0
+    } else if n == 1 {
+        return 1
+    } else if table[n] != 0 {
+        return table[n]
+    } else {
+        int ret = fib(n-1) + fib(n-2)
+        table[n] = ret
+        return ret
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
