@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 977 Squares of a Sorted Array解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 977 Squares of a Sorted Array解题笔记</h1>
+			</div>
+
+			<p><em>04 July 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-977-squares-of-a-sorted-array" id="题目-leetcode-977-squares-of-a-sorted-array">题目 leetcode 977 Squares of a Sorted Array</a></h2> 
+<p>输入一个数组， 本身是排序的， 要求输出一个数组， 里面的每个元素是原来的数组的每个元素的平方， 同时要对输出数组进行排序</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>朴素的思路就是先计算每个数的平方， 然后排序（我就是这么干的）， 但是显然时间复杂度是O(N*lgN)</li> 
+ <li>更好的做法是O(N)的， 因为原数组已经排序， 所以取平方以后， 要么是原来最大的数的平方值是最大的， 要么是原来最小的负数的平方值（也就是绝对值更大）是最大的。 所以，每次都取一个放到结果里面就好。<br> 这里的小trick是说如果考虑结果的最小值，是没有办法处理的。 但是如果考虑最大值，就是可以处理的。</li> 
+</ol> 
+<h2><a href="#java题解代码1" id="java题解代码1">java题解代码1</a></h2> 
+<pre><code>public int[] sortedSquares(int[] A) {
+    int[] ret = new int[A.length];
+    for(int i = 0; i &lt; A.length; ++i) {
+        ret[i] = A[i] * A[i];
+    }
+    Arrays.sort(ret);
+    return ret;
+}
+</code></pre> 
+<h2><a href="#java题解代码2" id="java题解代码2">java题解代码2</a></h2> 
+<pre><code>public int[] sortedSquares(int[] A) {
+    int left = 0, right = A.length-1;
+    int[] ret = new int[A.length];
+    for(int i = ret.length-1; i &gt;= 0; --i) {
+        if(Math.abs(A[left]) &gt; Math.abs(A[right])) {
+            ret[i] = A[left] * A[left];
+            left++;
+        }
+        else {
+            ret[i] = A[right] * A[right];
+            right--;
+        }
+    }
+    return ret;
+}
+
+</code></pre> 
+<h2><a href="#go题解代码1" id="go题解代码1">go题解代码1</a></h2> 
+<pre><code>import "sort"
+func sortedSquares(A []int) []int {
+    var ret = make([]int, len(A))
+    
+    for i, v := range A {
+        ret[i] = v * v
+    }
+    sort.Ints(ret)
+    return ret
+}
+</code></pre> 
+<h2><a href="#go题解代码2" id="go题解代码2">go题解代码2</a></h2> 
+<p>go语言笔记： math.Abs只接受float64参数， 如果传入int的话会报错！</p> 
+<pre><code>import "math"
+func sortedSquares(A []int) []int {
+    var ret = make([]int, len(A))
+    left, right := 0, len(A)-1
+    for i := len(A)-1; i &gt;= 0; i-- {
+        if math.Abs(float64(A[left])) &gt; math.Abs(float64(A[right])) {
+            ret[i] = A[left] * A[left]
+            left++
+        } else {
+            ret[i] = A[right] * A[right]
+            right--
+        }
+    }
+    return ret
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
