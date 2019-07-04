@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Leetcode 942 DI String Match的go语言解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>Leetcode 942 DI String Match的go语言解题笔记</h1>
+			</div>
+
+			<p><em>04 July 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-942-di-string-match" id="题目-leetcode-942-di-string-match">题目 leetcode 942 DI String Match</a></h2> 
+<p>对于一个只包含D和I的字符串， 返回一个整数数组， 使得符合前面的条件<br> Return any permutation A of [0, 1, …, N] such that for all i = 0, …, N-1:</p> 
+<pre><code>If S[i] == "I", then A[i] &lt; A[i+1]
+If S[i] == "D", then A[i] &gt; A[i+1]
+</code></pre> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目dfs的解法比较暴力 <a href="http://www.noteanddata.com/leetcode-942-DI-String-Match-java-solution-note.html">http://www.noteanddata.com/leetcode-942-DI-String-Match-java-solution-note.html</a>， 贪心的思路在这里 <a href="http://www.noteanddata.com/leetcode-942-DI-String-Match-java-solution-note-2.html">http://www.noteanddata.com/leetcode-942-DI-String-Match-java-solution-note-2.html</a></li> 
+ <li>基本的思想是， 每次都选最大的或者最小的数， 只要满足当前的解是合法的， 后面无法是从k个数里面继续构造， 这k个数存在相对大小关系，也一样可以构造</li> 
+</ol> 
+<h2><a href="#go题解代码" id="go题解代码">go题解代码</a></h2> 
+<pre><code>func diStringMatch(S string) []int {
+    var ret = make([]int, len(S)+1)
+    left, right := 0, len(S)
+    for i, v := range(S) {
+        if v == 'I' {
+            ret[i] = left
+            left++
+        } else {
+            ret[i] = right
+            right--
+        }
+    }
+    ret[len(S)] = left
+    return ret
+}
+
+</code></pre> 
+<h2><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h2> 
+<p>O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
