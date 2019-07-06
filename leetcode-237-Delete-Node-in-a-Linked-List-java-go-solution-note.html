@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 237 Delete Node in a Linked List解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 237 Delete Node in a Linked List解题笔记</h1>
+			</div>
+
+			<p><em>06 July 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-237-delete-node-in-a-linked-list" id="题目-leetcode-237-delete-node-in-a-linked-list">题目 leetcode 237 Delete Node in a Linked List</a></h2> 
+<p>输入一个linkedlist里面的一个节点， 要求直接在这个linkedlist里面删除这个节点</p> 
+<p>The linked list will have at least two elements.<br> All of the nodes’ values will be unique.<br> The given node will not be the tail and it will always be a valid node of the linked list.<br> Do not return anything from your function.</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>直接删除显然是不可能的， 因为要删除的是当前节点， 而且之前的节点都无法获得。<br> 那么， 唯一的办法就是把后面的值拷贝过来， 相当于起到了删除当前节点的效果</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for singly-linked list.
+ * public class ListNode {
+ *     int val;
+ *     ListNode next;
+ *     ListNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public void deleteNode(ListNode node) {
+        while(node.next.next != null) {
+            node.val = node.next.val;
+            node = node.next;
+        }
+        node.val = node.next.val;
+        node.next = null;
+    }
+}
+
+</code></pre> 
+<h2><a href="#go题解代码" id="go题解代码">go题解代码</a></h2> 
+<pre><code>/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func deleteNode(node *ListNode) {
+    for ; node.Next.Next != nil; {
+        node.Val = node.Next.Val
+        node = node.Next
+    }
+    node.Val = node.Next.Val
+    node.Next = nil
+    
+}
+
+</code></pre> 
+<h2><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h2> 
+<p>O(N)</p> 
+<h2><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h2> 
+<p>O(1)</p> 
+<h2><a href="#go错误代码" id="go错误代码">go错误代码</a></h2> 
+<p>最后一个节点的值没有设置正确</p> 
+<pre><code>/**
+ * Definition for singly-linked list.
+ * type ListNode struct {
+ *     Val int
+ *     Next *ListNode
+ * }
+ */
+func deleteNode(node *ListNode) {
+    for ; node.Next.Next != nil; {
+        node.Val = node.Next.Val
+        node = node.Next
+    }
+    node.Next = nil
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
