@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1002 Find Common Characters题go语言解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1002 Find Common Characters题go语言解题笔记</h1>
+			</div>
+
+			<p><em>05 July 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1002-find-common-characters" id="题目-leetcode-1002-find-common-characters">题目 leetcode 1002. Find Common Characters</a></h2> 
+<p>输入一个字符串数组，里面每个字符串都是小写字母，要求输出在所有字符串里面都出现的字母。输出要求包括重复字母，也就是如果一个字母在所有字符串里面出现3次，那么也输出3次。</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>解题思路和这个一样 <a href="http://www.noteanddata.com/leetcode-1002-Find-Common-Characters-java-solution-note.html">http://www.noteanddata.com/leetcode-1002-Find-Common-Characters-java-solution-note.html</a></li> 
+ <li>这里主要是用golang重新实现一遍这个代码</li> 
+</ol> 
+<h2><a href="#go语言题解代码和一些go语言的笔记" id="go语言题解代码和一些go语言的笔记">go语言题解代码和一些go语言的笔记</a></h2> 
+<ol> 
+ <li>go里面的数组， 可以用slice的概念进行修改大小, 但是这里append操作必须赋值， 否则会编译出错</li> 
+</ol> 
+<pre><code>var ret []string
+ret = append(ret, item)
+</code></pre> 
+<p>参考资料<br> <a href="https://tour.golang.org/moretypes/15">https://tour.golang.org/moretypes/15</a><br> <a href="https://blog.golang.org/go-slices-usage-and-internals">https://blog.golang.org/go-slices-usage-and-internals</a></p> 
+<p>这样，就类似于java里面的ArrayList了，</p> 
+<ol> 
+ <li> <p>对于整数类型， 好像没有直接类似于Math.min这样的操作， go里面有对float64直接操作的</p> </li> 
+ <li> <p>学习go语言第4天了， 这里的吐槽是， 为什么这么多语法细节要设计的和c系列不一样， 比如c/c++/java/c#感觉很多都是一脉相承的， 看上去区别不大， go为什么要在这么多小细节上独辟蹊径呢？ 没什么好处啊？ 这些小细节完全是增加了大家的语言学习成本</p> </li> 
+</ol> 
+<pre><code>//import "fmt"
+import "math"
+func commonChars(A []string) []string {
+    var table [26]int
+    for i := 0; i &lt; len(table); i++ {
+        table[i] = math.MaxInt32
+    }
+    
+    for i := 0; i &lt; len(A); i++ {
+        var s = A[i]
+        var curcount [26]int
+        for j := 0; j &lt; len(s); j++ {
+            var ch = s[j]
+            var index = ch - 'a'
+            curcount[index]++
+        }
+        for k := 0; k &lt; len(table); k++ {
+            if curcount[k] &lt; table[k]   {
+                table[k] = curcount[k]
+            }
+        }
+    }
+    var ret []string
+    for i := 0; i &lt; len(table); i++ {
+        for j := 0; j &lt; table[i]; j++ {
+            var chvalue = 'a' + i
+            var item = string([]byte{byte(chvalue)})
+            //fmt.Printf("%T, %s \n", item, item)
+            ret = append(ret, item)
+        }
+    }
+    return ret
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组遍历一次，其中数组里面的每个元素遍历一次，O(M*N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>使用空间是固定的26大小的数组统计频率，所以是O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
