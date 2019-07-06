@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 104 Maximum Depth of Binary Tree解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 104 Maximum Depth of Binary Tree解题笔记</h1>
+			</div>
+
+			<p><em>06 July 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-104-maximum-depth-of-binary-tree" id="题目-leetcode-104-maximum-depth-of-binary-tree">题目 leetcode 104 Maximum Depth of Binary Tree</a></h2> 
+<p>一个二叉树的最大深度</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>之前java版本的递归，stack和bfs的做法在这里<a href="http://www.noteanddata.com/leetcode-104-Maximum-Depth-of-Binary-Tree-java-solution-note.html">http://www.noteanddata.com/leetcode-104-Maximum-Depth-of-Binary-Tree-java-solution-note.html</a></li> 
+</ol> 
+<h2><a href="#go语言题解代码1" id="go语言题解代码1">go语言题解代码1</a></h2> 
+<ol> 
+ <li>go语言的math.Max只支持float64, 所以会需要很多类型转换，有点麻烦</li> 
+ <li>go语言里面的nil有点类似其他语言里面的null, 细节上又有一些不一样<br> <a href="https://go101.org/article/nil.html">https://go101.org/article/nil.html</a></li> 
+</ol> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+import "math"
+func maxDepth(root *TreeNode) int {
+    if nil == root {
+        return 0
+    }
+    leftDepth := maxDepth(root.Left)
+    rightDepth := maxDepth(root.Right)
+    return int(1 + math.Max(float64(leftDepth), float64(rightDepth)))
+}
+
+</code></pre> 
+<h2><a href="#go语言题解代码2" id="go语言题解代码2">go语言题解代码2</a></h2> 
+<ol> 
+ <li>BFS的做法, 现在学会了用go做BFS， 基本逻辑还是和java一样用两个queue, 做level order bfs</li> 
+ <li>在go里面表示一个数组， 里面每个元素都是指向一个类型的指针， 就可以声明成</li> 
+</ol> 
+<pre><code>var queue  []*TreeNode
+</code></pre> 
+<ol> 
+ <li>append操作的结果必须赋给一个变量，否则就会编译报错, 也就是append操作没有改变容器本身， 只是返回了一些变化的容器<br> 所以， 下面这段代码打印的结果是<br> []<br> [1]</li> 
+</ol> 
+<pre><code>func testappend0() {
+	var arr0 []int
+	var arr1 = append(arr0, 1)
+	fmt.Println(arr0)
+	fmt.Println(arr1)
+}
+</code></pre> 
+<ol> 
+ <li>stack的代码过几天再写</li> 
+</ol> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+func maxDepth(root *TreeNode) int {
+    if root == nil {
+        return 0
+    }
+    var queue  []*TreeNode
+    queue = append(queue, root)
+    
+    depth := 0
+    for ; len(queue) &gt; 0; {
+        var nextQueue []*TreeNode 
+        for ; len(queue) &gt; 0; {
+            var node = queue[0]
+            queue = queue[1:]
+            
+            if node.Left != nil {
+                nextQueue = append(nextQueue, node.Left)
+            }
+            if node.Right != nil {
+                nextQueue = append(nextQueue, node.Right)
+            }
+        }
+        queue = nextQueue
+        depth++
+    }
+    return depth
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
