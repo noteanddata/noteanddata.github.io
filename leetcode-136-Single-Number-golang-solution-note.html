@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 136 Single Number的go语言解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 136 Single Number的go语言解题笔记</h1>
+			</div>
+
+			<p><em>06 July 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-136-single-number" id="题目-leetcode-136-single-number">题目 leetcode 136 Single Number</a></h2> 
+<p>输入一个数组， 只有一个数只出现一次， 其他数都出现两次， 要求找到这个一次的数</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>通过异或的方式可以得到唯一的那个不同的值</li> 
+</ol> 
+<h2><a href="#go语言题解代码1" id="go语言题解代码1">go语言题解代码1</a></h2> 
+<ol> 
+ <li>go语言的位操作， 基本和其他语言类似<br> <a href="https://www.tutorialspoint.com/go/go_bitwise_operators.htm">https://www.tutorialspoint.com/go/go_bitwise_operators.htm</a></li> 
+ <li>但是没有无符号右移， 测试了一下下面代码的结果还是-1， 也就是右移操作是带符号的</li> 
+</ol> 
+<pre><code>-1 &gt;&gt; 1
+</code></pre> 
+<pre><code>func singleNumber(nums []int) int {
+    ret := 0
+    for _, v := range nums {
+        ret = ret ^ v
+    }
+    return ret
+}
+
+</code></pre> 
+<h2><a href="#go语言题解代码2" id="go语言题解代码2">go语言题解代码2</a></h2> 
+<p>在go语言的遍历过程中，range可以用来遍历数组和map</p> 
+<pre><code>func singleNumber(nums []int) int {
+    var countmap = make(map[int]int)
+    for _, v := range nums {
+        countmap[v]++
+    }
+    for k, v := range countmap {
+        if v == 1 {
+            return k
+        }
+    }
+    return -1
+}
+
+</code></pre> 
+<h2><a href="#go语言题解代码3" id="go语言题解代码3">go语言题解代码3</a></h2> 
+<p>当然， 也可以排序做, sort.Ints排序以后， 这个数组的元素就发生了变化</p> 
+<pre><code>import "sort"
+func singleNumber(nums []int) int {
+    sort.Ints(nums)
+    for i := 0; i &lt; len(nums) - 1; i += 2 {
+        if nums[i] != nums[i+1] {
+            return nums[i]
+        }
+    }
+    return nums[len(nums)-1]
+}
+
+</code></pre> 
+<h2><a href="#go语言错误代码" id="go语言错误代码">go语言错误代码</a></h2> 
+<pre><code>import "sort"
+func singleNumber(nums []int) int {
+    sort.Ints(nums)
+    for i := 0; i &lt; len(nums) - 1; i++ {
+        if nums[i] != nums[i+1] {
+            return nums[i]
+        }
+    }
+    return nums[len(nums)-1]
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
