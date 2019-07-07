@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 238 Product of Array Except Self的go语言解题报告3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 238 Product of Array Except Self的go语言解题报告3</h1>
+			</div>
+
+			<p><em>07 July 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-238-product-of-array-except-self" id="题目-leetcode-238-product-of-array-except-self">题目 leetcode 238 Product of Array Except Self</a></h2> 
+<ol> 
+ <li>输入一个整数数组，要求输出同样大小的一个整数数组，其中每个值是数组中所有值的积除以当前的值</li> 
+ <li>要求不使用除法来做这个题目</li> 
+ <li>最好能够使用O(1)空间的复杂度来做这个</li> 
+</ol> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>解题思路参考<a href="http://www.noteanddata.com/leetcode-238-Product-of-Array-Except-Self-java-note-2.html">http://www.noteanddata.com/leetcode-238-Product-of-Array-Except-Self-java-note-2.html</a><br> <a href="http://www.noteanddata.com/leetcode-238-Product-of-Array-Except-Self-java-solution-note.htmls">http://www.noteanddata.com/leetcode-238-Product-of-Array-Except-Self-java-solution-note.html</a></li> 
+</ol> 
+<h2><a href="#go语言题解笔记" id="go语言题解笔记">go语言题解笔记</a></h2> 
+<p>go语法学习： 初始化多个变量在一行里面是可以的； 但是赋值是只能一个一个赋值的。 下面的代码第二行就会报错。<br> 这感觉不是麻烦么？？？</p> 
+<pre><code>a ,b,c := 0,1,2
+a = b = c
+</code></pre> 
+<pre><code>func productExceptSelf(nums []int) []int {
+    
+    left := make([]int, len(nums))
+    right := make([]int, len(nums))
+    left[0] = 1
+    right[len(nums)-1] = 1
+    for i := 1; i &lt; len(nums); i++ {
+        left[i] = left[i-1] * nums[i-1]
+    }
+    for i := len(nums)-2; i &gt;= 0; i-- {
+        right[i] = right[i+1] * nums[i+1]
+    }
+    ret := make([]int, len(nums)) 
+    for i := 0; i &lt; len(nums); i++ {
+        if i == 0 {
+            ret[i] = right[i]
+        } else if i == len(nums) -1 {
+            ret[i] = left[i]
+        } else {
+            ret[i] = left[i] * right[i]
+        }
+    }
+    return ret
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
