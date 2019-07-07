@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 268 Missing Number解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 268 Missing Number解题笔记</h1>
+			</div>
+
+			<p><em>07 July 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-268-missing-number" id="题目-leetcode-268-missing-number">题目 leetcode 268 Missing Number</a></h2> 
+<p>从[0,1….., n]的数组里面， 删除掉一个， 然后结果是乱序的， 求这个删除的数字</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>可以用一个map或者boolean数组标记这个不存在的数， 也可以通过求和直接得到结果。 （当然排序也是可以的）</li> 
+</ol> 
+<h2><a href="#java题解代码1" id="java题解代码1">java题解代码1</a></h2> 
+<p>设置一个boolean 数组标记是否存在</p> 
+<pre><code>public int missingNumber(int[] nums) {
+    boolean[] flag = new boolean[nums.length+1];
+    for(int i = 0; i &lt; nums.length; ++i) {
+        flag[nums[i]] = true;
+    }
+    
+    int index = -1;
+    for(int i = 0; i &lt; nums.length+1; ++i) {
+        if(!flag[i]) {
+            index = i;
+            break;
+        }
+    }
+    return index;
+}
+</code></pre> 
+<h2><a href="#java题解代码2" id="java题解代码2">java题解代码2</a></h2> 
+<p>因为期望结果是连续的，所以和是可以提前知道的， 所以missing的数就可以用和来找到</p> 
+<pre><code>public int missingNumber(int[] nums) {
+    int sum = 0;
+    for(int num: nums) {
+        sum += num;
+    }
+    int total = (1 + nums.length) * nums.length / 2;
+    return total - sum;
+}
+
+
+</code></pre> 
+<h2><a href="#go语言题解代码1" id="go语言题解代码1">go语言题解代码1</a></h2> 
+<pre><code>func missingNumber(nums []int) int {
+    existmap := make(map[int]bool, 0)
+    for _, v := range nums {
+        existmap[v] = true
+    }
+    for i := 0; i &lt;= len(nums); i++ {
+        if !existmap[i] {
+            return i
+        } 
+    }
+    return -1
+}
+
+</code></pre> 
+<h2><a href="#go语言题解代码2" id="go语言题解代码2">go语言题解代码2</a></h2> 
+<pre><code>func missingNumber(nums []int) int {
+    sum := 0
+    for _, v := range nums {
+        sum += v
+    }
+    total := (1+len(nums)) * len(nums) / 2
+    return total-sum
+}
+
+</code></pre> 
+<h2><a href="#go语言题解代码4" id="go语言题解代码4">go语言题解代码4</a></h2> 
+<pre><code>import "sort"
+func missingNumber(nums []int) int {
+    sort.Ints(nums)
+    for i := 0; i &lt; len(nums); i++ {
+        if i != nums[i] {
+            return i
+        } 
+    }
+    return len(nums)
+}
+
+</code></pre> 
+<h2><a href="#go语言错误代码" id="go语言错误代码">go语言错误代码</a></h2> 
+<pre><code>import "sort"
+func missingNumber(nums []int) int {
+    sort.Ints(nums)
+    for i := 0; i &lt;= len(nums); i++ {
+        if i != nums[i] {
+            return i
+        } 
+    }
+    return -1
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>

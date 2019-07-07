@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1111 Maximum Nesting Depth of Two Valid Parentheses Strings的java和go解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1111 Maximum Nesting Depth of Two Valid Parentheses Strings的java和go解题笔记</h1>
+			</div>
+
+			<p><em>07 July 2019</em></p>
+
+			<p><h2><a href="#题目-1111-maximum-nesting-depth-of-two-valid-parentheses-strings" id="题目-1111-maximum-nesting-depth-of-two-valid-parentheses-strings">题目 1111 Maximum Nesting Depth of Two Valid Parentheses Strings</a></h2> 
+<p>这个题目意思比较难读<br> 1. 首先输入是一个只有左括号和右括号的字符串<br> 2. 然后定义合法的括号字符串就是左右可以匹配的， 就是可以用stack正确模拟的<br> 3. 定义这个字符串的深度规则如下<br> depth(““) = 0<br> depth(A + B) = max(depth(A), depth(B)), where A and B are VPS’s<br> depth(”(” + A + “)”) = 1 + depth(A), where A is a VPS.<br> 4. 然后从这个字符串里面取一个子序列，这个子序列也是合法的括号字符串， 然后剩下的子序列也是一个合法的括号字符串<br> 并且使得max(depth(A), depth(B))最小<br> 5. 返回这个分割的结果， 第一个子序列对应的是0， 第二子序列对应的是1</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>首先求解最大深度， 然后这个分割要让max(depth(A), depth(B))最小的话, 那就是其中一个子序列的深度是max/2+max%2</li> 
+ <li>那么， 遇到左括号的时候， 如果当前这个子序列的深度没有超过这个最大值，那就可以选；<br> 如果超过了， 那么左括号就不选， 等遇到右括号的时候会让深度下降， 那么后面又可以选左括号.<br> 遇到右括号的时候， 可以用贪心的思想，每次都先选， 这样可以保证一定会遇到结果</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int[] maxDepthAfterSplit(String seq) {
+        int max = 0;
+        int count = 0;
+        for(int i = 0; i &lt; seq.length(); ++i) {
+            if(seq.charAt(i) == '(') {
+                count++;
+                max = Math.max(max, count);
+            }
+            else {
+                count--;
+            }
+        }
+        
+        int depth = max/2 + max%2;
+        int[] ret = new int[seq.length()];
+        count = 0;
+        int acount = 0;
+        boolean valid = true;
+        for(int i = 0; i &lt; seq.length(); ++i) {
+            if(seq.charAt(i) == '(') {
+                count++;
+                if(count &lt;= depth) {
+                    acount++;
+                    ret[i] = 0;
+                }
+                else {
+                    ret[i] = 1;
+                }
+            }
+            else {
+                count--;
+                if(acount &gt; 0) {
+                    acount--;
+                    ret[i] = 0;
+                }
+                else {
+                    ret[i] = 1;
+                }
+            }            
+        }
+        return ret;
+    }
+}
+
+</code></pre> 
+<h2><a href="#go语言题解代码" id="go语言题解代码">go语言题解代码</a></h2> 
+<pre><code>func maxDepthAfterSplit(seq string) []int {
+    max, count := 0, 0
+    for i := 0; i &lt; len(seq); i++ {
+        if seq[i] == '(' {
+            count++
+            if count &gt; max {
+                max = count
+            }
+        } else {
+            count--
+        }
+    }
+    
+    depth := max/2 + max%2
+    ret := make([]int, len(seq))
+    count = 0
+    acount := 0
+    for i := 0; i &lt; len(seq); i++ {
+        if(seq[i] == '(') {
+            count++
+            if count &lt;= depth {
+                acount++
+                ret[i] = 0
+            } else {
+                ret[i] = 1
+            }
+        } else {
+            count--
+            if acount &gt; 0 {
+                acount--
+                ret[i] = 0
+            } else {
+                ret[i] = 1
+            }
+        }
+    }
+    return ret
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>O(1)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
