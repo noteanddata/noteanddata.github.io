@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 1109 Corporate Flight Bookings解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1109 Corporate Flight Bookings解题笔记</h1>
+			</div>
+
+			<p><em>07 July 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-1109-corporate-flight-bookings" id="题目-leetcode-1109-corporate-flight-bookings">题目 leetcode 1109 Corporate Flight Bookings</a></h2> 
+<p>输入一个n和一个二维数组， n表示航班的个数， 其中二维数组的每个元素表示[from, to, count]<br> 表示从from到to的航班上每个航班订了count个座位。<br> 问， 每个航班分别订了多少个座位</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>看数据规模感觉直接暴力做是不会过的，没想到提交了一下居然也可以过</li> 
+ <li>结果看大家的做法发现这题目有很多非常巧妙的做法， 从线段树到其他各种技巧。<br> 这里写一个相对比较容易理解的。<br> a. 假设没有to， 每个count都是从from到最后， 那么， ret[i] = bookings[from=i].count + ret[i-1]<br> 也就是说， 把每个从i开始的计算到当前的位置， 然后因为每个数都会对后面的所有flight起作用， 所以可以连续加到后面去<br> b. 这时候考虑to的影响， 那就是要减去booking[from=to].count</li> 
+</ol> 
+<h2><a href="#java暴力题解代码1" id="java暴力题解代码1">java暴力题解代码1</a></h2> 
+<p>O(N^2)的复杂度</p> 
+<pre><code>public int[] corpFlightBookings(int[][] bookings, int n) {
+    int[] ret = new int[n];
+    for(int[] booking: bookings) {
+        for(int i = booking[0]; i &lt;= booking[1]; ++i) {
+            ret[i-1] += booking[2];
+        }
+    }
+    return ret;
+}
+
+
+</code></pre> 
+<h2><a href="#java题解代码2" id="java题解代码2">java题解代码2</a></h2> 
+<p>O(N)时间复杂度</p> 
+<pre><code>public int[] corpFlightBookings(int[][] bookings, int n) {
+    int[] ret = new int[n];
+    for(int[] booking: bookings) {
+        ret[booking[0]-1] += booking[2];
+        if(booking[1] &lt; n) {
+            ret[booking[1]] -= booking[2];
+        }
+    }
+    for(int i = 1; i &lt; n; ++i) {
+        ret[i] += ret[i-1];
+    }
+    return ret;
+}
+
+
+</code></pre> 
+<h2><a href="#go题解代码1" id="go题解代码1">go题解代码1</a></h2> 
+<pre><code>func corpFlightBookings(bookings [][]int, n int) []int {
+    ret := make([]int, n)
+    for _, booking := range bookings {
+        for i := booking[0]; i &lt;= booking[1]; i++ {
+            ret[i-1] += booking[2]
+        }
+    }
+    return ret
+}
+</code></pre> 
+<h2><a href="#go题解代码2" id="go题解代码2">go题解代码2</a></h2> 
+<pre><code>func corpFlightBookings(bookings [][]int, n int) []int {
+    ret := make([]int, n)
+    for _, booking := range bookings {
+        ret[booking[0]-1] += booking[2]
+        if booking[1] &lt; n {
+            ret[booking[1]] -= booking[2]
+        }
+    }
+    for i := 1; i &lt; n; i++ {
+        ret[i] += ret[i-1]
+    }
+    return ret
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
