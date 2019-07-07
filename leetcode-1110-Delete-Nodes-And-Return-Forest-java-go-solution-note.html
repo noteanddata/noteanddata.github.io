@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>1110 Delete Nodes And Return Forest解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>1110 Delete Nodes And Return Forest解题笔记</h1>
+			</div>
+
+			<p><em>07 July 2019</em></p>
+
+			<p><h2><a href="#题目-1110-delete-nodes-and-return-forest" id="题目-1110-delete-nodes-and-return-forest">题目 1110 Delete Nodes And Return Forest</a></h2> 
+<p>输入一个每个节点值都不一样的二叉树， 和一个数组，里面包含了要删除的节点的值， 返回删除节点以后所有剩下的二叉树的根节点的集合</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>递归， 核心是需要传递给递归函数当前节点是否已经加入到集合里面；<br> 如果没有加入， 并且当前节点也是不需要删除的， 那么就加入<br> 如果已经加入， 那么当前节点就不需要加入；</li> 
+</ol> 
+<p>左右子树递归的时候也要传入类似的信息</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public List&lt;TreeNode&gt; delNodes(TreeNode root, int[] to_delete) {
+        Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+        for(int v: to_delete) {
+            set.add(v);
+        }
+        
+        List&lt;TreeNode&gt; list = new ArrayList&lt;&gt;();
+        dfs(root, set, list, false);
+        return list;
+    }
+    
+    void dfs(TreeNode node, Set&lt;Integer&gt; set, List&lt;TreeNode&gt; list, boolean rootadded) {
+        if(null == node) return;
+        if(set.contains(node.val)) {
+            dfs(node.left, set, list, false);
+            dfs(node.right, set, list, false);
+        }
+        else {
+            if(!rootadded) {
+                list.add(node);
+            }
+
+            if(null != node.left &amp;&amp; set.contains(node.left.val)) {
+                dfs(node.left, set, list, false);    
+                node.left = null;                
+            }
+            else {
+                dfs(node.left, set, list, true);
+            }
+                
+            if(null != node.right &amp;&amp; set.contains(node.right.val)) {
+                dfs(node.right, set, list, false);    
+                node.right = null;
+            }
+            else {
+                dfs(node.right, set, list, true);    
+            }
+        }
+    }
+}
+
+</code></pre> 
+<h2><a href="#go语言题解代码" id="go语言题解代码">go语言题解代码</a></h2> 
+<p>这个题目在go语言的细节上学习了很久才调试通过， 主要细节如下<br> 1. 传入map这样的数据结构的时候， 我们需要传入指针，传入参数和map的读取如下</p> 
+<pre><code>delmap *map[int]bool
+
+(*delmap)[node.Val]
+
+</code></pre> 
+<ol> 
+ <li>传入slice的时候， 因为slice里面的元素已经是指针了， 一直搞不定怎么传入slice的指针<br> 因为只传slice本身， 那么里面如果有数据， 是可以修改数据的， 因为slice本身也是指向内存的一个地址，<br> 但是如果要append这些， 则必须要传入slice的指针， 但是这里一直搞不定如何定义参数和修改这个slice，<br> 最后定义了一个type, 这样才方便传入指针<br> 所以type定义， 函数参数， 以及修改slice的指针的内容， 需要如下的方式</li> 
+</ol> 
+<pre><code>type nodeslice [] *TreeNode
+
+func dfs(node *TreeNode, delmap *map[int]bool, nodelist *nodeslice, added bool) {
+
+*nodelist = append(*nodelist, node)
+</code></pre> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+
+//import "container/list"
+
+type nodeslice [] *TreeNode
+
+func delNodes(root *TreeNode, to_delete []int) []*TreeNode {
+    delmap := make(map[int]bool)
+    for _, v := range to_delete {
+        delmap[v] = true
+    }
+    nodelist := make(nodeslice, 0)
+    dfs(root, &amp;delmap, &amp;nodelist, false)
+    return nodelist
+}
+
+func dfs(node *TreeNode, delmap *map[int]bool, nodelist *nodeslice, added bool) {
+    if node == nil {
+        return
+    }    
+    if (*delmap)[node.Val] {
+        dfs(node.Left, delmap, nodelist, false)
+        dfs(node.Right, delmap, nodelist, false)
+    } else {
+        if !added {
+            *nodelist = append(*nodelist, node)
+            
+        }
+        
+        if node.Left != nil &amp;&amp; (*delmap)[node.Left.Val] {
+            dfs(node.Left, delmap, nodelist, false)
+            node.Left = nil
+        } else {
+            dfs(node.Left, delmap, nodelist, true)
+        }
+        
+        if node.Right != nil &amp;&amp; (*delmap)[node.Right.Val] {
+            dfs(node.Right, delmap, nodelist, false)
+            node.Right = nil
+        } else {
+            dfs(node.Right, delmap, nodelist, true)
+        }
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
