@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>leetcode 98 Validate Binary Search Tree的go语言解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 98 Validate Binary Search Tree的go语言解题笔记</h1>
+			</div>
+
+			<p><em>10 July 2019</em></p>
+
+			<p><h2><a href="#题目-leetcode-98-validate-binary-search-tree" id="题目-leetcode-98-validate-binary-search-tree">题目 leetcode 98 Validate Binary Search Tree</a></h2> 
+<p>判断一个二叉搜索树是否是合法的</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li> <p>之前的解题思路在这里<a href="http://www.noteanddata.com/leetcode-98-Validate-Binary-Search-Tree-Facebook-Interview-Problem-java-solution-note.html">http://www.noteanddata.com/leetcode-98-Validate-Binary-Search-Tree-Facebook-Interview-Problem-java-solution-note.html</a><br> <a href="http://www.noteanddata.com/leetcode-98-Validate-Binary-Search-Tree-java-solution-note-2.html">http://www.noteanddata.com/leetcode-98-Validate-Binary-Search-Tree-java-solution-note-2.html</a></p> </li> 
+ <li> <p>但是按照之前的思路递归用go语言来写遇到了一些困难， 首先leetcode里面就直接给了一个函数让实现， 而java是一个class， 那么用一个class的话， 就可以用一个成员变量保存prev， 相当于全局的。 然后一开始也不知道go语言可以直接使用全局变量， 看到一个函数就感觉没有办法使用全局变量。 然后试图传入**TreeNode来做prev了。 但是怎么写都写不对， 要处理nil和非nil的情况， 只能放弃。 到最后才看到可以直接使用全局变量。</p> </li> 
+ <li> <p>中间学习了另外一个解法， 递归传入min和max值， 不过细节上， 还是有一些需要注意的地方</p> </li> 
+</ol> 
+<h2><a href="#go语言题解代码1" id="go语言题解代码1">go语言题解代码1</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+
+var prev *TreeNode
+func isValidBST(root *TreeNode) bool {
+    prev = nil
+    return validBST(root)
+}
+
+func validBST(node *TreeNode) bool {
+    if node == nil {
+        return true
+    }
+    if !validBST(node.Left) {
+        return false
+    }
+    if nil != prev &amp;&amp; node.Val &lt;= prev.Val {
+        return false
+    }
+    prev = node
+    return validBST(node.Right)
+}
+
+</code></pre> 
+<h2><a href="#go语言错误代码1" id="go语言错误代码1">go语言错误代码1</a></h2> 
+<p>这里全局变量， leetcode在验证的时候会跑多次test case， 所以如果不在入口函数的地方每次都把prev重新初始化成nil的话，多组test case就会报错.</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+
+var prev *TreeNode
+func isValidBST(root *TreeNode) bool {
+    return validBST(root)
+}
+
+func validBST(node *TreeNode) bool {
+    if node == nil {
+        return true
+    }
+    if !validBST(node.Left) {
+        return false
+    }
+    if nil != prev &amp;&amp; node.Val &lt;= prev.Val {
+        return false
+    }
+    prev = node
+    return validBST(node.Right)
+}
+
+</code></pre> 
+<h2><a href="#go语言题解代码" id="go语言题解代码">go语言题解代码</a></h2> 
+<p>使用最大最小值的代码， 这里有一些细节，<br> 1. 判断的时候，不能直接用&lt;=和&gt;=, 否则针对Integer.MAX_VALUE的单节点就无法判断了<br> 2. 然后改成&lt;和&gt;的时候， 那么每次递归的时候需要传入最大值和最小值</p> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * type TreeNode struct {
+ *     Val int
+ *     Left *TreeNode
+ *     Right *TreeNode
+ * }
+ */
+
+import "math"
+func isValidBST(root *TreeNode) bool {
+    return validBST(root, math.MinInt32, math.MaxInt32)
+}
+
+func validBST(node *TreeNode, min int, max int) bool {
+    if node == nil {
+        return true
+    }
+    if node.Val &lt; min || node.Val &gt; max {
+        return false
+    }
+    return validBST(node.Left, min, node.Val-1) &amp;&amp; validBST(node.Right, node.Val+1, max)
+}
+
+</code></pre> 
+<h2><a href="#go语言错误代码1" id="go语言错误代码1">go语言错误代码1</a></h2> 
+<p>好， 直接输入最大值最小值的情况就不能通过了<br> Input: [2147483647]<br> Output: false<br> Expected: true</p> 
+<pre><code>import "math"
+func isValidBST(root *TreeNode) bool {
+    return validBST(root, math.MinInt32, math.MaxInt32)
+}
+
+func validBST(node *TreeNode, min int, max int) bool {
+    if node == nil {
+        return true
+    }
+    if node.Val &lt;= min || node.Val &gt;= max {
+        return false
+    }
+    return validBST(node.Left, min, node.Val) &amp;&amp; validBST(node.Right, node.Val, max)
+}
+
+
+</code></pre> 
+<h2><a href="#go语言错误代码2" id="go语言错误代码2">go语言错误代码2</a></h2> 
+<p>那么尝试只判断&lt; 或者&gt;, 这样当然对于相等的数据就不可以了</p> 
+<pre><code>import "math"
+func isValidBST(root *TreeNode) bool {
+    return validBST(root, math.MinInt32, math.MaxInt32)
+}
+
+func validBST(node *TreeNode, min int, max int) bool {
+    if node == nil {
+        return true
+    }
+    if node.Val &lt; min || node.Val &gt; max {
+        return false
+    }
+    return validBST(node.Left, min, node.Val) &amp;&amp; validBST(node.Right, node.Val, max)
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
