@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>leetcode 9 Palindrome Number解题笔记</title>
+    <title>leetcode 14 Longest Common Prefix解题笔记</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Le styles -->
@@ -56,54 +56,60 @@ var _hmt = _hmt || [];
 		<div class="col-sm-8">
 
 			<div class="page-header">
-				<h1>leetcode 9 Palindrome Number解题笔记</h1>
+				<h1>leetcode 14 Longest Common Prefix解题笔记</h1>
 			</div>
 
-			<p><em>09 July 2019</em></p>
+			<p><em>10 July 2019</em></p>
 
-			<p><h2><a href="#题目-leetcode-9-palindrome-number" id="题目-leetcode-9-palindrome-number">题目 leetcode 9 Palindrome Number</a></h2> 
-<p>判断一个数是否是回文数</p> 
+			<p><h2><a href="#题目-leetcode-14-longest-common-prefix" id="题目-leetcode-14-longest-common-prefix">题目 leetcode 14 Longest Common Prefix</a></h2> 
+<p>输入一个字符串数组， 求这些字符串的最长的公共的prefix</p> 
 <h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
-<p>可以转换成字符串， 也可以直接数字判断， 注意尽量不要有溢出<br> <a href="http://www.noteanddata.com/leetcode-9-Palindrome-Number-java-solution-note.html">http://www.noteanddata.com/leetcode-9-Palindrome-Number-java-solution-note.html</a></p> 
+<p>直接按照题目意思遍历每个index就好</p> 
 <h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
-<pre><code>public  boolean isPalindrome(int x) {
-   if(x &lt; 0 || (x != 0 &amp;&amp; x%10 == 0)) return false;
-   int mirror = 0;
-   while(x &gt; mirror) {
-       mirror = mirror * 10 + x%10;
-       x /= 10;
-   }
-   return mirror == x || mirror/10 == x;
-}
-</code></pre> 
-<h2><a href="#go语言题解代码1" id="go语言题解代码1">go语言题解代码1</a></h2> 
-<pre><code>func isPalindrome(x int) bool {
-    if x &lt; 0 || (x != 0 &amp;&amp; x%10 == 0) {
-        return false
+<pre><code>public String longestCommonPrefix(String[] strs) {
+    if(strs.length == 0) {
+        return "";
     }
-    mirror := 0
-    for ; mirror &lt; x; {
-        r := x%10
-        mirror = mirror * 10 + r
-        x = x/10
-    }
-    return mirror == x || mirror/10 == x
-}
 
-</code></pre> 
-<h2><a href="#go语言题解代码2" id="go语言题解代码2">go语言题解代码2</a></h2> 
-<p>用strconv.Itoa把数字转换成字符串</p> 
-<pre><code>import "strconv"
-func isPalindrome(x int) bool {
-    s := strconv.Itoa(x)
-    for left, right := 0, len(s)-1; left &lt; right; {
-        if s[left] != s[right] {
-            return false
+    StringBuilder sb = new StringBuilder();
+    for(int i = 0; i &lt; strs[0].length(); ++i) {
+        char ch = strs[0].charAt(i);
+        boolean match = true;
+        for(int j = 1; j &lt; strs.length; ++j) {
+            if(i &gt;= strs[j].length() || strs[j].charAt(i) != ch) {
+                match = false;
+                break;
+            }
         }
-        left++
-        right--
+        if(!match) {
+            break;
+        }
+        sb.append(ch);
     }
-    return true
+    return sb.toString();
+}
+</code></pre> 
+<h2><a href="#go题解代码" id="go题解代码">go题解代码</a></h2> 
+<pre><code>import "strings"
+func longestCommonPrefix(strs []string) string {
+    if len(strs) == 0 {
+        return ""
+    }
+    var sb strings.Builder
+    for i := 0; i &lt; len(strs[0]); i++ {
+        match := true
+        for j := 1; j &lt; len(strs); j++ {
+            if i &gt;= len(strs[j]) || strs[0][i] != strs[j][i] {
+                match = false
+                break
+            }
+        }
+        if(!match) {
+            break
+        } 
+        sb.WriteByte(strs[0][i])
+    }
+    return sb.String()
 }
 
 </code></pre></p>
