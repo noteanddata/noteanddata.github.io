@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>go语言实现web服务的笔记1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>go语言实现web服务的笔记1</h1>
+			</div>
+
+			<p><em>16 July 2019</em></p>
+
+			<p><h2><a href="#参考资料" id="参考资料">参考资料</a></h2> 
+<p>go语言内置了http的基本实现， 所以主要参考这个就可以写做基本的http服务<br> <a href="https://golang.org/pkg/net/http/">https://golang.org/pkg/net/http/</a></p> 
+<h2><a href="#最基本代码" id="最基本代码">最基本代码</a></h2> 
+<pre><code>package main
+
+import (
+  "fmt"
+  "net/http"
+)
+
+func main() {
+  run()
+}
+
+func run() {
+  http.HandleFunc("/", HelloServer)
+  http.ListenAndServe(":8080", nil)
+}
+
+func HelloServer(w http.ResponseWriter, r * http.Request) {
+  fmt.Fprintf(w, "Hello, world !")
+}
+
+</code></pre> 
+<h2><a href="#使用web框架的最基本代码" id="使用web框架的最基本代码">使用web框架的最基本代码</a></h2> 
+<p>和其他语言一样， 语言原生的http支持的功能比较基础， 通常需要有上层的框架提供很多应用层的功能<br> 所以， 参考了一下这个go web 框架的列表， 选了其中第一个gin来实现最基础的web框架<br> <a href="https://github.com/mingrammer/go-web-framework-stars">https://github.com/mingrammer/go-web-framework-stars</a></p> 
+<p><a href="https://github.com/gin-gonic/gin">https://github.com/gin-gonic/gin</a></p> 
+<p>最基本代码如下</p> 
+<pre><code>package main 
+import "github.com/gin-gonic/gin"
+
+func main() {
+  startHttpServer()
+}
+
+func startHttpServer() {
+  r := gin.Default()
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "pong",
+		})
+	})
+  
+  r.Run() // listen and serve on 0.0.0.0:8080    
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
