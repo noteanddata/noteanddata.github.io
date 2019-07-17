@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>go语言empty interface学习笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>go语言empty interface学习笔记</h1>
+			</div>
+
+			<p><em>16 July 2019</em></p>
+
+			<p><h2><a href="#参考资料" id="参考资料">参考资料</a></h2> 
+<p><a href="https://tour.golang.org/methods/14">https://tour.golang.org/methods/14</a><br> <a href="https://flaviocopes.com/go-empty-interface/">https://flaviocopes.com/go-empty-interface/</a><br> <a href="https://github.com/golang/go/wiki/InterfaceSlice">https://github.com/golang/go/wiki/InterfaceSlice</a></p> 
+<h2><a href="#interface的基本概念" id="interface的基本概念">interface的基本概念</a></h2> 
+<p>不像其他语言里面一样有一个显式的implements, 只要一个类型实现了接口的对应方法那就是这个接口,<br> 就是可以在运行时把某个类型的变量转换成这个接口类型<br> <a href="https://gobyexample.com/interfaces">https://gobyexample.com/interfaces</a></p> 
+<h2><a href="#empty-interface的相关代码和实现" id="empty-interface的相关代码和实现">empty interface的相关代码和实现</a></h2> 
+<ol> 
+ <li>在go语言里面， 任何类型都实现了empty interface, 所以可以把任何变量赋给一个empty interface的变量.<br> 并且， 赋给empty interface以后，每个变量都会有正确的类型</li> 
+</ol> 
+<pre><code>func testinterface() {
+  var s interface{}
+  s = "hello"
+  fmt.Println(s)
+  s = 123
+  fmt.Println(s)
+}
+
+</code></pre> 
+<p>上面的代码的输出就会是</p> 
+<pre><code>string, hello
+int, 123
+</code></pre> 
+<h2><a href="#接受任何个数-任何类型的变量作为函数参数" id="接受任何个数-任何类型的变量作为函数参数">接受任何个数， 任何类型的变量作为函数参数</a></h2> 
+<p>因为 empty interface表示任何类型， 那么加上可变参数以后， 就是可以接受任何个数的， 任何类型的参数<br> 比如fmt.Print就是这样<br> <a href="https://golang.org/pkg/fmt/#Print">https://golang.org/pkg/fmt/#Print</a></p> 
+<pre><code>func Print(a ...interface{}) (n int, err error)
+</code></pre> 
+<h2><a href="#empty-interface-slice" id="empty-interface-slice">empty interface slice</a></h2> 
+<p><a href="https://github.com/golang/go/wiki/InterfaceSlice">https://github.com/golang/go/wiki/InterfaceSlice</a></p> 
+<p>下面的代码会报错， 不能直接把一个其他类型的slice赋值给一个empty interface的slice</p> 
+<pre><code>func test2() {
+  var dataSlice []int 
+  var interfaceSlice []interface{} = dataSlice
+}
+</code></pre> 
+<p>所以需要这样写, 先make一个slice, 然后一个一个拷贝过去</p> 
+<pre><code>func test2() {
+  var dataSlice []int = make([]int, 5)
+  var interfaceSlice []interface{} = make([]interface{}, len(dataSlice))
+  for i, d := range dataSlice {
+  	interfaceSlice[i] = d
+  }
+  fmt.Println(interfaceSlice)
+}
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
