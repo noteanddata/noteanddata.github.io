@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>系统设计demo--设计一个tinyurl系统的go语言实现</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>系统设计demo--设计一个tinyurl系统的go语言实现</h1>
+			</div>
+
+			<p><em>19 July 2019</em></p>
+
+			<p><h2><a href="#背景" id="背景">背景</a></h2> 
+<p>最近在学习go语言， 用go语言刷了几十道leetcode简单和中等题以后， 觉得可以写一些实际的项目来练习。 想法之一是把那些系统设计的项目用go语言做一些实现， 这样可以练习自己的系统设计水平，写出来也许对其他人有帮助， 然后放到github上或许还可以得到feedback，也可以帮助自己提高。</p> 
+<h2><a href="#题目-tinyurl系统设计" id="题目-tinyurl系统设计">题目 tinyurl系统设计</a></h2> 
+<p>设计一个短网址系统，<br> 1. 输入一个url， 返回一个短url， 通常是固定长度的url，需要尽可能短<br> 2. 针对短url， 每次访问需要重定向到对应的长url</p> 
+<h2><a href="#思路" id="思路">思路</a></h2> 
+<p>先从最简单的单机版开始， 主要是通过一个数据库来存储长url和短url的映射<br> 1. 每次来一个长url， 从数据库里面生成一个唯一的数字id， 然后把这个id用base62编码，也就是<br> A到Z, a到z， 0-9总共62个字符<br> 2. 每次来一个短url， 直接到数据库里面查询短url对应的长url</p> 
+<p>由于MySQL里面没有sequence, 所以专门用一张表格来生成id。 总共需要下面两个表格</p> 
+<pre><code>create table tinyurl_single.urls (
+  id int,
+  full_url varchar(2048),
+  short_url_key varchar(8),
+  primary key (id),
+  unique key (short_url_key)
+) ENGINE=INNODB;
+
+
+create table tinyurl_single.sequences (
+  sequence_no int auto_increment, 
+  PRIMARY KEY (sequence_no)
+) ENGINE=INNODB;
+
+</code></pre> 
+<ol> 
+ <li>通过数据库生成唯一的id<br> 这个直接读取MySQL的last_insert_id()就可以, 核心代码逻辑如下</li> 
+</ol> 
+<pre><code>  db, err  := sql.Open("mysql", db_url)
+  defer db.Close()  
+  ret, err := db.Exec("insert into sequences values ();")
+  id, err := ret.LastInsertId()
+
+</code></pre> 
+<ol> 
+ <li>把id做base62编码<br> go语言里面自带一个"encoding/base64"可以做base64编码， 但是那个实现是针对字符串做编码的，所以编码会比较长。<br> 但是我们需要的是一个短的url， 所以我们可以自己实现一个， 然后可以把长度做到比较短。<br> 比如长度固定8位， 那么62^8就可以支持超过万亿个url</li> 
+</ol> 
+<pre><code>func encode_base_62(id int64) string {
+  // table is a shuffled string of "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+  table := "ZegsI24TAUn1jcQ7hwP9mlKFOf0SLHozDuE6xXGrti3dWaVqYbBCk85ypMvRJN"
+  
+  bytes := make([] byte, 0)
+  for ; id != 0; {
+      r := id%62
+      ch := table[r]
+      bytes = append([]byte{ch}, bytes...)
+      id = id / 62
+  }
+  for size := 8 - len(bytes); size &gt; 0; size-- {
+    bytes = append(bytes, table[0])
+  }
+  return string(bytes)
+}
+</code></pre> 
+<ol> 
+ <li>把长url和短url的映射放到数据库里面<br> 核心逻辑如下</li> 
+</ol> 
+<pre><code>ret, err = statement.Exec(id, long_url, short_url_key)
+</code></pre> 
+<ol> 
+ <li>收到一个短url以后， 取到对应的长url<br> 核心实现如下</li> 
+</ol> 
+<pre><code>func get_long_url(short_url_key string) string {
+  db, err  := sql.Open("mysql", db_url)
+  defer db.Close()
+
+  statement, err := db.Prepare("select full_url from urls where short_url_key = ?")
+  defer statement.Close()
+  
+  rows, err := statement.Query(short_url_key)
+  var long_url string
+  if rows.Next() {
+    rows.Scan(&amp;long_url)
+  }  
+  return long_url
+}
+</code></pre> 
+<h2><a href="#完整代码" id="完整代码">完整代码</a></h2> 
+<ol> 
+ <li> <p>项目的完整代码在这里，<br> <a href="https://github.com/noteanddata/system-design-demo/tree/4268750b2b1c7c3fdf3c2f07c79835cab2dee3cf/tiny-url/tinyurl-single-instance-go">https://github.com/noteanddata/system-design-demo/tree/4268750b2b1c7c3fdf3c2f07c79835cab2dee3cf/tiny-url/tinyurl-single-instance-go</a></p> </li> 
+ <li> <p>运行方式<br> a. 需要先在本地MySQL数据库里面跑一下这个脚本建立数据库<br> <a href="https://github.com/noteanddata/system-design-demo/blob/4268750b2b1c7c3fdf3c2f07c79835cab2dee3cf/tiny-url/tinyurl-single-instance-go/db/db-init.sql">https://github.com/noteanddata/system-design-demo/blob/4268750b2b1c7c3fdf3c2f07c79835cab2dee3cf/tiny-url/tinyurl-single-instance-go/db/db-init.sql</a></p> </li> 
+</ol> 
+<p>b. 在当前目录下面运行go run tinyurl.go<br> 然后访问localhost:8080就可以看到效果</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
