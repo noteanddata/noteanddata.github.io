@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>如何在go语言里面一次性下载所有的依赖</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>如何在go语言里面一次性下载所有的依赖</h1>
+			</div>
+
+			<p><em>23 July 2019</em></p>
+
+			<p><h2><a href="#问题如何在go语言里面一次性下载所有的依赖" id="问题如何在go语言里面一次性下载所有的依赖">问题–如何在go语言里面一次性下载所有的依赖</a></h2> 
+<p>go语言里面会有依赖, 比如依赖于MySQL数据库驱动， 可以在本地运行</p> 
+<pre><code>go get github.com/go-sql-driver/mysql
+</code></pre> 
+<p>否则会报错</p> 
+<pre><code>root@5465cbf7fc36:/go/src/github.com/noteanddata/system-design-demo/tiny-url# go run tinyurl.go
+tinyurl.go:4:8: cannot find package "github.com/go-sql-driver/mysql" in any of:
+	/usr/local/go/src/github.com/go-sql-driver/mysql (from $GOROOT)
+	/go/src/github.com/go-sql-driver/mysql (from $GOPATH)
+root@5465cbf7fc36:/go/src/github.com/noteanddata/system-design-demo/tiny-url# go build
+tinyurl.go:4:8: cannot find package "github.com/go-sql-driver/mysql" in any of:
+	/usr/local/go/src/github.com/go-sql-driver/mysql (from $GOROOT)
+	/go/src/github.com/go-sql-driver/mysql (from $GOPATH)
+root@5465cbf7fc36:/go/src/github.com/noteanddata/system-design-demo/tiny-url# go install
+tinyurl.go:4:8: cannot find package "github.com/go-sql-driver/mysql" in any of:
+	/usr/local/go/src/github.com/go-sql-driver/mysql (from $GOROOT)
+	/go/src/github.com/go-sql-driver/mysql (from $GOPATH)
+
+</code></pre> 
+<p>但是一个项目里面如果有很多依赖， 特别是打包到docker里面的时候，肯定不能一个一个去下载依赖</p> 
+<h2><a href="#解决方案" id="解决方案">解决方案</a></h2> 
+<p>参考资料<br> <a href="https://stackoverflow.com/questions/32758235/how-to-get-all-dependency-files-for-a-program-using-golang">https://stackoverflow.com/questions/32758235/how-to-get-all-dependency-files-for-a-program-using-golang</a></p> 
+<p>在当前目录下执行</p> 
+<pre><code>get get -d ./...
+
+</code></pre> 
+<pre><code>root@5465cbf7fc36:/go/src/github.com/noteanddata/system-design-demo/tiny-url# go get -d ./...
+root@5465cbf7fc36:/go/src/github.com/noteanddata/system-design-demo/tiny-url# go build
+root@5465cbf7fc36:/go/src/github.com/noteanddata/system-design-demo/tiny-url# go run tinyurl.go
+
+</code></pre> 
+<h2><a href="#其他思考" id="其他思考">其他思考</a></h2> 
+<p>不过好像依赖于外部代码源的这个依赖方式不是太稳定？因为毕竟这个和maven仓库还是不太一样， maven仓库可以设置多个镜像，<br> 这个如果github挂了几个小时， 那这个编译就不能通过了， 这个感觉在公司里面这么做是不可行的？<br> 不知道go语言里面有没有类似maven仓库这样的东西，给大家发布稳定版本<br> 或者是全部变成代码依赖？</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
