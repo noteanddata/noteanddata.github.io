@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
     <meta charset="utf-8"/>
     <title>如何在go语言里面一次性下载所有的依赖</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -84,7 +95,7 @@ tinyurl.go:4:8: cannot find package "github.com/go-sql-driver/mysql" in any of:
 <h2><a href="#解决方案" id="解决方案">解决方案</a></h2> 
 <p>参考资料<br> <a href="https://stackoverflow.com/questions/32758235/how-to-get-all-dependency-files-for-a-program-using-golang">https://stackoverflow.com/questions/32758235/how-to-get-all-dependency-files-for-a-program-using-golang</a></p> 
 <p>在当前目录下执行</p> 
-<pre><code>get get -d ./...
+<pre><code>go get -d ./...
 
 </code></pre> 
 <pre><code>root@5465cbf7fc36:/go/src/github.com/noteanddata/system-design-demo/tiny-url# go get -d ./...
