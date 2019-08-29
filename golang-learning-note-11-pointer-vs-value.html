@@ -141,8 +141,10 @@ c.x= 4
 
 </code></pre> 
 <ol> 
- <li>更多细节<br> <a href="https://stackoverflow.com/questions/27775376/value-receiver-vs-pointer-receiver">https://stackoverflow.com/questions/27775376/value-receiver-vs-pointer-receiver</a></li> 
-</ol></p>
+ <li> <p>更多细节<br> <a href="https://stackoverflow.com/questions/27775376/value-receiver-vs-pointer-receiver">https://stackoverflow.com/questions/27775376/value-receiver-vs-pointer-receiver</a></p> </li> 
+ <li></li> 
+</ol> 
+<p>如果没有必要的话， 可以直接使用pass by value, 而不是by pointer, 因为go语言的编译器会做一些escape analysis(逃逸分析), 然后会对变量的内存分配做优化<br> <a href="https://goinbigdata.com/golang-pass-by-pointer-vs-pass-by-value/">https://goinbigdata.com/golang-pass-by-pointer-vs-pass-by-value/</a></p></p>
 	</div>		
 
 <div class="col-sm-4">
