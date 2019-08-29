@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>go语言学习笔记--指针和值</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>go语言学习笔记--指针和值</h1>
+			</div>
+
+			<p><em>28 August 2019</em></p>
+
+			<p><h2><a href="#go语言里面的指针和值是怎么传递的" id="go语言里面的指针和值是怎么传递的">go语言里面的指针和值是怎么传递的？</a></h2> 
+<ol> 
+ <li>官方解释参考<a href="https://golang.org/doc/faq#methods_on_values_or_pointers">https://golang.org/doc/faq#methods_on_values_or_pointers</a><br> 要点</li> 
+</ol> 
+<ul> 
+ <li>默认是传值， 那么如果是一个struct, 就会有拷贝， 那么在方法里面修改值就不会影响到外面的参数的值. 如果用指针的话就是可以在方法里面修改这个strut的值</li> 
+ <li>当然， slice和map比较特殊，因为他们本身也是引用<br> <a href="https://stackoverflow.com/questions/40680981/are-maps-passed-by-value-or-by-reference-in-go">https://stackoverflow.com/questions/40680981/are-maps-passed-by-value-or-by-reference-in-go</a></li> 
+ <li>当然，如果struct非常大， 拷贝的开销会很大。</li> 
+</ul> 
+<ol> 
+ <li> <p>另外一个就是方法的receiver, 也可以是指针， 也可以是值， 并且默认也是值！效果和方法的参数是一样的。<br> 当然，有点奇葩的地方在于调用方式是一样的， 都是x.method1()</p> </li> 
+ <li> <p>代码举例</p> </li> 
+</ol> 
+<pre><code>package main
+
+import "fmt"
+
+// Cat is a cat
+type Cat struct {
+	x int
+}
+
+func (c Cat) move() {
+	fmt.Println("cat is moving", c.x)
+	c.x = 1
+}
+func (c *Cat) move2() {
+	fmt.Println("cat is moving as well", c.x)
+	c.x = 2
+}
+
+func main() {
+	c := Cat{}
+
+	c.move()
+	fmt.Println("c.x=", c.x)
+	c.move2()
+	fmt.Println("c.x=", c.x)
+
+	movecat3(c)
+	fmt.Println("c.x=", c.x)
+
+	movecat4(&amp;c)
+	fmt.Println("c.x=", c.x)
+}
+
+func movecat3(c Cat) {
+	fmt.Println("now in movecat3")
+	c.x = 3
+}
+
+func movecat4(c *Cat) {
+	fmt.Println("now in movecat4")
+	c.x = 4
+}
+
+</code></pre> 
+<p>运行结果</p> 
+<pre><code>cat is moving 0
+c.x= 0
+cat is moving as well 0
+c.x= 2
+now in movecat3
+c.x= 2
+now in movecat4
+c.x= 4
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
