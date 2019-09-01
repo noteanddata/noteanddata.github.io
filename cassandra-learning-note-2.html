@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>cassandra学习笔记2--Consistency level</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>cassandra学习笔记2--Consistency level</h1>
+			</div>
+
+			<p><em>01 September 2019</em></p>
+
+			<p><h2><a href="#cassandra学习笔记2consistency-level" id="cassandra学习笔记2consistency-level">cassandra学习笔记2–Consistency level</a></h2> 
+<p>在之前的学习笔记里面， <a href="http://www.noteanddata.com/cassandra-learning-note-1.html">http://www.noteanddata.com/cassandra-learning-note-1.html</a><br> 其中cluster.Consistency最开始设置的是Quorum</p> 
+<pre><code>cluster.Consistency = gocql.Quorum
+
+</code></pre> 
+<p>然后在本地跑就出错了</p> 
+<pre><code>Cannot achieve consistency level QUORUM
+</code></pre> 
+<p>主要原因是我的cassandra是在本地单机跑的，只有一个节点，所以不能取得QUORUM(多数节点)</p> 
+<p>其中quorum = (sum_of_replication_factors / 2) + 1</p> 
+<p>而sum_of_replication_factors = datacenter1_RF + datacenter2_RF + … + datacentern_RF<br> 这里的细节是Cassandra支持多数据中心， 所以在一致性的选择上有只考虑当前数据中心和考虑所有数据中心两种情况</p> 
+<h2><a href="#consistency-level的相关设置" id="consistency-level的相关设置">consistency level的相关设置</a></h2> 
+<p>具体细节参考datastax的文档<br> <a href="https://docs.datastax.com/en/ddac/doc/datastax_enterprise/dbInternals/dbIntConfigConsistency.html">https://docs.datastax.com/en/ddac/doc/datastax_enterprise/dbInternals/dbIntConfigConsistency.html</a></p> 
+<p>对写入和读取都可以设置不同的consistency level,<br> 一些有趣的写入设置包括<br> * ALL: 要写入所有节点的commit log 和memtable<br> * EACH_QUORUM: 要写入每个data center的多数节点<br> * QUORUM: 要写入整体的多数节点<br> * LOCAL_QUORUM： 只要写入和coordinator所在的data center的多数节点<br> * ONE: 写入一个就可以<br> * TWO： 写入两个就可以<br> * THREE: 写入三个就可以<br> * LOCAL_ONE: 写入本地的一个就可以<br> * ANY: 写入任何一个就可以</p> 
+<p>读取的大部分设置和写入一样，区别是还有两个新值<br> * SERIAL: 允许读取当前没有commit的数据， 甚至如果当前就一个transaction没有commit, 会在这个读取的过程中commit这个transaction??? 这个地方有点迷， 为什么读取的时候会commit呢？ commit难道不是由写入的代码控制的嘛？<br> * LOCAL_SERIAL： 类似serial, 但是只是作用在当前的data center上</p> 
+<h2><a href="#在命令行里面查看和设置consistency的值" id="在命令行里面查看和设置consistency的值">在命令行里面查看和设置consistency的值</a></h2> 
+<pre><code>
+cqlsh:test&gt; consistency
+Current consistency level is ONE.
+cqlsh:test&gt; help consistency
+
+        CONSISTENCY [cqlsh only]
+
+           Overrides default consistency level (default level is ONE).
+
+        CONSISTENCY &lt;level&gt;
+
+           Sets consistency level for future requests.
+
+           Valid consistency levels:
+
+           ANY, ONE, TWO, THREE, QUORUM, ALL, LOCAL_ONE, LOCAL_QUORUM, EACH_QUORUM, SERIAL and LOCAL_SERIAL.
+
+           SERIAL and LOCAL_SERIAL may be used only for SELECTs; will be rejected with updates.
+
+        CONSISTENCY
+
+           CONSISTENCY with no arguments shows the current consistency level.
+        
+cqlsh:test&gt; consistency ANY
+Consistency level set to ANY.
+cqlsh:test&gt; consistency QUORUM
+Consistency level set to QUORUM.
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
