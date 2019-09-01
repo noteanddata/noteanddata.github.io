@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>gourl:一个简单的go语言实现的http命令行客户端</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>gourl:一个简单的go语言实现的http命令行客户端</h1>
+			</div>
+
+			<p><em>01 September 2019</em></p>
+
+			<p><h2><a href="#gourl-一个简单的go语言实现的http命令行客户端" id="gourl-一个简单的go语言实现的http命令行客户端">gourl: 一个简单的go语言实现的http命令行客户端</a></h2> 
+<p>代码在这里<a href="https://github.com/noteanddata/gourl/releases/tag/0.1">https://github.com/noteanddata/gourl/releases/tag/0.1</a></p> 
+<h3><a href="#simple-get" id="simple-get">simple get</a></h3> 
+<pre><code>gourl  http://www.example.com
+</code></pre> 
+<h3><a href="#with-header" id="with-header">with header</a></h3> 
+<pre><code>gourl -h http://www.example.com
+
+</code></pre> 
+<h3><a href="#support-n-number-of-http-get" id="support-n-number-of-http-get">support n number of http get</a></h3> 
+<pre><code>gourl -n 5 http://www.example.com
+
+</code></pre> 
+<h3><a href="#support-n-number-with-c-concurrent-calls-of-http-get" id="support-n-number-with-c-concurrent-calls-of-http-get">support n number with c concurrent calls of http get</a></h3> 
+<pre><code>gourl -n 1000 -c 100 http://www.example.com
+totalSuccess= 987 , totalFailure= 13 , time(ms)= 2398
+
+</code></pre> 
+<h3><a href="#support-http-post" id="support-http-post">support http post</a></h3> 
+<pre><code>gourl -p -pf ./resources/post_form_sample1.txt -h http://localhost:8080/generate_short_url
+
+</code></pre> 
+<h3><a href="#support-http-post-with-content-type-header" id="support-http-post-with-content-type-header">support http post with content type header</a></h3> 
+<pre><code>gourl -p -pf ./resources/post_sample.json -ct application/json -h http://localhost:8080/
+
+</code></pre> 
+<h3><a href="#support-http-post-with-header-from-file" id="support-http-post-with-header-from-file">support http post with header from file</a></h3> 
+<pre><code>gourl -p -pf ./resources/post_form_sample1.txt -hf ./resources/header_sample.properties -h http://localhost:8080/generate_short_url
+
+</code></pre> 
+<h3><a href="#support-http-get-with-header-from-file" id="support-http-get-with-header-from-file">support http GET with header from file</a></h3> 
+<pre><code>gourl -hf ./resources/header_sample.properties -h http://localhost:8080/generate_short_url
+
+</code></pre> 
+<h3><a href="#support-http-get-with-header-from-file-and-also-with-n-and-c" id="support-http-get-with-header-from-file-and-also-with-n-and-c">support http GET with header from file and also with -n and -c</a></h3> 
+<pre><code>gourl -n 6 -c 2 -hf ./resources/header_sample.properties -h http://localhost:8080/generate_short_url
+
+</code></pre> 
+<h3><a href="#support-http-post-with-n-and-c" id="support-http-post-with-n-and-c">support http POST with -n and -c</a></h3> 
+<pre><code>gourl -n 6 -c 2 -p -pf ./resources/post_form_sample1.txt -h http://localhost:8080/generate_short_url
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
