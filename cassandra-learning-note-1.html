@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>cassandra学习笔记1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>cassandra学习笔记1</h1>
+			</div>
+
+			<p><em>31 August 2019</em></p>
+
+			<p><h2><a href="#cassandra学习笔记1" id="cassandra学习笔记1">cassandra学习笔记1</a></h2> 
+<p>今天学习了一些cassandra的基本使用， 先在官网下载了cassandra-3.11.4</p> 
+<ol> 
+ <li>如何启动cassdandra</li> 
+</ol> 
+<pre><code>cassandra-3.11.4/bin $ ./cassandra
+
+</code></pre> 
+<ol> 
+ <li>使用cql命令行</li> 
+</ol> 
+<pre><code>cassandra-3.11.4/bin $ ./cqlsh
+
+</code></pre> 
+<ol> 
+ <li>keyspace的概念<br> keyspace–&gt; 相当于一个数据库(database)</li> 
+</ol> 
+<p>列出当前的所有keyspaces</p> 
+<pre><code>cqlsh&gt; describe keyspaces;
+
+system_traces  system_schema  system_auth  system  system_distributed
+
+</code></pre> 
+<ol> 
+ <li>创建table, 插入数据， 查询数据</li> 
+</ol> 
+<pre><code>cqlsh&gt; use test;
+cqlsh:test&gt; create table test_table (id int, name text);
+InvalidRequest: Error from server: code=2200 [Invalid query] message="No PRIMARY KEY specifed (exactly one required)"
+cqlsh:test&gt; create table test_table (id int primary key, name text);
+cqlsh:test&gt; insert into test_table (id, name) values (1, 'hello');
+cqlsh:test&gt; select * from test_table;
+
+ id | name
+----+-------
+  1 | hello
+
+(1 rows)
+cqlsh:test&gt; insert into test_table (id, name) values (2, 'world');
+cqlsh:test&gt; select * from test_table;
+
+ id | name
+----+-------
+  1 | hello
+  2 | world
+
+</code></pre> 
+<ol> 
+ <li>列出table, 修改数据</li> 
+</ol> 
+<pre><code>cqlsh:test&gt; describe tables;
+
+test_table
+
+cqlsh:test&gt; select * from test_table;
+
+ id | name
+----+-------
+  1 | hello
+  2 | world
+
+(2 rows)
+cqlsh:test&gt; update test_table set name = 'hello2' where id = 1;
+cqlsh:test&gt; select * from test_table;
+
+ id | name
+----+--------
+  1 | hello2
+  2 |  world
+
+
+
+</code></pre> 
+<ol> 
+ <li> <p>总结<br> 初步印象cassandra还是比较厉害的， 看上去是一个支持SQL的分布式的数据库；</p> </li> 
+ <li> <p>后面需要学习的一些问题<br> a. 是否支持分布式多表join<br> 不知道涉及到分布式多表join的时候是否可以很好的支持?<br> 看了一下， 原来cassandra不支持join, 看来分布式的基本限制还是没有突破<br> <a href="https://stackoverflow.com/questions/16790297/inner-join-in-cassandra-cql/16885265">https://stackoverflow.com/questions/16790297/inner-join-in-cassandra-cql/16885265</a><br> <a href="https://stackoverflow.com/questions/17248232/how-to-do-a-join-queries-with-2-or-more-tables-in-cassandra-cql">https://stackoverflow.com/questions/17248232/how-to-do-a-join-queries-with-2-or-more-tables-in-cassandra-cql</a></p> </li> 
+</ol> 
+<p>b. 是否支持运行时快速加列？ 比如MySQL 5.6之前的加列会导致锁表， 以前通常会需要切主备来做操作<br> <a href="https://stackoverflow.com/questions/35424543/alter-table-without-locking-the-entire-table">https://stackoverflow.com/questions/35424543/alter-table-without-locking-the-entire-table</a></p> 
+<p>c. 索引的创建和维护？如何保证性能?<br> d. 高可用是否就不需要开发人员关心细节了？</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
