@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>cassandra学习笔记3--NoHostAvailable和Cache schema version does not match current schema version问题</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>cassandra学习笔记3--NoHostAvailable和Cache schema version does not match current schema version问题</h1>
+			</div>
+
+			<p><em>01 September 2019</em></p>
+
+			<p><h2><a href="#运行cql出现nohostavailable错误" id="运行cql出现nohostavailable错误">运行cql出现NoHostAvailable错误</a></h2> 
+<pre><code>cqlsh:test&gt; select * from test_table;
+NoHostAvailable: 
+
+</code></pre> 
+<p>然后运行nodetool status查看状态, 好像一切正常, U=Up N=Normal</p> 
+<pre><code>Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address    Load       Tokens       Owns (effective)  Host ID                               Rack
+UN  127.0.0.1  213.22 KiB  256          100.0%            9dafab91-6152-49fe-9c51-3506e7e61def  rack1
+
+</code></pre> 
+<p>没办法，只好重启, 可是重启又报错</p> 
+<pre><code>INFO  [pool-3-thread-1] 2019-09-01 18:19:30,282 AutoSavingCache.java:198 - reading saved cache ./../data/saved_caches/KeyCache-e.db
+INFO  [pool-3-thread-1] 2019-09-01 18:19:30,292 AutoSavingCache.java:263 - Harmless error reading saved cache cassandra-3.11.4/bin/./../data/saved_caches/KeyCache-e.db
+java.lang.RuntimeException: Cache schema version 3adeee51-116a-3dc0-96b5-92bcc5691c93 does not match current schema version f73a7ecf-a4ca-3bee-a992-67b08a41e2e3
+	at org.apache.cassandra.cache.AutoSavingCache.loadSaved(AutoSavingCache.java:207) ~[apache-cassandra-3.11.4.jar:3.11.4]
+	at org.apache.cassandra.cache.AutoSavingCache$3.call(AutoSavingCache.java:165) [apache-cassandra-3.11.4.jar:3.11.4]
+	at org.apache.cassandra.cache.AutoSavingCache$3.call(AutoSavingCache.java:161) [apache-cassandra-3.11.4.jar:3.11.4]
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266) [na:1.8.0_51]
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142) [na:1.8.0_51]
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617) [na:1.8.0_51]
+	at java.lang.Thread.run(Thread.java:745) [na:1.8.0_51]
+INFO  [pool-3-thread-1] 2019-09-01 18:19:30,292 AutoSavingCache.java:174 - Completed loading (11 ms; 25 keys) KeyCache cache
+INFO  [main] 2019-09-01 18:19:30,303 CommitLog.java:147 - Replaying ./../data/commitlog/CommitLog-6-1567277685129.log, ./../data/commitlog/CommitLog-6-1567277685130.log
+INFO  [main] 2019-09-01 18:19:30,319 CommitLogReader.java:105 - Skipping playback of empty log: CommitLog-6-1567277685130.log
+INFO  [main] 2019-09-01 18:19:31,258 CommitLog.java:149 - Log replay complete, 78 replayed mutations
+INFO  [main] 2019-09-01 18:19:31,261 StorageService.java:619 - Populating token metadata from system tables
+
+</code></pre> 
+<h2><a href="#如何解决cache-schema-version-does-not-match-current-schema-version" id="如何解决cache-schema-version-does-not-match-current-schema-version">如何解决Cache schema version does not match current schema version</a></h2> 
+<p>参考这个<a href="https://stackoverflow.com/questions/36050971/cassandra-exception-cache-schema-version-x-does-not-match-current-schema-version">https://stackoverflow.com/questions/36050971/cassandra-exception-cache-schema-version-x-does-not-match-current-schema-version</a><br> 当然， 不要看那个删除commit log的答案， 本地测试玩玩无所谓， 但是prod集群删除commit log那肯定是不行的<br> 尝试删除data/saved_caches目录里面的内容， 然后重启cassandra, 然后重启cqlsh, 然后一切正常了</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
