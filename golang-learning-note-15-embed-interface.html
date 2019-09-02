@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>go语言接口的继承和嵌套</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>go语言接口的继承和嵌套</h1>
+			</div>
+
+			<p><em>01 September 2019</em></p>
+
+			<p><h2><a href="#go语言里面的接口继承" id="go语言里面的接口继承">go语言里面的接口继承</a></h2> 
+<p>go语言里面没有直接的接口继承关键字， 接口的继承是通过声明同样的方法来做的<br> 比如下面这个例子， bird这个接口里面也声明了printName()和fly()方法， 那么, birdImpl既可以是animal, 也可以是flyable, 也可以是bird</p> 
+<pre><code>package main
+
+import "fmt"
+
+type animal interface {
+	printName()
+}
+
+type flyable interface {
+	fly()
+}
+
+type bird interface {
+	//animal
+	//flyable
+	printName()
+	fly()
+}
+
+type birdImpl struct {
+	name string
+}
+
+func (a birdImpl) printName() {
+	fmt.Println("this is ", a.name)
+}
+func (a birdImpl) fly() {
+	fmt.Println("I am flying: ", a.name)
+}
+
+func main() {
+	test1()
+}
+
+func test1() {
+	b1 := birdImpl{}
+	testAnimal(b1)
+	testf(b1)
+	testbird(b1)
+}
+
+func testAnimal(a animal) {
+	a.printName()
+}
+
+func testf(f flyable) {
+	f.fly()
+}
+
+func testbird(b bird) {
+	b.printName()
+	b.fly()
+}
+
+</code></pre> 
+<p>运行结果如下</p> 
+<pre><code>go run interface-embed.go
+this is
+I am flying:
+this is
+I am flying:
+
+</code></pre> 
+<h2><a href="#go语言里面的接口嵌套" id="go语言里面的接口嵌套">go语言里面的接口嵌套</a></h2> 
+<p>当然， go语言里面还可以用接口嵌套， 在一个接口里面声明另外一个接口， 那么，对应的方法就自动继承过来了</p> 
+<pre><code>package main
+
+import "fmt"
+
+type animal interface {
+	printName()
+}
+
+type flyable interface {
+	fly()
+}
+
+type bird interface {
+	animal
+	flyable
+}
+
+type birdImpl struct {
+	name string
+}
+
+func (a birdImpl) printName() {
+	fmt.Println("this is ", a.name)
+}
+func (a birdImpl) fly() {
+	fmt.Println("I am flying: ", a.name)
+}
+
+func main() {
+	test1()
+}
+
+func test1() {
+	b1 := birdImpl{}
+	testAnimal(b1)
+	testf(b1)
+	testbird(b1)
+}
+
+func testAnimal(a animal) {
+	a.printName()
+}
+
+func testf(f flyable) {
+	f.fly()
+}
+
+func testbird(b bird) {
+	b.printName()
+	b.fly()
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
