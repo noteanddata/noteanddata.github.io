@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>go语言依赖管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>go语言依赖管理</h1>
+			</div>
+
+			<p><em>02 September 2019</em></p>
+
+			<p><h2><a href="#go语言的依赖管理的历史" id="go语言的依赖管理的历史">go语言的依赖管理的历史</a></h2> 
+<p>参考资料<a href="https://talks.golang.org/2014/organizeio.slide#1">https://talks.golang.org/2014/organizeio.slide#1</a><br> 1. go语言的最开始方式是代码结构保持一致， 然后没有配置文件， 直接在代码里面写依赖， 比如下面这样</p> 
+<pre><code>import "github.com/gocql/gocql"
+</code></pre> 
+<p>然后直接在代码里面编译, 这样的好处是没有build.xml, 没有makefile, 大家都按照一个结构来</p> 
+<ol> 
+ <li> <p>然后这里有一个问题是， 这是依赖于’go get github.com/gocql/gocql’的， 而go get每次都拿最新版本， 这里没有版本话， 然后有人就搞出了一个gopkg.in的东西， 方便指定版本<br> <a href="http://labix.org/gopkg.in">http://labix.org/gopkg.in</a></p> </li> 
+ <li> <p>当然， 这里还有一个问题就是如果github挂了的话，编译打包就做不了了, github比较是一个功能丰富的产品，而不是像maven central一样的静态cdn。 所以还有一个建议的方式是做代码依赖， 把别人的代码直接下载下来， 然后放到一个vendor的目录。<br> 这个过程其实感觉也比较繁琐， 比如大型项目如果要依赖100多个依赖， 难道还一个个去下载代码嘛？</p> </li> 
+ <li> <p>后来又搞了一些其他工具<br> <a href="https://github.com/tools/godep">https://github.com/tools/godep</a>这个已经被下面的godep废弃<br> golang 1.9开始用了dep<br> <a href="https://github.com/golang/dep">https://github.com/golang/dep</a></p> </li> 
+ <li> <p>从golang 1.11开始， go语言搞了一个新的方式， 叫做golang module, 用来做依赖管理<br> 主要参考资料<br> <a href="https://github.com/golang/go/wiki/Modules">https://github.com/golang/go/wiki/Modules</a><br> <a href="https://blog.golang.org/using-go-modules">https://blog.golang.org/using-go-modules</a><br> <a href="https://blog.golang.org/versioning-proposal">https://blog.golang.org/versioning-proposal</a></p> </li> 
+</ol> 
+<p>用下面的命令初始化module</p> 
+<pre><code>go mod init github.com/my/repo
+
+</code></pre> 
+<p>运行这个命令了以后，就会生成go.mod和go.sum两个文件， 这两个文件里面有依赖的具体信息，<br> 其中， go.mod可以手动编辑的，所以版本可以自己手动修改</p> 
+<p>常用的命令有:<br> * go build 或者go test, 所有的依赖就会自动下载下来， 不需要一个一个去go get, 而且会有具体的版本依赖<br> * go list -m all来列出所有的版本依赖<br> * go mod tidy可以清理不需要的依赖<br> * go build ./… or go test ./… 递归运行和测试当前目录下所有的package<br> * go get github.com/gocql/gocql 升级某一个依赖的版本<br> * go get -u 升级依赖到最新的minor版本<br> * go get -u=patch 升级依赖到最新的patch版本<br> * go get <a href="mailto:rsc.io/sampler@v1.3.1">rsc.io/sampler@v1.3.1</a> 这就是对某一个依赖做版本升级的例子<br> * go list -m -versions rsc.io/sampler 列出某一个依赖的各个版本</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
