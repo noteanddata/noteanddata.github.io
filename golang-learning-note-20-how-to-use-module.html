@@ -13,7 +13,7 @@
 
     
     <meta charset="utf-8"/>
-    <title>go语言的特殊模块</title>
+    <title>go语言如何使用module</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Le styles -->
@@ -67,16 +67,17 @@ var _hmt = _hmt || [];
 		<div class="col-sm-8">
 
 			<div class="page-header">
-				<h1>go语言的特殊模块</h1>
+				<h1>go语言如何使用module</h1>
 			</div>
 
-			<p><em>03 September 2019</em></p>
+			<p><em>04 September 2019</em></p>
 
-			<p><ol> 
- <li>参考资料<br> <a href="https://blog.learngoprogramming.com/special-packages-and-directories-in-go-1d6295690a6b">https://blog.learngoprogramming.com/special-packages-and-directories-in-go-1d6295690a6b</a></li> 
+			<p><p>如何在go语言里面使用module，<br> <a href="https://github.com/golang/go/wiki/Modules">https://github.com/golang/go/wiki/Modules</a></p> 
+<ol> 
+ <li>Invoke the go command in a directory outside of the $GOPATH/src tree, with a valid go.mod file in the current directory or any parent of it and the environment variable GO111MODULE unset (or explicitly set to auto).</li> 
+ <li>Invoke the go command with GO111MODULE=on environment variable set.</li> 
 </ol> 
-<p>主要有<br> - main<br> - internal<br> - vendor</p> 
-<p>main就是入口， vendor用来放第三方的代码， internal比较特殊，internal里面的代码是不会被其他包引用的，那么就只能在当前项目中被引用， 所以， 这个项目的代码目录必须严格按照golang的目录结构来放， 这样才可以被自己的代码引用, 否则是引用不到到</p></p>
+<p>比如下载了一个代码， 要本地编译的时候， 如果是按照$GOPATH/src目录的， 那么设置GO111MODULE=on； 如果是在$GOPATH/src目录以外的，那么需要在当前目录下有一个go.mod文件. 然后GO111MODULE没有设置或者设置成auto</p></p>
 	</div>		
 
 <div class="col-sm-4">
