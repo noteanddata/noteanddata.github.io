@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>go语言的vscode， golang module 和 gopls的一些笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>go语言的vscode， golang module 和 gopls的一些笔记</h1>
+			</div>
+
+			<p><em>21 December 2019</em></p>
+
+			<p><h2><a href="#vscode-golang-module-和-gopls的一些笔记" id="vscode-golang-module-和-gopls的一些笔记">vscode， golang module 和 gopls的一些笔记</a></h2> 
+<ol> 
+ <li>按照之前的学习笔记<a href="http://www.noteanddata.com/golang-learning-note-17-dependency-management.html">http://www.noteanddata.com/golang-learning-note-17-dependency-management.html</a>, go语言的依赖管理现在应该是go modules</li> 
+ <li>go语言的IDE里面，我试用了atom, vscode, goland, 其中goland最好， 保持了jetbrains系列产品的高水准， 但是需要收费， 所以自己电脑上就没有买. atom更多的是一个编辑器， 虽然有一堆插件， 但是就算配置了插件以后， 还是和goland和vscode差距比较大， 所以准备自己电脑上主要使用vscode</li> 
+ <li>但是试用了一下vscode和go module, 默认设置有比较多问题， 比如import就有问题，<br> 需要先安装一个gopls</li> 
+</ol> 
+<pre><code>go get golang.org/x/tools/gopls@latest
+</code></pre> 
+<p>然后在setting里面加上这句话</p> 
+<pre><code>"go.useLanguageServer": true
+</code></pre> 
+<p>参考资料：<br> - vscode官方wiki <a href="https://github.com/Microsoft/vscode-go/wiki/Go-modules-support-in-Visual-Studio-Code">https://github.com/Microsoft/vscode-go/wiki/Go-modules-support-in-Visual-Studio-Code</a><br> - gopls的官方wiki <a href="https://github.com/golang/tools/blob/master/gopls/doc/user.md">https://github.com/golang/tools/blob/master/gopls/doc/user.md</a></p> 
+<ol> 
+ <li>不过就算安装了以后， 还是有一些问题，有一些函数的go to implementation没有用， 感觉和goland还是有差距</li> 
+</ol> 
+<h2><a href="#gopls的一些概念" id="gopls的一些概念">gopls的一些概念</a></h2> 
+<p>第一次接触到gopls， 所以简单学习了一下gopls的概念<br> 1. gopls是Language Server Protocol <a href="https://microsoft.github.io/language-server-protocol/specifications/specification-3-14/">https://microsoft.github.io/language-server-protocol/specifications/specification-3-14/</a>的一个实现，<br> 2. gopls是一个官方支持的，希望成为所有编辑器的一个backend， 来实现编辑器/ide的各种特性， 虽然现在支持还是十分有限</p> 
+<ol> 
+ <li>参考资料<a href="https://github.com/golang/tools/blob/master/gopls/doc/design.md">https://github.com/golang/tools/blob/master/gopls/doc/design.md</a><br> 这些参考资料的设计文档还是写的非常不错， 清晰的讲了设计的目标， 背景， 哪些不是gopls的设计目标， 现有的解决方案， 技术难点和特点等， 非常值得学习。</li> 
+</ol></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
