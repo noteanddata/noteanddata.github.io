@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>javascript里面的var和let以及const的区别</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>javascript里面的var和let以及const的区别</h1>
+			</div>
+
+			<p><em>22 December 2019</em></p>
+
+			<p><h2><a href="#javascript里面的var和let以及const的区别" id="javascript里面的var和let以及const的区别">javascript里面的var和let以及const的区别</a></h2> 
+<ol> 
+ <li> <p>看现代的很多javascript代码，会看到大量的const和let， 而很少有var, 出于好奇， 查看了一下var和let以及const的区别</p> </li> 
+ <li> <p>在ECMAScript 2015标准(又称为在ECMAScript6, 简称ES6)里面， 给javascript引入了const和let两个关键字. 使用const和let声明的变量， 有block scope, 而之前的变量，只有global scope 和function scope两种。</p> </li> 
+</ol> 
+<ul> 
+ <li>所谓global scope就是变量声明在函数外面， 那么就是全局变量</li> 
+ <li>所谓function scope就是变量声明在函数内部，就算在一个for循环里面，变量也是有函数作用域的， 这时候会造成很多的困扰</li> 
+ <li>所谓block scope, 就是块作用域， 基本和其他c系列的编程语言一样(c, c++, c#, java, golang等), 变量作用域到对应的大括弧结束</li> 
+</ul> 
+<ol> 
+ <li>测试代码1<br> 把下面的代码保存成node1.js, 然后运行node node1.js</li> 
+</ol> 
+<pre><code>test1()
+test2()
+
+function test1() {
+  console.log("-----in test1----")
+  for(var i = 0; i &lt; 3; ++i) {
+    console.log("i=", i)
+  }
+  console.log(i) // will print 3 
+}
+
+function test2() {
+  console.log("-----in test2----")
+  for(let i = 0; i &lt; 3; ++i) {
+    console.log("i=", i)
+  }
+  console.log(i) // ReferenceError: i is not defined
+}
+
+</code></pre> 
+<p>运行结果如下， test1()函数可以正常运行并且打印3， 但是在test2的最后一行会报错</p> 
+<pre><code>-----in test1----
+i= 0
+i= 1
+i= 2
+3
+-----in test2----
+i= 0
+i= 1
+i= 2
+
+  console.log(i)              ^
+
+ReferenceError: i is not defined
+
+</code></pre> 
+<ol> 
+ <li>测试代码2<br> 注释里面写了会打印的值</li> 
+</ol> 
+<pre><code>
+function test3() {
+  var a = 3
+  {
+    let a = 4
+    console.log("a=", a) // will print 4
+  }
+  console.log("a=", a) // will print 3
+}
+
+function test4() {
+  var a = 3
+  {
+    var a = 4
+    console.log("a=", a) // will print 4
+  }
+  console.log("a=", a) // will print 4
+}
+
+</code></pre> 
+<h2><a href="#参考资料" id="参考资料">参考资料</a></h2> 
+<ul> 
+ <li><a href="https://www.w3schools.com/js/js_let.asp">https://www.w3schools.com/js/js_let.asp</a></li> 
+ <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/let</a></li> 
+</ul></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
