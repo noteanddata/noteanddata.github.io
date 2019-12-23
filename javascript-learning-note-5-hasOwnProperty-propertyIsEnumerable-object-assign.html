@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>JavaScript学习笔记5--hasOwnProperty, propertyIsEnumerable和Object.assign方法</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>JavaScript学习笔记5--hasOwnProperty, propertyIsEnumerable和Object.assign方法</h1>
+			</div>
+
+			<p><em>23 December 2019</em></p>
+
+			<p><h2><a href="#javascript的objectassign方法" id="javascript的objectassign方法">JavaScript的Object.assign方法</a></h2> 
+<ol> 
+ <li>看代码的时候看到Object.assign方法， 查了一下, 基本就是可以复制一个对象的"enumerable own properties", 就是可以枚举并且是自身的属性<br> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign</a></li> 
+</ol> 
+<p>用nodejs运行如下代码， 具体打印的值可以看注释</p> 
+<pre><code>testassign()
+
+function testassign() {
+  const source = {name: 'john', age: 20}
+  const target = {name: 'lucy', gender: 'female'}
+  const ret = Object.assign(target, source)
+  console.log(target) // { name: 'john', gender: 'female', age: 20 }
+  console.log(ret) // { name: 'john', gender: 'female', age: 20 }
+}
+</code></pre> 
+<p>所以Object.assign主要功能是拷贝对象的属性。 同时， 这里注意被声明成const的target也被拷贝了？所以const似乎只是说指向一个固定的对象引用， 但是对象的属性还是可以被修改的？ 后面单独再学习一下</p> 
+<ol> 
+ <li> <p>什么是自身的属性(hasOwnProperty)?<br> 基本上可以理解成继承的属性就不是自身的属性</p> </li> 
+ <li> <p>什么是可以枚举的属性(propertyIsEnumerable)？<br> 基本上可以理解成可以遍历的，</p> </li> 
+</ol> 
+<pre><code>Every object has a propertyIsEnumerable method. This method can determine whether the specified property in an object can be enumerated by a for...in loop, with the exception of properties inherited through the prototype chain. If the object does not have the specified property, this method returns false.
+
+</code></pre> 
+<p>比如， built-in的属性就是不属于可以枚举的属性</p> 
+<pre><code>var a = ['is enumerable'];
+
+a.propertyIsEnumerable(0);          // returns true
+a.propertyIsEnumerable('length');   // returns false
+
+
+</code></pre> 
+<ol> 
+ <li>对Object.keys和JSON.stringify的影响<br> 具体可以参考下面的例子</li> 
+</ol> 
+<pre><code>function testEnumerable2() {
+  var a = {name: "jack"}
+  console.log(Object.keys(a));   // [ 'name' ]
+  console.log(JSON.stringify(a)); // {"name":"jack"}
+}
+
+
+</code></pre> 
+<h2><a href="#参考资料" id="参考资料">参考资料</a></h2> 
+<ul> 
+ <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/assign</a></li> 
+ <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/propertyIsEnumerable</a></li> 
+ <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Enumerability_and_ownership_of_properties">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Enumerability_and_ownership_of_properties</a></li> 
+ <li><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty">https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/hasOwnProperty</a></li> 
+ <li><a href="https://javascript.ruanyifeng.com/stdlib/attributes.html">https://javascript.ruanyifeng.com/stdlib/attributes.html</a></li> 
+ <li><a href="https://zhuanlan.zhihu.com/p/27049139">https://zhuanlan.zhihu.com/p/27049139</a></li> 
+</ul></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
