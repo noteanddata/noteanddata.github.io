@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>reactjs学习笔记6--props和inverse data flow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>reactjs学习笔记6--props和inverse data flow</h1>
+			</div>
+
+			<p><em>25 December 2019</em></p>
+
+			<p><h2><a href="#reactjs学习笔记6props和inverse-data-flow" id="reactjs学习笔记6props和inverse-data-flow">reactjs学习笔记6–props和inverse data flow</a></h2> 
+<ol> 
+ <li>props的定义和使用</li> 
+</ol> 
+<ul> 
+ <li>定义</li> 
+</ul> 
+<pre><code>function Welcome(props) {
+  return &lt;h1&gt;Hello, {props.name}, your age is {props.age}&lt;/h1&gt;;
+}
+
+</code></pre> 
+<ul> 
+ <li>从父组件里面传递props, 定义多个不同的属性就直接当成普通元素的属性就好</li> 
+</ul> 
+<pre><code>const element = &lt;Welcome name="Sara" age = "13" /&gt;;
+
+</code></pre> 
+<ol> 
+ <li>inverse data flow (反向数据流)<br> 在之前的reactjs的教程里面， 所有的数据都是从父组件流到子组件， 也就是通过props传递.<br> 但是，有很多时候， 一个输入组件变化了， 我们希望修改其他组件的显示， 很多时候这些组件之间不是一个父子关系。<br> 比如， 假设是一个搜索页面， 搜索框里面的内容变化了， 那么搜索结果列表也会跟着变化。<br> 而根据react的思想， 每个组件都是最小化原则设计的， 然后再不断复用的。 那么， 搜索框和搜索结果肯定不是父子关系，<br> 这时候， 需要的是根据一个子组件的内容， 修改其他组件的内容， 也就是数据需要反向传递,</li> 
+</ol> 
+<p>这个时候， react的解决方法是， 父组件给子组件传入一个回调函数作为props. 主要样例代码有</p> 
+<pre><code>&lt;SearchBar
+  filterText={this.state.filterText}
+  inStockOnly={this.state.inStockOnly}
+  onFilterTextChange={this.handleFilterTextChange}
+  onInStockChange={this.handleInStockChange}
+/&gt;
+&lt;ProductTable
+  products={this.props.products}
+  filterText={this.state.filterText}
+  inStockOnly={this.state.inStockOnly}
+/&gt;
+
+</code></pre> 
+<p>在FilterableProductTable调用SearchBar的时候，传入两个回调函数， 然后这些回调函数可以接受参数， 修改自己的state， 而FilterableProductTable自己的state， 本身会作为props传入到其他子组件， 比如这里的ProductTable</p> 
+<p>官网的完整代码如下，</p> 
+<pre><code>class ProductCategoryRow extends React.Component {
+  render() {
+    const category = this.props.category;
+    return (
+      &lt;tr&gt;
+        &lt;th colSpan="2"&gt;
+          {category}
+        &lt;/th&gt;
+      &lt;/tr&gt;
+    );
+  }
+}
+
+class ProductRow extends React.Component {
+  render() {
+    const product = this.props.product;
+    const name = product.stocked ?
+      product.name :
+      &lt;span style={{color: 'red'}}&gt;
+        {product.name}
+      &lt;/span&gt;;
+
+    return (
+      &lt;tr&gt;
+        &lt;td&gt;{name}&lt;/td&gt;
+        &lt;td&gt;{product.price}&lt;/td&gt;
+      &lt;/tr&gt;
+    );
+  }
+}
+
+class ProductTable extends React.Component {
+  render() {
+    const filterText = this.props.filterText;
+    const inStockOnly = this.props.inStockOnly;
+
+    const rows = [];
+    let lastCategory = null;
+
+    this.props.products.forEach((product) =&gt; {
+      if (product.name.indexOf(filterText) === -1) {
+        return;
+      }
+      if (inStockOnly &amp;&amp; !product.stocked) {
+        return;
+      }
+      if (product.category !== lastCategory) {
+        rows.push(
+          &lt;ProductCategoryRow
+            category={product.category}
+            key={product.category} /&gt;
+        );
+      }
+      rows.push(
+        &lt;ProductRow
+          product={product}
+          key={product.name}
+        /&gt;
+      );
+      lastCategory = product.category;
+    });
+
+    return (
+      &lt;table&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th&gt;Name&lt;/th&gt;
+            &lt;th&gt;Price&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;{rows}&lt;/tbody&gt;
+      &lt;/table&gt;
+    );
+  }
+}
+
+class SearchBar extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
+    this.handleInStockChange = this.handleInStockChange.bind(this);
+  }
+  
+  handleFilterTextChange(e) {
+    this.props.onFilterTextChange(e.target.value);
+  }
+  
+  handleInStockChange(e) {
+    this.props.onInStockChange(e.target.checked);
+  }
+  
+  render() {
+    return (
+      &lt;form&gt;
+        &lt;input
+          type="text"
+          placeholder="Search..."
+          value={this.props.filterText}
+          onChange={this.handleFilterTextChange}
+        /&gt;
+        &lt;p&gt;
+          &lt;input
+            type="checkbox"
+            checked={this.props.inStockOnly}
+            onChange={this.handleInStockChange}
+          /&gt;
+          {' '}
+          Only show products in stock
+        &lt;/p&gt;
+      &lt;/form&gt;
+    );
+  }
+}
+
+class FilterableProductTable extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      filterText: '',
+      inStockOnly: false
+    };
+    
+    this.handleFilterTextChange = this.handleFilterTextChange.bind(this);
+    this.handleInStockChange = this.handleInStockChange.bind(this);
+  }
+
+  handleFilterTextChange(filterText) {
+    this.setState({
+      filterText: filterText
+    });
+  }
+  
+  handleInStockChange(inStockOnly) {
+    this.setState({
+      inStockOnly: inStockOnly
+    })
+  }
+
+  render() {
+    return (
+      &lt;div&gt;
+        &lt;SearchBar
+          filterText={this.state.filterText}
+          inStockOnly={this.state.inStockOnly}
+          onFilterTextChange={this.handleFilterTextChange}
+          onInStockChange={this.handleInStockChange}
+        /&gt;
+        &lt;ProductTable
+          products={this.props.products}
+          filterText={this.state.filterText}
+          inStockOnly={this.state.inStockOnly}
+        /&gt;
+      &lt;/div&gt;
+    );
+  }
+}
+
+
+const PRODUCTS = [
+  {category: 'Sporting Goods', price: '$49.99', stocked: true, name: 'Football'},
+  {category: 'Sporting Goods', price: '$9.99', stocked: true, name: 'Baseball'},
+  {category: 'Sporting Goods', price: '$29.99', stocked: false, name: 'Basketball'},
+  {category: 'Electronics', price: '$99.99', stocked: true, name: 'iPod Touch'},
+  {category: 'Electronics', price: '$399.99', stocked: false, name: 'iPhone 5'},
+  {category: 'Electronics', price: '$199.99', stocked: true, name: 'Nexus 7'}
+];
+
+ReactDOM.render(
+  &lt;FilterableProductTable products={PRODUCTS} /&gt;,
+  document.getElementById('container')
+);
+
+
+</code></pre> 
+<h2><a href="#参考资料" id="参考资料">参考资料</a></h2> 
+<ul> 
+ <li><a href="https://reactjs.org/docs/thinking-in-react.html#step-5-add-inverse-data-flow">https://reactjs.org/docs/thinking-in-react.html#step-5-add-inverse-data-flow</a></li> 
+ <li><a href="https://segmentfault.com/q/1010000003861070">https://segmentfault.com/q/1010000003861070</a></li> 
+ <li><a href="https://blog.csdn.net/qq_26878975/article/details/62052234">https://blog.csdn.net/qq_26878975/article/details/62052234</a></li> 
+</ul></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
