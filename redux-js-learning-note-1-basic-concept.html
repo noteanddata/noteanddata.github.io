@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>redux js学习笔记1--基本概念</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>redux js学习笔记1--基本概念</h1>
+			</div>
+
+			<p><em>26 December 2019</em></p>
+
+			<p><h2><a href="#redux-js学习笔记1基本概念" id="redux-js学习笔记1基本概念">redux js学习笔记1–基本概念</a></h2> 
+<ol> 
+ <li>redux是javascript应用的的一个状态容器, redux可以和react一起使用， 也可以单独使用</li> 
+ <li>redux的安装, 可以通过下面的命令安装</li> 
+</ol> 
+<pre><code>npm install redux
+</code></pre> 
+<ol> 
+ <li>redux出现的原因是single page app的流行， 很多网站直接在一个网页里面完成了所有的功能， 这样就导致了在单页面里面的状态变得非常复杂， 所以需要一套机制来让应用的状态变得可以管理, 以至于有人发出了<a href="https://www.quirksmode.org/blog/archives/2015/07/stop_pushing_th.html">Stop pushing the web forward</a>的口号。</li> 
+ <li>redux的三个原则</li> 
+</ol> 
+<ul> 
+ <li>整个应用的状态保存在一个全局的state对象里面</li> 
+ <li>state对象本身是只读的</li> 
+ <li>对state的修改只能通过函数来实现</li> 
+</ul> 
+<ol> 
+ <li>状态修改函数是通过dispatch(action)来传递需要修改的action, 然后在会触发reducer函数里面修改状态</li> 
+ <li>reducer本身可以合并起来， 成为更大的reducer, 比如</li> 
+</ol> 
+<pre><code>function todos(state = [], action) {
+  // Somehow calculate it...
+  return nextState
+}
+function visibleTodoFilter(state = 'SHOW_ALL', action) {
+  // Somehow calculate it...
+  return nextState
+}
+let todoApp = combineReducers({
+  todos,
+  visibleTodoFilter
+})
+
+</code></pre> 
+<ol> 
+ <li>在react里面使用redux<br> redux本身没有和react绑定， 但是提供和react绑定的react-redux</li> 
+</ol> 
+<pre><code>npm install  react-redux
+
+
+</code></pre> 
+<h3><a href="#action的概念" id="action的概念">Action的概念</a></h3> 
+<p>Action就是一些数据， 表示state要如何改变的数据, 比如这就是一个Action</p> 
+<pre><code>{
+  type: 'ADD_TODO',
+  text: 'Build my first Redux app'
+}
+
+</code></pre> 
+<h3><a href="#reducer的概念" id="reducer的概念">Reducer的概念</a></h3> 
+<p>Reducer就是一个函数， 根据当前状态和action， 计算得到下一个状态的函数</p> 
+<pre><code>(previousState, action) =&gt; nextState
+</code></pre> 
+<h3><a href="#store的概念" id="store的概念">Store的概念</a></h3> 
+<ul> 
+ <li>保存应用的状态</li> 
+ <li>store.getState()可以得到当前的状态</li> 
+ <li>store.dispatch(action)发布一个action， 从而触发reducer函数， 得到下一个状态</li> 
+ <li>store.subscribe(listener) 可以注册listener函数 , 每次state发生变化的时候， listener函数就会被调用，<br> listener可以在里面调用store.getState()得到当前的状态</li> 
+</ul> 
+<h3><a href="#reduxcreatestore函数" id="reduxcreatestore函数">Redux.createStore函数</a></h3> 
+<p>Redux.createStore(reducer, [preloadedState], [enhancer])是redux应用的开始，就是创建一个store,<br> 在ES6里面需要先引用</p> 
+<pre><code>import { createStore } from 'redux'
+
+
+</code></pre> 
+<h2><a href="#参考资料" id="参考资料">参考资料</a></h2> 
+<ul> 
+ <li><a href="https://redux.js.org/basics">https://redux.js.org/basics</a></li> 
+</ul></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
