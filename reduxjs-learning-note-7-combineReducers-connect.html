@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>reduxjs学习笔记7--combineReducers和connect</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>reduxjs学习笔记7--combineReducers和connect</h1>
+			</div>
+
+			<p><em>26 December 2019</em></p>
+
+			<p><h2><a href="#reduxjs学习笔记7combinereducers和connect" id="reduxjs学习笔记7combinereducers和connect">reduxjs学习笔记7–combineReducers和connect</a></h2> 
+<p>这里记录一下combineReducers和connect两个方法的笔记， combineReducers是redux自己的方法， connect用在react-redux里面</p> 
+<h2><a href="#combinereducers方法" id="combinereducers方法">combineReducers方法</a></h2> 
+<p>combineReducers非常直观， 就是把多个reducer合并成一个reducer</p> 
+<pre><code>import cp1 from '../components/cp1/reducer'
+import cp2 from '../components/cp2/reducer'
+
+const rootReducer = redux.combineReducers({
+    cp1,
+    cp2
+});
+
+const store = redux.createStore(rootReducer)
+
+export default store;
+
+</code></pre> 
+<h2><a href="#connect方法" id="connect方法">connect方法</a></h2> 
+<p>connect方法是从UI组件生成容器组件， 也就是UI组件是纯粹显示UI的, 容器是管理状态的， 然后通过connect把UI组件和容器组件连接起来,</p> 
+<pre><code>import { connect } from 'react-redux'
+
+const VisibleTodoList = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(TodoList)
+</code></pre> 
+<p>mapStateToProps参数是一个输入逻辑， 每次state发生变化， 这个函数都会被调用， 也就是订阅了state的变化，</p> 
+<p>mapDispatchToProps是一个输出逻辑, 定义了哪些用户的操作需要定义成action， 然后传递给props</p> 
+<pre><code>const mapDispatchToProps = (
+  dispatch,
+  ownProps
+) =&gt; {
+  return {
+    onClick: () =&gt; {
+      dispatch({
+        type: 'SET_VISIBILITY_FILTER',
+        filter: ownProps.filter
+      });
+    }
+  };
+}
+
+</code></pre> 
+<h2><a href="#参考资料" id="参考资料">参考资料</a></h2> 
+<ul> 
+ <li><a href="https://segmentfault.com/a/1190000015007803">https://segmentfault.com/a/1190000015007803</a></li> 
+ <li><a href="https://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_three_react-redux.html">https://www.ruanyifeng.com/blog/2016/09/redux_tutorial_part_three_react-redux.html</a></li> 
+ <li><a href="https://react-redux.js.org/api/connect">https://react-redux.js.org/api/connect</a></li> 
+</ul></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
