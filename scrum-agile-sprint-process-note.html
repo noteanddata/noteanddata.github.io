@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>各种敏捷开发scrum/agile/sprint流程的思考和笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>各种敏捷开发scrum/agile/sprint流程的思考和笔记</h1>
+			</div>
+
+			<p><em>04 January 2020</em></p>
+
+			<p><h2><a href="#各种敏捷开发scrumagilesprint流程的思考和笔记" id="各种敏捷开发scrumagilesprint流程的思考和笔记">各种敏捷开发scrum/agile/sprint流程的思考和笔记</a></h2> 
+<ol> 
+ <li>传统软件开发流程是瀑布型的，有需求分析，系统设计，写代码，测试，发布等流程， 每个步骤可能都会比较长</li> 
+ <li>因为步骤很长, 经常出现的问题是， 到写代码的时候， 发现前面的需求有问题， 或者设计有问题， 然后会出现一些重修</li> 
+ <li>本质上， 这还是因为反馈的周期太长导致的。 所有，后来出现了一些敏捷的概念。 敏捷/scrum/agile/sprint各种概念满天飞，然后各种教练，布道师，咨询师，咨询公司也是眼花缭乱，但是其实大体框架也就几点:</li> 
+</ol> 
+<ul> 
+ <li>需求是一堆backlog, 然后把大任务拆分一个一个小任务, 就是一个backlog里面的ticket</li> 
+ <li>每次搞一个Sprint, 通常是两周， 然后这两周就基本固定做这些ticket</li> 
+ <li>最后搞一个demo， 演示一下</li> 
+ <li>通常会搞个daily standup， 主要是大家互相交流一下每天完成了什么， 有哪些是被block了，</li> 
+ <li>通常会有一个sprint board (或者kanban), 反正就是每天把进度透明化， 大家完成了什么一目了然， 然后如果有QA角色的， 开发测试完了以后就可以QA直接拿ticket去测试</li> 
+</ul> 
+<ol> 
+ <li>软件开发流程的演变，首先软件公司有几类， 一类是传统的软件开发公司， 一类是企业内部的软件开发， 一类是咨询公司， 最后一类是互联网软件开发。<br> 到今天，互联网软件公司以压倒性的优势碾压了其他几类， 主要原因是三点：</li> 
+</ol> 
+<ul> 
+ <li>规模效应: 比如淘宝亚马逊， 相当于开发了一套软件给所有的卖家用， 那么只要有足够多的卖家， 开发费用平摊到每个卖家上是很低的。 企业内部的软件开发， 软件开发的收益只是本公司， 那么收益缺乏规模效应， 成本的平摊也无法平摊到很低。</li> 
+ <li>快速迭代： 传统软件公司可能要开发几个月以后再发布， 等到发布的时候环境可能发生了变化，或者原来的需求逻辑，实现有问题， 但是已经太晚了， 互联网公司则可以每天发布很多次， 快速收集反馈</li> 
+ <li>互联网公司的软件开发直接创造价值： 很多企业的内部软件开发部门， 属于成本中心， 是为了业务的需要要不得不开发一些软件来支持公司的运作， 软件本身没有创造直接的价值， 但是绝大多数互联网公司的软件开发都是直接创造价值的， 因为直接就对应到创造收入的产品</li> 
+</ul> 
+<ol> 
+ <li>根据参考资料, 早在1957年就出现了迭代式增量软件开发的概念, 1995年就出现了scrum的概念。</li> 
+ <li>大量搞咨询的公司推动了很多流程和概念的普及， 但是咨询公司由于是为客户服务间接创造价值的，本身其实并不直接创造价值。 另外一个方面，由于这些概念和流程本身也不是什么高深莫测的东西，不是属于需要大量的练习和积累的硬技能， 更何况流程很多时候落地的时候需要和团队实际情况相结合， 本身也不是什么灵丹妙药， 所以，这些东西很多时候由团队人员自己学习一下应用就好，并不需要单独搞一个咨询公司来搞流程。 有时候业务每天都在大量亏钱， 公司岌岌可危， 然后还搞一些咨询的人来搞流程，也是非常搞笑。</li> 
+ <li>有一段时间， 曾经花了不少时间看这种流程和软概念， 比如看到系统分析师， 软件工程， RUP, UML, 敏捷， 测试驱动开发(TDD), 回过头看感觉做这些事情浪费了不少时间，本质上来说没什么大用， 不如直接学习一下硬技能有用。 当然，更好的是去解决一个实际的问题。</li> 
+</ol> 
+<h2><a href="#参考资料" id="参考资料">参考资料</a></h2> 
+<ul> 
+ <li><a href="https://en.wikipedia.org/wiki/Agile_software_development">https://en.wikipedia.org/wiki/Agile_software_development</a></li> 
+ <li><a href="https://coolshell.cn/articles/3745.html">https://coolshell.cn/articles/3745.html</a></li> 
+</ul></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
