@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>leetcode 1319 Number of Operations to Make Network Connected解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1319 Number of Operations to Make Network Connected解题笔记</h1>
+			</div>
+
+			<p><em>12 January 2020</em></p>
+
+			<p><h2><a href="#题目-leetcode-1319-number-of-operations-to-make-network-connected" id="题目-leetcode-1319-number-of-operations-to-make-network-connected">题目 leetcode 1319 Number of Operations to Make Network Connected</a></h2> 
+<p><a href="https://leetcode.com/problems/number-of-operations-to-make-network-connected/description/">https://leetcode.com/problems/number-of-operations-to-make-network-connected/description/</a></p> 
+<p>输入一个无向图， 问最少移动多少次边，可以让这个图上的所有节点都相连？ 如果不存在这样一个操作， 那么返回-1;<br> 其中， 输入的无向图上没有重复的边.</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>如果总共的边数小于n-1, 那么无论如何都不可能。</li> 
+ <li>如果总共的边数&gt;= n-1, 那么肯定可以。 需要移动的次数就是总共的group的个数-1, 一个group就是一个相联通的节点组合</li> 
+ <li>BFS可以做, 注意是无向图</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int makeConnected(int n, int[][] connections) {
+        if(connections.length &lt; n-1) {
+            return -1;
+        }
+        Map&lt;Integer, Set&lt;Integer&gt;&gt; graph = new HashMap&lt;&gt;();
+        for(int[] connection: connections) {
+            Set&lt;Integer&gt; set0 = graph.getOrDefault(connection[0], new HashSet&lt;&gt;());
+            set0.add(connection[1]);
+            graph.put(connection[0], set0);
+            
+            Set&lt;Integer&gt; set1 = graph.getOrDefault(connection[1], new HashSet&lt;&gt;());
+            set1.add(connection[0]);
+            graph.put(connection[1], set1);
+        }
+        
+        
+        
+        Set&lt;Integer&gt; visited = new HashSet&lt;&gt;();
+        
+        int groupcount = 0;
+        for(int i = 0; i &lt; n; ++i) {
+            if(visited.contains(i)) {
+                continue;
+            }
+            groupcount++;
+            
+            visited.add(i);
+            
+            Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+            queue.add(i);
+            while(!queue.isEmpty()) {
+                int node = queue.poll();
+                
+                Set&lt;Integer&gt; nextset = graph.get(node);
+                if(null == nextset) continue;
+                for(int next: nextset) {
+                    if(!visited.contains(next)) {
+                        queue.add(next);    
+                        visited.add(next);
+                    }
+                }
+            }
+        }
+        
+        return groupcount-1;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
