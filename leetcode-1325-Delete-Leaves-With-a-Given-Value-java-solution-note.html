@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>leetcode 1325 Delete Leaves With a Given Value解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="leetcode 1325 Delete Leaves With a Given Value java tree binary tree dfs 二叉树， 递归，深度优先搜索 "/>
+    <meta name="description" content="leetcode 1325 Delete Leaves With a Given Value的解题思路分析和代码实现, 主要使用dfs的方法做自底向上的深度优先搜索"/>
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1325 Delete Leaves With a Given Value解题笔记</h1>
+			</div>
+
+			<p><em>19 January 2020</em></p>
+
+			<p><h2><a href="#题目-leetcode-1325-delete-leaves-with-a-given-value" id="题目-leetcode-1325-delete-leaves-with-a-given-value">题目 leetcode 1325 Delete Leaves With a Given Value</a></h2> 
+<p>输入一个二叉树和一个数字， 如果一个树的叶节点和这个数的值一样的话，就把这个叶节点删除。 然后更新以后树又继续进行这个过程。</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个可以用自底向上做递归的方式来更新, 可以用dfs来做</li> 
+ <li>记得左右子树递归了以后，需要更新root.left和root.right</li> 
+ <li>然后如果返回的左右节点都变成null的话， 需要判断root.val == target, 如果是的话那也要返回null</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    public TreeNode removeLeafNodes(TreeNode root, int target) {
+        return dfs(root, target);
+    }
+    
+    public TreeNode dfs(TreeNode root, int target) {
+        if(null == root) {
+            return null; 
+        }
+        TreeNode left = dfs(root.left, target);
+        TreeNode right = dfs(root.right, target);
+        // update to null if needed
+        root.left = left;
+        root.right = right;
+        
+        if(left != null || right != null) {
+            return root;
+        } else { // left == null &amp;&amp; right == null
+            if(root.val == target) {
+                return null;
+            } else {
+                return root;
+            }
+        }
+    }
+}
+
+</code></pre> 
+<h2><a href="#错误代码" id="错误代码">错误代码</a></h2> 
+<p>下面的代码就是错误的， 重点在于每次递归的时候都需要更新root.left和root.right, 因为只要有更新成null就要更新，</p> 
+<pre><code>public TreeNode removeLeafNodes(TreeNode root, int target) {
+    return dfs(root, target);
+}
+
+public TreeNode dfs(TreeNode root, int target) {
+    if(null == root) {
+        return null; 
+    }
+    TreeNode left = dfs(root.left, target);
+    TreeNode right = dfs(root.right, target);
+    System.out.println("root.val=" + root.val + ", left=" + left + ", right=" + right);
+    
+    if(left != null || right != null) {
+        // update to null if needed
+        root.left = left;
+        root.right = right;
+        return root;
+    } else { // left == null &amp;&amp; right == null
+        if(root.val == target) {
+            return null;
+        } else {
+            return root;
+        }
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
