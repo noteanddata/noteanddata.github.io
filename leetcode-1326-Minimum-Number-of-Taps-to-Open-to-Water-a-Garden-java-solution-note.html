@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>leetcode 1326 Minimum Number of Taps to Open to Water a Garden解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="leetcode 1326 Minimum Number of Taps to Open to Water a Garden java greedy two pointer "/>
+    <meta name="description" content="leetcode 1326 Minimum Number of Taps to Open to Water a Garden这个题目的解题思路分析和java代码实现，本质上是一个贪心的思路，使用了双指针的实现"/>
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1326 Minimum Number of Taps to Open to Water a Garden解题笔记</h1>
+			</div>
+
+			<p><em>19 January 2020</em></p>
+
+			<p><h2><a href="#题目-leetcode-1326-minimum-number-of-taps-to-open-to-water-a-garden" id="题目-leetcode-1326-minimum-number-of-taps-to-open-to-water-a-garden">题目 leetcode 1326 Minimum Number of Taps to Open to Water a Garden</a></h2> 
+<p>输入一个n， 表示花园是在一维坐标上[0,n]是花园。<br> 然后再输入一个n+1长的数组， 表示在从0到n的每个为位置上的水龙头的覆盖半径， 也就是[i - ranges[i], i + ranges[i]]</p> 
+<p>问， 最少打开多少个水龙头可以覆盖整个花园</p> 
+<p>测试数据1</p> 
+<pre><code>Input: n = 5, ranges = [3,4,1,1,0,0]
+Output: 1
+Explanation: The tap at point 0 can cover the interval [-3,3]
+The tap at point 1 can cover the interval [-3,5]
+The tap at point 2 can cover the interval [1,3]
+The tap at point 3 can cover the interval [2,4]
+The tap at point 4 can cover the interval [4,4]
+The tap at point 5 can cover the interval [5,5]
+Opening Only the second tap will water the whole garden [0,5]
+
+</code></pre> 
+<p>测试数据2</p> 
+<pre><code>Input: n = 3, ranges = [0,0,0,0]
+Output: -1
+Explanation: Even if you activate all the four taps you cannot water the whole garden.
+
+</code></pre> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>这个题目测试数据1很好理解， 测试数据2我一直理解不了， 不是每个水龙头开起来就全部覆盖了嘛？ 导致实现的时候一直有问题。<br> 后来才明白， 这个花园是要全覆盖所有的范围， 而不是只覆盖那一个点。</li> 
+ <li>这类题目通常从小问题开始，我们看第一个点， 也就是坐标是0的这个点， 我们会如何选择， 我们肯定是从左到右选择一个水龙头，使得这个水龙头可以覆盖0， 同时可以覆盖到最右边</li> 
+ <li>然后， 下一个需要覆盖的范围就是前面选择的水龙头的最右边的这个点， 然后同样去找剩下的水龙头， 看看最远可以覆盖到哪里，</li> 
+ <li>直到找到可以覆盖n的位置就返回， 如果不能覆盖到n，那就返回-1</li> 
+ <li>这个思路可以认为是一个贪心的思路, 实现上是双指针的实现</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int minTaps(int n, int[] ranges) {        
+    int count = 0;
+    int i = 0;
+    int j = 0;
+    
+    while(i &lt;= n) {
+        int maxright = -1;
+        int maxj = -1;
+        while(j &lt;= n) {
+            int left = j - ranges[j];
+            int right = j + ranges[j];
+            if(i &gt;= left &amp;&amp; i &lt;= right) {
+                if(right &gt;= maxright) {
+                    maxright = right;
+                    maxj = j;
+                }
+            }
+            j++;
+        }
+        if(maxright == -1) {            
+            return -1;
+        }
+        count++;
+        
+        if(maxright &gt;= n) {
+            return count;
+        }
+        
+        i = maxright;
+        j = maxj + 1;
+    }
+    
+    return -1;
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>本质上，数组其实只遍历了1次， 所以复杂度是O(N)</p> 
+<h2><a href="#错误代码" id="错误代码">错误代码</a></h2> 
+<p>因为之前对覆盖的理解有错误，所以只针对测试的那个case特殊处理了一下， 然后区别在于i = maxright+1;这行</p> 
+<pre><code>class Solution {
+    public int minTaps(int n, int[] ranges) {
+        boolean allzero = true;
+        for(int r : ranges) {
+            if(r != 0) {
+                allzero = false;
+                break;
+            }
+        }
+        if(allzero) {
+            return -1;
+        }
+        
+        int count = 0;
+        int i = 0;
+        
+        int j = 0;
+        
+        while(i &lt;= n) {
+            int maxright = -1;
+            int maxj = -1;
+            while(j &lt;= n) {
+                int left = j - ranges[j];
+                int right = j + ranges[j];
+                if(i &gt;= left &amp;&amp; i &lt;= right) {
+                    if(right &gt;= maxright) {
+                        maxright = right;
+                        maxj = j;
+                    }
+                }
+                j++;
+            }
+            //System.out.println("i=" + i + ", maxright=" + maxright);
+            if(maxright == -1) {
+                
+                return -1;
+            }
+            count++;
+            i = maxright+1;
+            j = maxj + 1;
+        }
+        
+        return count;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
