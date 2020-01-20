@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>web开发笔记--给网站添加评论插件</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="web comment disqus facebook comments commento isso widgetpack "/>
+    <meta name="description" content="尝试给这个笔记和数据网站添加一个网站评论的插件, 比较了几个网站评论插件的优点和缺点"/>
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>web开发笔记--给网站添加评论插件</h1>
+			</div>
+
+			<p><em>20 January 2020</em></p>
+
+			<p><h2><a href="#web开发笔记给网站添加评论插件" id="web开发笔记给网站添加评论插件">web开发笔记–给网站添加评论插件</a></h2> 
+<ol> 
+ <li> <p>背景<br> 断断续续也写了一些笔记， 大部分都是用做自己记录，主要是给自己看的，所以写的都比较乱。 因为要写一片好的文章第一需要技术的功力， 第二需要写作的水平，第三需要时间的投入， 所以现在都还只能写到自己看看都程度。 但是，有时候也好奇每天来的这些不多的读者，是怎么看待这些笔记的。 所以今天搜索了一下， 添加一个评论和打分的插件。</p> </li> 
+ <li> <p>主要解决方案</p> </li> 
+</ol> 
+<ul> 
+ <li>disqus<br> 老牌评论解决方案, 最早应该是因为wordpress插件受到大家的欢迎， 可是现在免费版是有广告的， 所以暂时不考虑. <a href="https://disqus.com/pricing/">https://disqus.com/pricing/</a></li> 
+ <li>facebook comments<br> 大牌厂商的解决方案， 优点是facebook账号绑定， 使得评论的账号质量比较高。 缺点也是facebook账号绑定，使得评论的成本比较高</li> 
+ <li>查看了其他一些方案，要么是没有免费方案， 要么是单独和wordpress绑定, 要么是开源解决方案需要自己搭服务器, 比如下面一些</li> 
+ <li><a href="https://commento.io/pricing">https://commento.io/pricing</a></li> 
+ <li><a href="https://wordpress.org/plugins/muut/">https://wordpress.org/plugins/muut/</a></li> 
+ <li><a href="https://wordpress.org/plugins/wpdiscuz/">https://wordpress.org/plugins/wpdiscuz/</a></li> 
+ <li><a href="https://github.com/posativ/isso">https://github.com/posativ/isso</a></li> 
+ <li><a href="https://www.remarkbox.com/#plans">https://www.remarkbox.com/#plans</a></li> 
+</ul> 
+<ol> 
+ <li> <p>最终选择<br> 最后选择了<a href="https://widgetpack.com/">https://widgetpack.com/</a>, 安装比较简单， 然后评论管理也比较灵活， 可以用各种社交网络账号登陆， 也可以用email登陆</p> </li> 
+ <li> <p>欢迎各位读者积极评论打分， 这样我可以得到一些反馈, feedback是进步的钥匙</p> </li> 
+</ol></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+	<div id="wpac-comment"></div>
+<script type="text/javascript">
+wpac_init = window.wpac_init || [];
+wpac_init.push({widget: 'Comment', id: 22932});
+(function() {
+    if ('WIDGETPACK_LOADED' in window) return;
+    WIDGETPACK_LOADED = true;
+    var mc = document.createElement('script');
+    mc.type = 'text/javascript';
+    mc.async = true;
+    mc.src = 'https://embed.widgetpack.com/widget.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+})();
+</script>
+<a href="https://widgetpack.com" class="wpac-cr">Comments System WIDGET PACK</a>
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
