@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>go语言学习笔记26--go语言自带的profiling 工具pprof的使用</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="golang profiling pprof graphviz "/>
+    <meta name="description" content="记录了一下golang里面使用profiling工具pprof的一些笔记"/>
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>go语言学习笔记26--go语言自带的profiling 工具pprof的使用</h1>
+			</div>
+
+			<p><em>26 January 2020</em></p>
+
+			<p><h2><a href="#go语言学习笔记26go语言自带的profiling-工具pprof的使用" id="go语言学习笔记26go语言自带的profiling-工具pprof的使用">go语言学习笔记26–go语言自带的profiling 工具pprof的使用</a></h2> 
+<ol> 
+ <li>测试代码</li> 
+</ol> 
+<pre><code>package main
+
+import _ "net/http/pprof"
+import "net/http"
+import "log"
+import "time"
+
+func main() {
+    go func() {
+        log.Println(http.ListenAndServe("localhost:6060", nil))
+    }() 
+
+    run()
+
+}
+
+func run() {
+    s := make([]string, 3)
+    for i:= 0; i &lt; 10000000; i++{
+        s = append(s, "magical pandas")
+        if (i % 100000) == 0 { 
+            time.Sleep(500 * time.Millisecond)
+        }   
+    }   
+}
+
+</code></pre> 
+<ol> 
+ <li>运行</li> 
+</ol> 
+<pre><code>go run test.go
+</code></pre> 
+<ol> 
+ <li> <p>在浏览器里面打开<a href="http://localhost:6060/debug/pprof/profile?seconds=30">http://localhost:6060/debug/pprof/profile?seconds=30</a><br> 会对这个程序做30秒的cpu profile, 会下载一个文件名是profile对文件</p> </li> 
+ <li> <p>对下载下来对文件运行pprof -web profile, 可以生成一个svg的图片， 里面有程序运行时间的profile<br> （这里需要安装graphviz工具)</p> </li> 
+</ol> 
+<pre><code>brew install graphviz
+</code></pre> 
+<ol> 
+ <li>这个程序生成的图片如下, 感觉非常强大<br> <img src="images/golang-notes/pprof001.svg" width="1024px" height="1024px" alt="golang性能profile图片"></li> 
+</ol> 
+<h2><a href="#参考资料" id="参考资料">参考资料</a></h2> 
+<ul> 
+ <li><a href="https://golang.org/pkg/net/http/pprof/">https://golang.org/pkg/net/http/pprof/</a></li> 
+ <li><a href="https://jvns.ca/blog/2017/09/24/profiling-go-with-pprof/">https://jvns.ca/blog/2017/09/24/profiling-go-with-pprof/</a></li> 
+</ul></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+	<div id="wpac-comment"></div>
+<script type="text/javascript">
+wpac_init = window.wpac_init || [];
+wpac_init.push({widget: 'Comment', id: 22932});
+(function() {
+    if ('WIDGETPACK_LOADED' in window) return;
+    WIDGETPACK_LOADED = true;
+    var mc = document.createElement('script');
+    mc.type = 'text/javascript';
+    mc.async = true;
+    mc.src = 'https://embed.widgetpack.com/widget.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+})();
+</script>
+<a href="https://widgetpack.com" class="wpac-cr">Comments System WIDGET PACK</a>
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
