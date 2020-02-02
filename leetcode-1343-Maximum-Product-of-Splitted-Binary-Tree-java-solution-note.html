@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>leetcode 1343 Maximum Product of Splitted Binary Tree</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="leetcode 1343 Maximum Product of Splitted Binary Tree binary tree dfs post order travesal java "/>
+    <meta name="description" content="leetcode 1343 Maximum Product of Splitted Binary Tree的解题思路和代码实现的笔记， 主要使用递归(dfs)的方式来实现, 这里使用了后序遍历"/>
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1343 Maximum Product of Splitted Binary Tree</h1>
+			</div>
+
+			<p><em>02 February 2020</em></p>
+
+			<p><h2><a href="#题目-leetcode-1343-maximum-product-of-splitted-binary-tree" id="题目-leetcode-1343-maximum-product-of-splitted-binary-tree">题目 leetcode 1343 Maximum Product of Splitted Binary Tree</a></h2> 
+<p>输入一个二叉树，最少有两个节点， 然后在任意一条边上剪断把这个二叉树分成两部分， 左边和右边的节点取和， 然后把这两个数相乘， 求最大的积，然后把这个积对1000000007取余</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>每次剪断以后， 左边和右边要求和，如果每次都要计算一次，那么有很多重复计算， 所以可以先把节点和计算好， 比如得到total,<br> 那么， 如果把一个节点和左边的子节点剪断， 最后的结果就会是 (totalSum - node.left.sum) * node.left.sum<br> 如果把一个节点和右边的节点剪断， 那么最后的结果就是 (totalSum - node.right.sum) * node.right.sum</li> 
+ <li>由于结果会溢出， 所以用long来存储。 我做的时候重新生成了整个树， 我看很多答案都不需要。</li> 
+ <li>一个直观的做法是两次遍历，有一些高手的做法是一次遍历的时候直接完成的， 这个有待后续学习</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    static class LongNode {
+        long val;
+        LongNode left, right;
+        LongNode (long val) {this.val = val;}
+    }
+    public int maxProduct(TreeNode root) {
+        if(null == root) {
+            return 0;
+        }    
+        
+        LongNode sumtree = buildSumTree(root);
+        long total = sumtree.val;
+                
+        long max = maxProductFromSumTree(sumtree, total);
+        return (int)(max%1000000007);
+    }
+    
+    public long maxProductFromSumTree(LongNode root, long total) {
+        if(null == root) {
+            return 0;
+        }
+        if(null == root.left &amp;&amp; null == root.right) {
+            return 0;
+        }
+        long max = 0;
+        if(null != root.left) {
+            long sum = root.left.val * (total - root.left.val);
+            max = Math.max(max, sum);
+            max = Math.max(max, maxProductFromSumTree(root.left, total));
+        }
+        if(null != root.right) {
+            long sum = root.right.val * (total - root.right.val) ;
+            max = Math.max(max, sum);
+            max = Math.max(max, maxProductFromSumTree(root.right, total));
+        }
+        
+        return max;
+    }
+    
+    public LongNode buildSumTree(TreeNode root) {
+        if(null == root) {
+            return null;
+        }
+        LongNode left = buildSumTree(root.left);
+        LongNode right = buildSumTree(root.right);
+        
+        long leftval = (null == left) ? 0 : left.val;
+        long rightval = (null == right) ? 0 : right.val;
+        LongNode nroot = new LongNode(leftval + rightval + root.val);
+        nroot.left = left;
+        nroot.right = right;
+        
+        
+        return nroot;
+    }
+    
+    
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>两次遍历 O(N)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>重新生成了一个树, O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+	<div id="wpac-comment"></div>
+<script type="text/javascript">
+wpac_init = window.wpac_init || [];
+wpac_init.push({widget: 'Comment', id: 22932});
+(function() {
+    if ('WIDGETPACK_LOADED' in window) return;
+    WIDGETPACK_LOADED = true;
+    var mc = document.createElement('script');
+    mc.type = 'text/javascript';
+    mc.async = true;
+    mc.src = 'https://embed.widgetpack.com/widget.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+})();
+</script>
+<a href="https://widgetpack.com" class="wpac-cr">Comments System WIDGET PACK</a>
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
