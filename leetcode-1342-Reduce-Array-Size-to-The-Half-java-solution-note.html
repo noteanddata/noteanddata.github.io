@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>leetcode 1342 Reduce Array Size to The Half解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="leetcode 1342 Reduce Array Size to The Half java sort heap "/>
+    <meta name="description" content="leetcode 1342 Reduce Array Size to The Half的解题思路和代码实现， 主要使用了排序的方法"/>
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1342 Reduce Array Size to The Half解题笔记</h1>
+			</div>
+
+			<p><em>02 February 2020</em></p>
+
+			<p><h2><a href="#题目-leetcode-1342-reduce-array-size-to-the-half" id="题目-leetcode-1342-reduce-array-size-to-the-half">题目 leetcode 1342 Reduce Array Size to The Half</a></h2> 
+<p>输入一个数组， 每次选择里面一个数，然后把这个数组里面所有出现的这个数都去掉，问最少需要几次操作使得数组的大小至少减半</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>先建立一个HashMap统计每个元素出现的次数, 然后按次数排序，取最大的几个次数，使得满足最少减半的要求</li> 
+ <li>这里直接排序了， 当然实际上如果用PriorityQueue会更好一点， 因为建立heap的过程是O(N)， 而不是O(N*lgN)的</li> 
+ <li>这个题目还可以采用count sort的方法来做， 这个留待以后学习</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>public int minSetSize(int[] arr) {
+    Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+    for(int v: arr) {
+        int count = countMap.getOrDefault(v, 0);
+        countMap.put(v, count+1);
+    }
+    List&lt;Integer&gt; countList = new ArrayList&lt;&gt;();
+    for(Map.Entry&lt;Integer, Integer&gt; entry: countMap.entrySet()) {
+        countList.add(entry.getValue());
+    }
+    Collections.sort(countList, Comparator.reverseOrder());
+    
+    int size = 0;
+    int sum = 0;
+    for(int count: countList) {
+        sum += count;
+        size++;
+        if (sum*2 &gt;= arr.length) {
+            break;
+        }
+    }
+    return size;
+}
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>有全局排序, O(N*lgN)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>有分配可能最大是N的map， O(N)</p> 
+<h2><a href="#错误代码" id="错误代码">错误代码</a></h2> 
+<p>这里写过一份错误的代码，主要是把count当成唯一的，实际上很多元素出现的次数会是重复的</p> 
+<pre><code>public int minSetSize(int[] arr) {
+    Map&lt;Integer, Integer&gt; countMap = new HashMap&lt;&gt;();
+    for(int v: arr) {
+        int count = countMap.getOrDefault(v, 0);
+        countMap.put(v, count+1);
+    }
+    SortedSet&lt;Integer&gt; set = new TreeSet&lt;&gt;(Comparator.reverseOrder());
+    set.addAll(countMap.values());
+    int size = 0;
+    int sum = 0;
+    for(int count: set) {
+        sum += count;
+        size++;
+        if (sum*2 &gt;= arr.length) {
+            break;
+        }
+    }
+    return size;
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+	<div id="wpac-comment"></div>
+<script type="text/javascript">
+wpac_init = window.wpac_init || [];
+wpac_init.push({widget: 'Comment', id: 22932});
+(function() {
+    if ('WIDGETPACK_LOADED' in window) return;
+    WIDGETPACK_LOADED = true;
+    var mc = document.createElement('script');
+    mc.type = 'text/javascript';
+    mc.async = true;
+    mc.src = 'https://embed.widgetpack.com/widget.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+})();
+</script>
+<a href="https://widgetpack.com" class="wpac-cr">Comments System WIDGET PACK</a>
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
