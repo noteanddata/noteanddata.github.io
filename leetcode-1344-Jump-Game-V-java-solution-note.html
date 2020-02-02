@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>leetcode 1344 Jump Game V</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="leetcode 1344 Jump Game V dynamic programming 动态规划 dp top down动态规划， 记忆化搜索 "/>
+    <meta name="description" content="leetcode 1344 Jump Game V的解题思路分析和代码实现, 使用top down的动态规划实现，也就是记忆化搜索"/>
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1344 Jump Game V</h1>
+			</div>
+
+			<p><em>02 February 2020</em></p>
+
+			<p><h2><a href="#题目-leetcode-1344-jump-game-v" id="题目-leetcode-1344-jump-game-v">题目 leetcode 1344 Jump Game V</a></h2> 
+<p>输入一个数组， 里面有正整数， 每个数表示在每个位置上的柱子的高度。<br> 然后对于每个位置， 可以选择向左跳或者向右跳, 跳跃的最大宽度是d。<br> 同时， 任何一个跳跃，都只能从高往低跳， 并且， 在跳跃过程中经过的每个节点都要是从高到低的。 In addition, you can only jump from index i to index j if arr[i] &gt; arr[j] and arr[i] &gt; arr[k] for all indices k between i and j (More formally min(i, j) &lt; k &lt; max(i, j)).<br> 问，从任何一个柱子开始，最多可以跳到几个柱子</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<p>对于每个柱子，从两边的节点开始，如果旁边的节点是符合要求的，并且结果已经计算好， 那么就不需要重复计算了，<br> dp[i] = dp[j] + 1 // if i-&gt;j is valid<br> 如果遇到一个j已经是不符合要求的, 那么就不用继续向这个方向移动了。<br> 所以， 用top down 的动态规划(dp)就可以解</p> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>class Solution {
+    public int maxJumps(int[] arr, int d) {
+        int[] table = new int[arr.length];
+        int totalMax = 1;
+        for(int i = 0;i &lt; arr.length; ++i) {
+            int max = findMax(arr, table, i, d);
+            table[i] = max;
+            totalMax = Math.max(totalMax, max);
+        }
+                
+        return totalMax;
+    }
+    
+    public int findMax(int[] arr, int[] table, int i, int d) {
+        if(table[i] != 0) {
+            return table[i];
+        }
+        int max = 0;
+        for(int size = 1; size &lt;= d; ++size) {
+            if(i+ size &gt;= arr.length || arr[i+size] &gt;= arr[i]) {
+                break;
+            }
+            if(table[i+size] == 0) {
+                table[i+size] = findMax(arr, table, i+size, d);
+            }
+            max = Math.max(max, table[i+size]);
+        }
+        
+        for(int size = 1; size &lt;= d; ++size) {
+            if(i - size &lt; 0 || arr[i-size] &gt;= arr[i]) {
+                break;
+            }
+            if(table[i-size] == 0) {
+                table[i-size] = findMax(arr, table, i-size, d);
+            }
+            max = Math.max(max, table[i-size]);
+        }
+        
+        return max+1;
+    }
+}
+
+</code></pre> 
+<h3><a href="#时间复杂度" id="时间复杂度">时间复杂度</a></h3> 
+<p>数组需要遍历，遍历每个元素的时候，需要访问2d个元素 ， 计算的时候，每个元素没有重复计算， 所以整体复杂度是O(N*d)</p> 
+<h3><a href="#空间复杂度" id="空间复杂度">空间复杂度</a></h3> 
+<p>使用了同样大小的表格存储结果， O(N)</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+	<div id="wpac-comment"></div>
+<script type="text/javascript">
+wpac_init = window.wpac_init || [];
+wpac_init.push({widget: 'Comment', id: 22932});
+(function() {
+    if ('WIDGETPACK_LOADED' in window) return;
+    WIDGETPACK_LOADED = true;
+    var mc = document.createElement('script');
+    mc.type = 'text/javascript';
+    mc.async = true;
+    mc.src = 'https://embed.widgetpack.com/widget.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+})();
+</script>
+<a href="https://widgetpack.com" class="wpac-cr">Comments System WIDGET PACK</a>
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
