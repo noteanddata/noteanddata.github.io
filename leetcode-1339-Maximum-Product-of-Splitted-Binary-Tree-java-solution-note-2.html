@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>leetcode 1339 Maximum Product of Splitted Binary Tree</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="leetcode 1339 Maximum Product of Splitted Binary Tree binary tree dfs post order travesal java "/>
+    <meta name="description" content="leetcode 1339 Maximum Product of Splitted Binary Tree的解题思路和代码实现的笔记， 主要使用递归(dfs)的方式来实现, 这里使用了后序遍历"/>
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>leetcode 1339 Maximum Product of Splitted Binary Tree</h1>
+			</div>
+
+			<p><em>08 February 2020</em></p>
+
+			<p><h2><a href="#题目-leetcode-1339-maximum-product-of-splitted-binary-tree" id="题目-leetcode-1339-maximum-product-of-splitted-binary-tree">题目 leetcode 1339 Maximum Product of Splitted Binary Tree</a></h2> 
+<p>leetcode的题目题号会变, 之前在这里<a href="http://www.noteanddata.com/leetcode-1343-Maximum-Product-of-Splitted-Binary-Tree-java-solution-note.html">http://www.noteanddata.com/leetcode-1343-Maximum-Product-of-Splitted-Binary-Tree-java-solution-note.html</a>写了这个题目的解题笔记, 后来看了下自己的代码还是太繁琐了, 重新写了一下，代码更简洁一点。</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>核心的思路还是不变，每次分割都是product=左子树的和*右子树的和</li> 
+ <li>如果每次都单独计算，那就比较麻烦，实际上，某一个节点的子树的和可以通过后序遍历的递归来实现，</li> 
+ <li>所以，如果先知道整体的和， 那么对于砍左边的子树的边, product = (sum - leftsum) * leftsum<br> 同样， 如果砍右边， 那么product = (sum - rightsum) * rightsum</li> 
+ <li>所以，先一次遍历得到整体的sum， 然后再做一次后序遍历，就可以得到最大值， 不需要建一颗树</li> 
+</ol> 
+<h2><a href="#java题解代码" id="java题解代码">java题解代码</a></h2> 
+<pre><code>/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+class Solution {
+    
+    private long max = 0;
+    public int maxProduct(TreeNode root) {
+        long sum = sum(root);
+        findmax(root, sum);
+        return (int)(max%1_000_000_007);
+    }
+    
+    public long findmax(TreeNode root, long sum) {
+        if(null == root) {
+            return 0;
+        }
+        long leftsum = findmax(root.left, sum);
+        long rightsum = findmax(root.right, sum);
+        max = Math.max(max, leftsum * (sum - leftsum));
+        max = Math.max(max, rightsum * (sum - rightsum));
+        
+        return leftsum + rightsum + root.val;
+    }
+    
+    public long sum(TreeNode root) {
+        if(null == root) {
+            return 0;
+        }
+        return sum(root.left) + sum(root.right) + root.val;
+    }
+}
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+	<div id="wpac-comment"></div>
+<script type="text/javascript">
+wpac_init = window.wpac_init || [];
+wpac_init.push({widget: 'Comment', id: 22932});
+(function() {
+    if ('WIDGETPACK_LOADED' in window) return;
+    WIDGETPACK_LOADED = true;
+    var mc = document.createElement('script');
+    mc.type = 'text/javascript';
+    mc.async = true;
+    mc.src = 'https://embed.widgetpack.com/widget.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(mc, s.nextSibling);
+})();
+</script>
+<a href="https://widgetpack.com" class="wpac-cr">Comments System WIDGET PACK</a>
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
