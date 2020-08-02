@@ -77,15 +77,12 @@ var _hmt = _hmt || [];
 
 			<p><h2><a href="#coursera的吴恩达机器学习课程第一周-cost-function最简单的情况" id="coursera的吴恩达机器学习课程第一周-cost-function最简单的情况">coursera的吴恩达机器学习课程第一周-cost function最简单的情况</a></h2> 
 <ol> 
- <li> <p>课程视频: <a href="https://www.coursera.org/learn/machine-learning/lecture/N09c6/cost-function-intuition-i">https://www.coursera.org/learn/machine-learning/lecture/N09c6/cost-function-intuition-i</a></p> </li> 
- <li> <p>在前面的linear regression里面， 定义了预测函数是 y = kx + b ，</p> </li> 
- <li>定义预测的距离为欧式距离的平方, d = (y[x] - y)^2</li> 
- <li>cost function可以设置成 H= sum(d) /2m</li> 
- <li> <p>如果取最简单的情况， 设置b=0, y = kx, 其中， 实际的数据是[1,1], [2,2], [3,3],</p> </li> 
- <li>那么， H其实是一个关于k的函数</li> 
- <li>再取最简单的情况，预测函数也设置成k = 1, 也就是y=x, 那么, H = 0, 也就是完美预测，距离是0，</li> 
- <li>然后尝试其他k的值，在二维坐标上把k和H的值画出来，其实是一个抛物线， 极点就是[1,0]</li> 
-</ol></p>
+ <li> <p>课程视频: <a href="https://www.coursera.org/learn/machine-learning/lecture/nwpe2/cost-function-intuition-ii">https://www.coursera.org/learn/machine-learning/lecture/nwpe2/cost-function-intuition-ii</a></p> </li> 
+ <li> <p>在前面的视频里面， 对预测函数是 y = kx + b 做了最简单的情况， 就是设置b=0， 那么如果b不是0，会是什么情况呢？</p> </li> 
+ <li>那么， H就会是一个关于k,b两个变量的函数， 然后对很多[k,b]做计算， 会得到一个三维空间中的很多点， 形成一个曲面</li> 
+ <li>用软件把这些点画出来，会发现这个三维曲面也是有一个极点，在这个极点上会得到最小的H值。这个曲面的形状类似一个向上三维的椭圆球</li> 
+</ol> 
+<p>那么，这个极点的位置对应的k和b，就是我们要求的最优预测函数</p></p>
 	</div>		
 
 <div class="col-sm-4">
