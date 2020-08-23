@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>coursera的吴恩达机器学习课程第二周---feature的选择和非线性的regression</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="machine learning 机器学习 linear regression polynomial regression features "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>coursera的吴恩达机器学习课程第二周---feature的选择和非线性的regression</h1>
+			</div>
+
+			<p><em>22 August 2020</em></p>
+
+			<p><h2><a href="#coursera的吴恩达机器学习课程第二周feature的选择和非线性的regression" id="coursera的吴恩达机器学习课程第二周feature的选择和非线性的regression">coursera的吴恩达机器学习课程第二周—feature的选择和非线性的regression</a></h2> 
+<p>课程资料：<br> <a href="https://www.coursera.org/learn/machine-learning/lecture/Rqgfz/features-and-polynomial-regression">https://www.coursera.org/learn/machine-learning/lecture/Rqgfz/features-and-polynomial-regression</a></p> 
+<p>主要笔记：</p> 
+<ol> 
+ <li>feature的选择， 比如以房价为例子， 可以选择房子的长度和宽度分别作为feature， 这样有两个变量，<br> 也可以选择房子的面积作为feature， 这样只有一个变量。<br> 因为机器学习涉及到大量的矩阵计算，所以feature多少会影响到速度</li> 
+ <li>非线性的regression (多项式)， 之前的例子假设都是线性函数， 这样会有很大的限制，实际的变量关系很可能是非线性的。 比如<br> y = k0 + k1 * x1 + k2 * x1^2<br> 但是，可以通过定义一个新的变量x2 = x1 ^2 , 这样，就变成了有两个变量的线性关系，仍然可以用linear regression来解。<br> 那么，这个linear regression可以应用的范围就一下子大了很多很多.<br> 当然，在这样的情况下， feature scaling就变得非常重要。 因为每个变量的大小就多了很多很多。 所以需要scaling到一个</li> 
+</ol> 
+<p>当然，整个过程非常的科学，从最简单的一个变量的线性函数开始，然后过渡到多个变量的线性函数， 最后扩展到支持多个变量的多项式函数，一下子可以应用到很多很多场景了。</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
