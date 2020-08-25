@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>coursera的吴恩达机器学习课程第二周---normal equation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="machine learning 机器学习 linear regression normal equation "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>coursera的吴恩达机器学习课程第二周---normal equation</h1>
+			</div>
+
+			<p><em>24 August 2020</em></p>
+
+			<p><h2><a href="#coursera的吴恩达机器学习课程第二周normal-equation" id="coursera的吴恩达机器学习课程第二周normal-equation">coursera的吴恩达机器学习课程第二周—normal equation</a></h2> 
+<p>课程资料：<br> <a href="https://www.coursera.org/learn/machine-learning/lecture/2DKxQ/normal-equation">https://www.coursera.org/learn/machine-learning/lecture/2DKxQ/normal-equation</a></p> 
+<p>参考资料:<br> <a href="https://blog.csdn.net/Artprog/article/details/51172025">https://blog.csdn.net/Artprog/article/details/51172025</a><br> <a href="https://zhuanlan.zhihu.com/p/22757336">https://zhuanlan.zhihu.com/p/22757336</a><br> <a href="https://blog.csdn.net/Mao_Jonah/article/details/82119408">https://blog.csdn.net/Mao_Jonah/article/details/82119408</a></p> 
+<p>主要笔记：</p> 
+<p>这节主要讲了一个矩阵的normal equation方法, 就是通过矩阵的转账，以及矩阵的求逆，直接在数学上得到linear regression的最佳解,<br> 具体方式是从二次函数出发，cost function的最低值是顶点，也就是导数是0的地方。<br> 那么，针对多个变量也是分别针对每个变量求导，然后找等于0的值。<br> 整个数学推导过程只能看其他辅助资料了：）</p> 
+<p>计算的结论是，矩阵求逆是O(N^3)的复杂度，所以对于feature个数小于1000的情况， 可以考虑用normal equation,<br> 再往上就考虑还是用梯度下降。</p> 
+<p>然后, normal equation方法只是针对linear regression可以使用， 后面一些其他更复杂的方法，就不合适用了， 而梯度下降方法有更广泛的适用范围</p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
