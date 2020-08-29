@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>coursera的吴恩达机器学习课程第三周---hypothesis-representation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="machine learning 机器学习 hypothesis representation "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>coursera的吴恩达机器学习课程第三周---hypothesis-representation</h1>
+			</div>
+
+			<p><em>29 August 2020</em></p>
+
+			<p><h2><a href="#coursera的吴恩达机器学习课程第二周hypothesis-representation" id="coursera的吴恩达机器学习课程第二周hypothesis-representation">coursera的吴恩达机器学习课程第二周—hypothesis representation</a></h2> 
+<h3><a href="#课程资料" id="课程资料">课程资料：</a></h3> 
+<p><a href="https://www.coursera.org/learn/machine-learning/lecture/RJXfB/hypothesis-representation">https://www.coursera.org/learn/machine-learning/lecture/RJXfB/hypothesis-representation</a></p> 
+<p><a href="https://zhuanlan.zhihu.com/p/28408516">https://zhuanlan.zhihu.com/p/28408516</a><br> <a href="https://zhuanlan.zhihu.com/p/74874291">https://zhuanlan.zhihu.com/p/74874291</a></p> 
+<h3><a href="#主要笔记" id="主要笔记">主要笔记</a></h3> 
+<ol> 
+ <li> <p>之前讲了简单的线性回归应用到二元分类问题上的主要问题是两个，<br> 一是不能把结果映射到[0,1]之间, 二是一个距离比较远的点会对结果造成比较大的影响。</p> </li> 
+ <li> <p>所以，这里在原来的线性回归的基础上，在定义了一个sigmoid函数， 也称为逻辑回归函数<br> g(z) = 1/(1+e^-z)<br> 这个函数的结果就是会把所有的输入映射到[0,1]之间，然后曲线非常平滑，就可以解决前面两个问题.</p> </li> 
+</ol> 
+<p>具体函数图，可以参考上面知乎的两个文章</p> 
+<ol> 
+ <li>这个函数的结果，其实表示的就是在某个输入的时候，结果是1的概率</li> 
+</ol></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
