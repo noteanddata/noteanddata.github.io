@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>coursera的吴恩达机器学习课程第三周---overfitting</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="machine learning 机器学习 overfitting "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>coursera的吴恩达机器学习课程第三周---overfitting</h1>
+			</div>
+
+			<p><em>05 September 2020</em></p>
+
+			<p><h2><a href="#coursera的吴恩达机器学习课程第三周overfitting" id="coursera的吴恩达机器学习课程第三周overfitting">coursera的吴恩达机器学习课程第三周—overfitting</a></h2> 
+<h3><a href="#课程资料" id="课程资料">课程资料：</a></h3> 
+<p><a href="https://www.coursera.org/learn/machine-learning/lecture/ACpTQ/the-problem-of-overfitting">https://www.coursera.org/learn/machine-learning/lecture/ACpTQ/the-problem-of-overfitting</a></p> 
+<h3><a href="#学习笔记" id="学习笔记">学习笔记</a></h3> 
+<ol> 
+ <li>overfitting，表示针对训练数据的拟合，做了一个过度的拟合，导致在训练数据上，曲线和训练数据拟合的非常好.<br> 因为对于一个训练数据，可以使用多项式表达式拟合， 比如 y = k0 + k1 * x1 + k2 * x1^2 + k3 * x1 ^ 3<br> 如果在这个过程中，只要选择足够多的k，总可以找到一个符合要求的表达式可以很好的拟合训练数据.<br> 但是overfitting的意思是预测函数在训练数据上非常有效，但是在实际数据上表现反而会不好，因为只是针对训练数据的过拟合,不可能扩展到实际场景</li> 
+</ol> 
+<p>类似的， under-fitting, 表示预测函数在训练数据上偏差就比较大。</p> 
+<p>overfitting和under-fitting在各种预测函数里面都存在，比如线性预测和分类预测里面都存在</p> 
+<ol> 
+ <li>如何解决overfitting?<br> a. overfitting一个原因是feature太多了， 那么可以减少feature，比如手动选择部分feature, 或者通过model selection algorithm来选择feature<br> b. 第二种方法是保留feature，但是做regularization, 就是把每个参数k都改到一定的范围，这样每个feature虽然保留，但是只对最后的结果影响一小部分</li> 
+</ol></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
