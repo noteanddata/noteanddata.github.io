@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>go语言学习笔记28 -- golang的builtin package之常量和nil</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="golang builtin "/>
+    <meta name="description" content="golang的builtin package之常量和nil"/>
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>go语言学习笔记28 -- golang的builtin package之常量和nil</h1>
+			</div>
+
+			<p><em>19 September 2020</em></p>
+
+			<p><h2><a href="#go语言学习笔记28-golang的builtin-package之常量和nil" id="go语言学习笔记28-golang的builtin-package之常量和nil">go语言学习笔记28 – golang的builtin package之常量和nil</a></h2> 
+<ol> 
+ <li> <p>go语言的builtin package<br> builtin的意思就是语言内置，不需要单独写import就可以用里面的常量，变量，类型和函数<br> <a href="https://golang.org/pkg/builtin/">https://golang.org/pkg/builtin/</a></p> </li> 
+ <li> <p>常量总共就3个, false, true 和itoa</p> </li> 
+ <li> <p>变量就一个, nil<br> 在go语言里面， nil是有类型的, 而且只能对下面这些类型做pointer<br> nil is a predeclared identifier representing the zero value for a pointer, channel, func, interface, map, or slice type.</p> </li> 
+</ol> 
+<p>所以，下面的代码是会编译报错的</p> 
+<pre><code>package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println("Hello, playground")
+ 	p := nil
+	fmt.Println(p)
+}
+
+</code></pre> 
+<p>编译报错</p> 
+<pre><code>./prog.go:9:5: use of untyped nil
+</code></pre> 
+<p>但是如果针对nil声明类型， 那就可以编译通过</p> 
+<pre><code>package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println("Hello, playground")
+ 	var p *int = nil
+	fmt.Println(p)
+}
+</code></pre> 
+<p>运行结果如下</p> 
+<pre><code>Hello, playground
+&lt;nil&gt;
+</code></pre> 
+<ol> 
+ <li>因为nil有类型， 所以比较的时候就会有一些奇怪的事情发生</li> 
+</ol> 
+<p>比如下面的代码会出现编译错误</p> 
+<pre><code>package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	fmt.Println("Hello, playground")
+ 	var p *int = nil
+	var p2 *float64 = nil 
+	fmt.Println(p == p2)
+}
+</code></pre> 
+<p>显示</p> 
+<pre><code>./prog.go:11:16: invalid operation: p == p2 (mismatched types *int and *float64)
+</code></pre> 
+<p>而下面的代码就比较坑了， 没有编译错误， 但是 a == b 返回false, 因为他们虽然都是nil，但是类型不一样</p> 
+<pre><code>package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	var a *int = nil
+	var b interface{} = nil
+
+	fmt.Println("a == nil:", a == nil)
+	fmt.Println("b == nil:", b == nil)
+	fmt.Println("a == b:", a == b)
+}
+
+
+</code></pre> 
+<p>运行结果</p> 
+<pre><code>a == nil: true
+b == nil: true
+a == b: false
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
