@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>golang学习笔记30 - 吐槽 为什么golang没有内置的priorityqueue?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="golang heap priorityqueue 堆，优先队列 "/>
+    <meta name="description" content="golang学习笔记30 - 吐槽 为什么golang没有内置的priorityqueue?"/>
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>golang学习笔记30 - 吐槽 为什么golang没有内置的priorityqueue?</h1>
+			</div>
+
+			<p><em>04 October 2020</em></p>
+
+			<p><h2><a href="#golang学习笔记30-吐槽-为什么golang没有内置的priorityqueue" id="golang学习笔记30-吐槽-为什么golang没有内置的priorityqueue">golang学习笔记30 - 吐槽 为什么golang没有内置的priorityqueue?</a></h2> 
+<h3><a href="#priorityqueue简介" id="priorityqueue简介">priorityqueue简介</a></h3> 
+<p>priorityqueue是一个非常有用的数据结构， 通常用heap实现, 也就是某种二叉树， 可以实现元素添加，删除的过程中动态排序，也就是保持整个数据结构始终是排序的, 并且时间复杂度通常实现的比较好。</p> 
+<p>比如java有内置的priorityqueue的实现<br> <a href="https://docs.oracle.com/javase/7/docs/api/java/util/PriorityQueue.html">https://docs.oracle.com/javase/7/docs/api/java/util/PriorityQueue.html</a></p> 
+<p>摘抄复杂度部分如下:<br> - O(log(n)) time for the enqueing and dequeing methods (offer, poll, remove() and add);<br> 因为采用了最大堆或者最小堆(heap)的实现，所以每次添加删除元素只需要O(log(n))的复杂度就可以维持数据排序，效率非常高</p> 
+<ul> 
+ <li>constant time for the retrieval methods (peek, element, and size). ,也就是O(1)<br> 因为数据已经排序， 所以读顶端的元素只需要常数的时间</li> 
+</ul> 
+<p>注： 文档上写着linear time for the remove(Object) and contains(Object) methods ,也就是O(N)， 这是因为这两个接口是从AbstractCollection里面来的，没有用到priorityqueue的实现，所以实际中不应该使用，可以忽略</p> 
+<h3><a href="#golang的相关库" id="golang的相关库">golang的相关库</a></h3> 
+<p>很可惜，golang里面没有直接的实现, 而是提供了一个heap的包<br> <a href="https://golang.org/pkg/container/heap/">https://golang.org/pkg/container/heap/</a></p> 
+<p>然后官方的推荐实现是下面这样的代码，</p> 
+<pre><code>// This example demonstrates an integer heap built using the heap interface.
+package main
+
+import (
+	"container/heap"
+	"fmt"
+)
+
+// An IntHeap is a min-heap of ints.
+type IntHeap []int
+
+func (h IntHeap) Len() int           { return len(h) }
+func (h IntHeap) Less(i, j int) bool { return h[i] &lt; h[j] }
+func (h IntHeap) Swap(i, j int)      { h[i], h[j] = h[j], h[i] }
+
+func (h *IntHeap) Push(x interface{}) {
+	// Push and Pop use pointer receivers because they modify the slice's length,
+	// not just its contents.
+	*h = append(*h, x.(int))
+}
+
+func (h *IntHeap) Pop() interface{} {
+	old := *h
+	n := len(old)
+	x := old[n-1]
+	*h = old[0 : n-1]
+	return x
+}
+
+// This example inserts several ints into an IntHeap, checks the minimum,
+// and removes them in order of priority.
+func main() {
+	h := &amp;IntHeap{2, 1, 5}
+	heap.Init(h)
+	heap.Push(h, 3)
+	fmt.Printf("minimum: %d\n", (*h)[0])
+	for h.Len() &gt; 0 {
+		fmt.Printf("%d ", heap.Pop(h))
+	}
+}
+
+
+</code></pre> 
+<p>上面的代码是不是直接看的很吐血？</p> 
+<ul> 
+ <li>首先你要自己定义一个容器，比如slice来存储你需要的元素</li> 
+ <li>另外， heap的元素需要实现下面这个接口, 里面embed了一个 sort.interface, 然后这个sort.Interface有三个方法, 也就是最少要自己实现5个方法</li> 
+ <li>然后使用的时候，创建好容器以后， 还要调用heap.Init(&amp;pq)来初始化成heap</li> 
+</ul> 
+<pre><code>type Interface interface {
+    sort.Interface
+    Push(x interface{}) // add x as element Len()
+    Pop() interface{}   // remove and return element Len() - 1.
+}
+
+</code></pre> 
+<p>下面这个来源于<br> <a href="https://golang.org/pkg/sort/#Interface">https://golang.org/pkg/sort/#Interface</a></p> 
+<pre><code>type Interface interface {
+    // Len is the number of elements in the collection.
+    Len() int
+    // Less reports whether the element with
+    // index i should sort before the element with index j.
+    Less(i, j int) bool
+    // Swap swaps the elements with indexes i and j.
+    Swap(i, j int)
+}
+
+</code></pre> 
+<h3><a href="#吐槽-为什么golang会搞的这么麻烦" id="吐槽-为什么golang会搞的这么麻烦">吐槽 为什么golang会搞的这么麻烦？</a></h3> 
+<ol> 
+ <li>这代码实在写起来太麻烦了， 估计看到一堆业务代码里面乱入一个这么基础的函数实现要晕吧。<br> 我一开始以为是golang没有模版的原因， 后来想了一下本身interface已经提供了接口了， java里面只要实现一个compareTo方法就好了！没有模版其实也是可以的。</li> 
+</ol> 
+<p>比如同在container这个package里面的list，就提供了很完备的功能，使用者直接拿来用就好了<br> <a href="https://golang.org/pkg/container/list/">https://golang.org/pkg/container/list/</a></p> 
+<ol> 
+ <li>然后搜索了一下<br> <a href="https://stackoverflow.com/questions/30827729/does-go-has-out-of-the-box-priority-queue">https://stackoverflow.com/questions/30827729/does-go-has-out-of-the-box-priority-queue</a><br> <a href="https://stackoverflow.com/questions/13777298/priority-queue-implementation-in-go">https://stackoverflow.com/questions/13777298/priority-queue-implementation-in-go</a></li> 
+</ol> 
+<p>基本说的是一个trade off， 说什么golang讲究简洁， 只做最基本的东西，不增加非必要的东西。<br> 然后还说“Container/heap allows more flexibility by using your container. (You might have nodes in a container already, and that container might not even be a slice. It just has to be indexable.)”<br> 这我就无语了， 难道用的人直接放到priorityqueue里面的container不就行了嘛？！<br> 简洁更是无稽之谈， 语法层面的简洁当然是好， 比如像scala那样搞一堆语法当然是麻烦，<br> 库函数当然是越丰富越好， java当年的最大优点就是collections framework比较完善，各种容器和库函数非常丰富， 直接拿来用就好。<br> 你要简洁干脆连heap也不提供好了， 让大家手写一个heap最灵活！</p> 
+<ol> 
+ <li>所以有人看不下去就自己实现了一个库<br> <a href="https://godoc.org/github.com/jupp0r/go-priority-queue">https://godoc.org/github.com/jupp0r/go-priority-queue</a></li> 
+</ol></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
