@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>系统设计学习笔记--从一个单一数据库到分布式数据库</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="system design database sharding 数据库拆分 "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>系统设计学习笔记--从一个单一数据库到分布式数据库</h1>
+			</div>
+
+			<p><em>04 October 2020</em></p>
+
+			<p><h1><a href="#系统设计学习笔记从一个单一数据库到分布式数据库" id="系统设计学习笔记从一个单一数据库到分布式数据库">系统设计学习笔记–从一个单一数据库到分布式数据库</a></h1> 
+<p>看了一个公司几年前的开放的一篇技术博客，介绍一个公司从单一数据库到分布式数据库的方案， 总结一下要点和一些思考</p> 
+<h2><a href="#业务背景" id="业务背景">业务背景</a></h2> 
+<ul> 
+ <li>核心业务系统最开始是一个monorepo单一service，由一堆application server，连接到一个单一的PostgreSQL数据库</li> 
+ <li>核心业务系统随着业务增长逐渐拆分到多个service, 到将近100个service的时候, 核心系统还是单个数据库， IOPS瓶颈明显, 核心数据库到了不得不拆分的时候</li> 
+ <li>单一数据库中，超过一半的数据属于一个表格的数据</li> 
+</ul> 
+<h2><a href="#拆分目标" id="拆分目标">拆分目标</a></h2> 
+<ul> 
+ <li>运营稳定, 无数据丢失， 支持备份，支持跨机房复制， 调试维护成本低</li> 
+ <li>可以水平扩展，通过加机器的方式来解决IOPS限制的问题</li> 
+ <li>写高可用， 短暂的读不可用是可以接受的。 一般业务系统设计合理的话，数据只要写入了，后续的业务操作都会有幂等的重试操作</li> 
+ <li>支持二级索引</li> 
+ <li>没有down机时间, 这里说的是整体的高可用， 主要是说添加存储，备份，添加索引，添加数据等数据库操作没有引起down机时间。 在原来的数据库下，每次加字段或者加索引都会引起down机时间。 这个需求成为核心需求。</li> 
+</ul> 
+<p>感受： 这里感觉是不是这个公司的dba做主备切换操作不成熟？感觉在那个时候开源数据库主备切换维护的技术应该已经很成熟了， 除了一些手动切换的方案，利用MHA+VIP的解决方案在很多公司应用都很广泛了<br> <a href="https://mysqlstepbystep.com/2015/06/01/mysql-high-available-with-mha-2/">https://mysqlstepbystep.com/2015/06/01/mysql-high-available-with-mha-2/</a><br> <a href="https://www.percona.com/live/17/sites/default/files/slides/Choosing%20a%20MySQL%20High%20Availability%20Solution.pdf">https://www.percona.com/live/17/sites/default/files/slides/Choosing%20a%20MySQL%20High%20Availability%20Solution.pdf</a><br> <a href="https://www.percona.com/blog/2016/06/07/choosing-mysql-high-availability-solutions/">https://www.percona.com/blog/2016/06/07/choosing-mysql-high-availability-solutions/</a><br> 当然，话说回来，分布式高可用都会遇到一致性问题，要做到完美自动切换还是还是需要一些paxos或者raft类似的解决方案来辅助节点挂了以后选主的过程。 但是要提供维护的时候手动failover的话前面的一些方案都是没有问题的.</p> 
+<h2><a href="#拆分方案" id="拆分方案">拆分方案</a></h2> 
+<ul> 
+ <li>在MySQL上做解决方案</li> 
+ <li>水平拆分， 直接按照4096做sharding<br> 注： 一些公司这方面做的不错，直接选一个大的数，至少在逻辑拆分上一次搞定，有一些公司做了多次拆分，先来1拆3，然后3拆10，然后拆100，搞好几轮大工程（其中包括一些业界比较大的公司当时也都重复搞了好几轮）</li> 
+ <li>做append only的数据模型, 也就是每条记录一旦写入以后不能更改， 所有的数据都通过追加修改记录来完成。<br> 这里号称的优点是实现了天然的幂等，所有的更新可以replay,<br> 注：感觉上和数据库的redo/undo log有点类似， 细节上其实还需要进一步理解， 是如何实现幂等的。 因为幂等的基本实现就是需要一个唯一的id。</li> 
+ <li> <p>写缓冲： 如果一个数据库不可用， 那么先把数据写到任何一个其他数据库的pending table, 然后后面把数据replay到主数据库</p> </li> 
+ <li> <p>sharded 二级索引： 相对于通过MySQL表格自建了一套二级索引， 看上去这个二级索引必须包含一个主键</p> </li> 
+</ul></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
