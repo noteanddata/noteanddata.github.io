@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>codeforces round 677 div3 problem A - Boring Apartments解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="codeforces java div3 boring apartments "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>codeforces round 677 div3 problem A - Boring Apartments解题笔记</h1>
+			</div>
+
+			<p><em>07 November 2020</em></p>
+
+			<p><h2><a href="#codeforces-round-677-div3-problem-a-boring-apartments解题笔记" id="codeforces-round-677-div3-problem-a-boring-apartments解题笔记">codeforces round 677 div3 problem A - Boring Apartments解题笔记</a></h2> 
+<h2><a href="#题目大意" id="题目大意">题目大意</a></h2> 
+<ol> 
+ <li>有一个人在叫号码，按照下面的顺序数数字, 也就是从每个数字1到9循环，在每个数字上每次重复这个数字到4位数，</li> 
+</ol> 
+<pre><code>1,11,111,1111 
+2,22,222,2222
+3,33,333,3333
+........
+9, 99,999,9999
+</code></pre> 
+<ol> 
+ <li>然后会输入另外一个数字， 比如22， 那么就停止.这样当前的叫过的号码就是<br> 1,11,111,1111,2,22</li> 
+</ol> 
+<p>然后把这些数字的位数加起来，这个例子里面就是1+2+3+4+1+2=13</p> 
+<h2><a href="#解题思路" id="解题思路">解题思路</a></h2> 
+<p>实现题，直接遍历循环就好。 不过在数字版本的实现的时候，还是错了两次！<br> 并且， 虚拟比赛的时候总共花了15分钟, 读题目和实现还是太慢了。</p> 
+<h2><a href="#java解题代码" id="java解题代码">java解题代码</a></h2> 
+<pre><code>import java.util.Scanner;
+
+public class CF_Round_677_Div3_ProblemA_Boring_Apartments {
+    public static void main(String[] args) {
+        process();
+    }
+
+    public static void process() {
+        Scanner scanner = new Scanner(System.in);
+        int t = scanner.nextInt();
+        for(int i = 0; i &lt; t; ++i) {
+            int n = scanner.nextInt();
+            int ret = solve(n);
+            System.out.println(ret);
+        }
+    }
+
+    public static int solve(int n) {
+        int ret = 0;
+        for(int i = 1; i &lt;= 9; ++i) {
+            int v = 0;
+            for(int j = 1; j &lt;= 4; ++j) {
+                v = v * 10 + i;
+                ret += j;
+                if(v == n) {
+                    return ret;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+
+}
+
+
+</code></pre> 
+<h2><a href="#版本1" id="版本1">版本1</a></h2> 
+<pre><code>import java.util.Scanner;
+
+public class CodeForce_Round_677_Div3_ProblemA_BoringApartment {
+
+    public static void main(String[] args) {
+        process();
+    }
+
+    public static void process() {
+        Scanner scanner = new Scanner(System.in);
+        int t = scanner.nextInt();
+        for(int i = 0; i &lt; t; ++i) {
+            int x = scanner.nextInt();
+            int count = calculate(x);
+            System.out.println(count);
+        }
+    }
+
+    public static int calculate(int x) {
+        int count = 0;
+        String strx = String.valueOf(x);
+
+        for(int i = 1; i &lt;= 9; ++i) {
+            StringBuilder sb = new StringBuilder();
+
+            for(int j = 0; j &lt; 4; ++j) {
+                sb.append(i);
+
+                count += sb.length();
+
+                if(sb.toString().equals(strx)) {
+                    return count;
+                }
+            }
+        }
+        return count;
+    }
+}
+
+
+</code></pre> 
+<h2><a href="#错误代码1" id="错误代码1">错误代码1</a></h2> 
+<pre><code>import java.util.Scanner;
+
+public class CF_Round_677_Div3_ProblemA_Boring_Apartments {
+    public static void main(String[] args) {
+        process();
+    }
+
+    public static void process() {
+        Scanner scanner = new Scanner(System.in);
+        int t = scanner.nextInt();
+        for(int i = 0; i &lt; t; ++i) {
+            int n = scanner.nextInt();
+            int ret = solve(n);
+            System.out.println(ret);
+        }
+    }
+
+    public static int solve(int n) {
+        int ret = 0;
+        for(int i = 1; i &lt;= 9; ++i) {
+            int v = i;
+            for(int j = 1; j &lt;= 4; ++j) {
+                v = v * 10 + v;
+                ret += j;
+                if(v == n) {
+                    return ret;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+
+}
+
+
+</code></pre> 
+<h2><a href="#错误代码2" id="错误代码2">错误代码2</a></h2> 
+<pre><code>import java.util.Scanner;
+
+public class CF_Round_677_Div3_ProblemA_Boring_Apartments {
+    public static void main(String[] args) {
+        process();
+    }
+
+    public static void process() {
+        Scanner scanner = new Scanner(System.in);
+        int t = scanner.nextInt();
+        for(int i = 0; i &lt; t; ++i) {
+            int n = scanner.nextInt();
+            int ret = solve(n);
+            System.out.println(ret);
+        }
+    }
+
+    public static int solve(int n) {
+        int ret = 0;
+        for(int i = 1; i &lt;= 9; ++i) {
+            int v = 0;
+            for(int j = 1; j &lt;= 4; ++j) {
+                v = v * 10 + v;
+                ret += j;
+                if(v == n) {
+                    return ret;
+                }
+            }
+        }
+
+        return ret;
+    }
+
+
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
