@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>codeforces round 667 div3 problem E - Two Platforms解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="codeforces java div3 Two Platforms "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>codeforces round 667 div3 problem E - Two Platforms解题笔记</h1>
+			</div>
+
+			<p><em>26 November 2020</em></p>
+
+			<p><h2><a href="#codeforces-round-667-div3-problem-e-two-platforms解题笔记" id="codeforces-round-667-div3-problem-e-two-platforms解题笔记">codeforces round 667 div3 problem E - Two Platforms解题笔记</a></h2> 
+<h3><a href="#题目" id="题目">题目</a></h3> 
+<p><a href="https://codeforces.com/contest/1409/problem/E">https://codeforces.com/contest/1409/problem/E</a></p> 
+<p>在一个二维坐标上，有很多点， 然后会从坐标系上从上往下掉。这个时候有宽度为k的横板，可以放在从(x,y)到(x+k, y)的点上， 形成一个水平放置的横板， x,y可以任意取。 这样的横板有两块。<br> 问，如何放置这两块横板，可以在横板上接住的点最多。两块横板可以任意放置，可以重叠。</p> 
+<h3><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h3> 
+<ol> 
+ <li> <p>首先， y可以直接取无穷小， 所以这个问题和y无关， 只需要关心x， 就上变成一个一维数组的问题</p> </li> 
+ <li> <p>每块板的位置一定可以设置到某一个点的x上，因为如果没有设置到对应点上，那么一定有一端是浪费的，平移以后能够覆盖的点的个数只可能一样或者更多，不可能更少。所以相当于在某一个点上做选择.</p> </li> 
+ <li> <p>虽然两块横板可以重叠， 但是一定存在一个不重叠的对应解， 只要把其中一块板往右边移动一些变成不重叠的就好。</p> </li> 
+ <li> <p>假设只有一块横板， 那么操作就比较简单，对于任意一个点nums[i], 找到对应的点， 使得nums[j] - nums[i] &lt;= k就可以。 我一开始用排序以后二分查找， 其实直接用双指针更好。</p> </li> 
+ <li>对于两块横板，可以设置left[i]和right[i], 分别表示从i开始向左的最大覆盖和向右的最大覆盖的点的个数。 然后可以计算两个数组的前缀最大结果和后缀最大结果， 这样就可以遍历取leftmax[i] + rightmax[i+1]里面的最大结果就可以了。</li> 
+</ol> 
+<h3><a href="#解题代码" id="解题代码">解题代码</a></h3> 
+<pre><code>import java.util.Arrays;
+import java.util.Scanner;
+
+public class CF_Round_667_Div3_ProblemE_TwoPlatforms {
+    public static void main(String[] args) {
+        process();
+    }
+
+    public static void process() {
+        Scanner scanner = new Scanner(System.in);
+        int t = scanner.nextInt();
+        for(int i = 0; i &lt; t; ++i) {
+            int n = scanner.nextInt();
+            int k = scanner.nextInt();
+            Integer[] x = new Integer[n];
+            int[] y = new int[n];
+            for(int p = 0; p &lt; n; ++p) {
+                x[p] = scanner.nextInt();
+            }
+            for(int p = 0; p &lt; n; ++p) {
+                y[p] = scanner.nextInt();
+            }
+
+
+            int ret = solve(x, k);
+            System.out.println(ret);
+
+        }
+    }
+
+    public static int solve(Integer[] nums, int k) {
+        Arrays.sort(nums);
+        int n = nums.length;
+
+        int[] left = new int[n];
+        int[] right = new int[n];
+        for(int i = 0, j = 0; i &lt; n; ++i) {
+            while(nums[i] - nums[j] &gt; k) {
+                j++;
+            }
+            left[i] = i-j+1;
+            if(i &gt; 0) {
+                left[i] = Math.max(left[i], left[i-1]);
+            }
+        }
+        for(int i = n-1, j = n-1; i &gt;= 0; --i) {
+            while(nums[j] - nums[i] &gt; k) {
+                j--;
+            }
+            right[i] = j - i + 1;
+            if(i &lt; n-1) {
+                right[i]  = Math.max(right[i], right[i+1]);
+            }
+        }
+        int ret = 1;
+        for(int i = 0; i &lt; n-1; ++i) {
+            ret = Math.max(ret, left[i] + right[i+1]);
+        }
+        return ret;
+    }
+
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
