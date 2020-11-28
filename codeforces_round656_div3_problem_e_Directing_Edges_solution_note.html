@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>codeforces round 656 div3 problem E - Directing Edges 解题笔记</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="codeforces java div3 Directing Edges dfs bfs topological sort 拓扑排序 graph 图 有向图 "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>codeforces round 656 div3 problem E - Directing Edges 解题笔记</h1>
+			</div>
+
+			<p><em>28 November 2020</em></p>
+
+			<p><h2><a href="#codeforces-round-656-div3-problem-e-directing-edges-解题笔记" id="codeforces-round-656-div3-problem-e-directing-edges-解题笔记">codeforces round 656 div3 problem E - Directing Edges 解题笔记</a></h2> 
+<h2><a href="#题目-codeforces-round-656-div3-problem-e-directing-edges-1385-e" id="题目-codeforces-round-656-div3-problem-e-directing-edges-1385-e">题目 - codeforces round 656 div3 problem E - Directing Edges (1385 E)</a></h2> 
+<p><a href="https://codeforces.com/contest/1385/problem/E">https://codeforces.com/contest/1385/problem/E</a></p> 
+<p>一个图上面有一些边是有方向的，有一些边是没有方向的. 问题， 能否把所有的无向边改成有方向的边，使得最后的有向图是没有环的。 如果有的话，把所有无向图变成有向图以后的图输出。 如果有多个答案，输出其中任何一个就好。</p> 
+<p>其中，没有多余的边，就是任意两个节点之间只有一条边。 也不存在一条边指向自己。</p> 
+<h2><a href="#解题思路分析" id="解题思路分析">解题思路分析</a></h2> 
+<ol> 
+ <li>如果完全是有向图， 那这就是一个经典的判断有向图是否有环的问题， 可以用拓扑排序的方法来判断。 但是这个问题的难点在于有一些边暂时是没有方向的，需要改成有方向的。</li> 
+ <li>这时候陷入了苦思，一开始的时候试图先对无向边随意选择一个方向，如果发现有环以后然后在退回来，换一个方向。 类似于backtrack的方法， 但是这个方法写了很久以后发现错误比较多，大数据测试的时候直接报错了。</li> 
+ <li>看了解题报告以后，才发现无向边完全不需要管。 首先有向边部分如果有环的话，当然是不通过。 主要的问题是如果有向图无环的话，那么把无向边改成有向边是否一定有解？ 其实无论有多少条无向边,对于任何一条无向边，只要按照两个节点的拓扑排序的顺序来设定方向，那么一定是可以的。</li> 
+ <li>那么，先对有向图做一遍拓扑排序，然后输出顺序， 然后对所有的边按照拓扑顺序输出就好</li> 
+</ol> 
+<h2><a href="#一些错误" id="一些错误">一些错误</a></h2> 
+<p>有时间的话下次可以在写详细一点<br> 1. dfs的时候，输出顺序的时候必须在当前节点访问结束以后添加, 如果在开始访问的时候添加的话顺序就是不对的。</p> 
+<ol> 
+ <li>之前用linkedlist做，结果一直超时。 原因是linkedlist后面遍历的时候是get(node)是O(N)的， 整体循环的时候会变成O(N^2),</li> 
+</ol> 
+<h2><a href="#dfs代码" id="dfs代码">dfs代码</a></h2> 
+<pre><code>import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+
+public class CF_Round_656_Div3_ProblemE_DirectingEdges {
+    public static void main(String[] args) {
+        process();
+    }
+
+    public static void process() {
+        Scanner scanner = new Scanner(System.in);
+        int t = scanner.nextInt();
+        for(int i = 0; i &lt; t; ++i) {
+            int n = scanner.nextInt();
+            int m = scanner.nextInt();
+            int[][] graph = new int[m][3];
+            for(int j = 0; j &lt; m; ++j) {
+                graph[j][0] = scanner.nextInt();
+                graph[j][1] = scanner.nextInt();
+                graph[j][2] = scanner.nextInt();
+            }
+
+            solve(n, graph);
+
+
+        }
+    }
+
+    public static void solve(int n, int[][] graph) {
+
+        Map&lt;Integer, Set&lt;Integer&gt;&gt; directed = new HashMap&lt;&gt;(n);
+        List&lt;int[]&gt; alledges = new ArrayList&lt;&gt;();
+
+        for(int i = 0; i &lt; graph.length; ++i) {
+            if(graph[i][0] == 1) {
+                Set&lt;Integer&gt; set = directed.computeIfAbsent(graph[i][1], k -&gt; new HashSet&lt;&gt;());
+                set.add(graph[i][2]);
+            }
+
+            alledges.add(new int[]{graph[i][1], graph[i][2]});
+        }
+
+        List&lt;Integer&gt; topOrderList = new ArrayList&lt;&gt;();
+        int[] states = new int[n+1]; // 0: unvisited; 1: visiting; 2: visited
+        for(int i = 0; i &lt; n; i++) {
+            if(states[i+1] == 2) {
+                continue;
+            }
+            if (!dfs(i + 1, states, directed, topOrderList)) {
+                System.out.println("NO");
+                return;
+            }
+        }
+        System.out.println("YES");
+
+        Collections.reverse(topOrderList);
+        int[] positions = new int[n+1];
+        for(int i = 0; i &lt; topOrderList.size(); ++i) {
+            positions[topOrderList.get(i)] = i+1;
+        }
+
+        // alledges part
+        for(int[] path: alledges) {
+            int cur = path[0];
+            int next = path[1];
+            if(positions[cur] &lt; positions[next]) {
+                System.out.println(cur + " " + next + "\n");
+            }
+            else {
+                System.out.println(next + " " + cur + "\n");
+            }
+        }
+
+
+    }
+
+    public static boolean dfs(int i,
+                              int[] states,
+                              Map&lt;Integer, Set&lt;Integer&gt;&gt; dg,
+                              List&lt;Integer&gt; topOrderList) {
+        if(states[i] == 2) {
+            return true;
+        }
+        else if(states[i] == 1) {
+            return false;
+        }
+        states[i] = 1; // visiting
+
+
+        Set&lt;Integer&gt; set = dg.get(i);
+        if(null != set) {
+            for (int next : set) {
+                if (!dfs(next, states, dg, topOrderList)) {
+                    return false;
+                }
+            }
+        }
+
+        topOrderList.add(i); // add to the order
+
+        states[i] = 2; // visited
+        return true;
+    }
+
+}
+
+
+</code></pre> 
+<h2><a href="#bfs代码" id="bfs代码">bfs代码</a></h2> 
+<pre><code>import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Queue;
+import java.util.Scanner;
+
+public class CF_Round_656_Div3_ProblemE_DirectingEdges_bfs {
+    public static void main(String[] args) {
+        process();
+    }
+
+    public static void process() {
+        Scanner scanner = new Scanner(System.in);
+        int t = scanner.nextInt();
+        for(int i = 0; i &lt; t; ++i) {
+            int n = scanner.nextInt();
+            int m = scanner.nextInt();
+            int[][] edges = new int[m][3];
+            for(int j = 0; j &lt; m; ++j) {
+                edges[j][0] = scanner.nextInt();
+                edges[j][1] = scanner.nextInt();
+                edges[j][2] = scanner.nextInt();
+            }
+            solve(n, edges);
+        }
+    }
+
+    public static void solve(int n, int[][] edges) {
+        Map&lt;Integer, List&lt;Integer&gt;&gt; graph = new HashMap&lt;&gt;();
+        int[] inDegrees = new int[n+1];
+        for(int[] edge: edges) {
+            if(edge[0] == 1) {
+                List&lt;Integer&gt; nextList = graph.computeIfAbsent(edge[1], k -&gt; new ArrayList&lt;&gt;());
+                nextList.add(edge[2]);
+                inDegrees[edge[2]]++;
+            }
+        }
+
+        List&lt;Integer&gt; orderList = new ArrayList&lt;&gt;();
+        boolean valid = bfs(n, orderList, inDegrees, graph);
+        if(!valid) {
+            System.out.println("NO");
+            return;
+        }
+        System.out.println("YES");
+        int[] orderIndex = new int[n+1];
+        for(int i = 0; i &lt; orderList.size(); ++i) {
+            orderIndex[orderList.get(i)] = i+1;
+        }
+        for(int[] edge : edges) {
+            int node1 = edge[1];
+            int node2 = edge[2];
+            if(orderIndex[node1] &lt; orderIndex[node2]) {
+                System.out.println(node1 + " " + node2);
+            }
+            else {
+                System.out.println(node2 + " " + node1);
+            }
+        }
+    }
+
+    public static boolean bfs(int n, List&lt;Integer&gt; orderList, int[] inDegrees, Map&lt;Integer, List&lt;Integer&gt;&gt; graph) {
+        Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+        for(int i = 1; i &lt; inDegrees.length; ++i) {
+            if(inDegrees[i] == 0) {
+                queue.add(i);
+            }
+        }
+
+        int visited = 0;
+        while(queue.size() &gt; 0) {
+            int node = queue.poll();
+            visited++;
+            orderList.add(node);
+            List&lt;Integer&gt; nextList = graph.get(node);
+            if(null != nextList) {
+                for(int next: nextList) {
+                    inDegrees[next]--;
+                    if(inDegrees[next] == 0) {
+                        queue.add(next);
+                    }
+                }
+            }
+        }
+
+
+        return visited == n;
+    }
+}
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
