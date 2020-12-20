@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>统计学基础笔记1-- dummy variables, python的pandas的get_dummies</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="python panda statistics dummy variables get_dummies "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>统计学基础笔记1-- dummy variables, python的pandas的get_dummies</h1>
+			</div>
+
+			<p><em>19 December 2020</em></p>
+
+			<p><h2><a href="#统计学基础笔记1-dummy-variables-python的pandas的get-dummies" id="统计学基础笔记1-dummy-variables-python的pandas的get-dummies">统计学基础笔记1– dummy variables, python的pandas的get_dummies</a></h2> 
+<h3><a href="#什么是dummy-variables" id="什么是dummy-variables">什么是dummy variables</a></h3> 
+<p>dummy variables,又叫做indicator variables, 中文翻译成哑变量, 指示变量或者虚拟变量，<br> 表示一个变量的值只有两个值， 通常在统计分析里面直接对应成0和1</p> 
+<p>在python的pandas库里面又一个get_dummies函数会把类别变量转化成dummy变量<br> “Convert categorical variable into dummy/indicator variables.”</p> 
+<pre><code>&gt;&gt;&gt; import pandas as pd
+&gt;&gt;&gt; s = pd.Series(["bachelor", "master", "doctor"])
+&gt;&gt;&gt; print(s)
+0    bachelor
+1      master
+2      doctor
+dtype: object
+&gt;&gt;&gt; d = pd.get_dummies(s)
+&gt;&gt;&gt; d
+   bachelor  doctor  master
+0         1       0       0
+1         0       0       1
+2         0       1       0
+
+</code></pre> 
+<h3><a href="#参考资料" id="参考资料">参考资料</a></h3> 
+<p><a href="https://en.wikipedia.org/wiki/Dummy_variable_(statistics)">https://en.wikipedia.org/wiki/Dummy_variable_(statistics)</a><br> <a href="https://online.stat.psu.edu/stat462/node/161/">https://online.stat.psu.edu/stat462/node/161/</a><br> <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.get_dummies.html">https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.get_dummies.html</a></p></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
