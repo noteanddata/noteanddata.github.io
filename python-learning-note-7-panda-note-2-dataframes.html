@@ -13,9 +13,9 @@
 
     
     <meta charset="utf-8"/>
-    <title>python学习笔记6 -- panda Series</title>
+    <title>python学习笔记7 -- panda DataFrames</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="keywords" content="python panda series "/>
+    <meta name="keywords" content="python panda DataFrames "/>
     
 
 
@@ -70,41 +70,46 @@ var _hmt = _hmt || [];
 		<div class="col-sm-8">
 
 			<div class="page-header">
-				<h1>python学习笔记6 -- panda Series</h1>
+				<h1>python学习笔记7 -- panda DataFrames</h1>
 			</div>
 
 			<p><em>19 December 2020</em></p>
 
-			<p><h2><a href="#python学习笔记6-panda-series" id="python学习笔记6-panda-series">python学习笔记6 – panda Series</a></h2> 
-<p>panda库也是python处理数值的另外一个强大的库， 通常和numpy配合使用。</p> 
-<p>其中，最基础的数据结构是Series, 表示一个一维数组， 但是可以有index作为标签。<br> 创建方式可以通过传入numpy的ndarray来创建, 也可以通过python的dict来创建</p> 
+			<p><h2><a href="#python学习笔记7-panda-dataframes" id="python学习笔记7-panda-dataframes">python学习笔记7 – panda DataFrames</a></h2> 
+<p>panda里面的DataFrames是一个二维矩阵， 行和列都可以有index或者是label，有很多内置的各种矩阵操作，以及对外的接口比如读取csv等，</p> 
 <pre><code>&gt;&gt;&gt; import pandas as pd
-&gt;&gt;&gt; import numpy as np
-&gt;&gt;&gt; data = np.array([1,2,3])
-&gt;&gt;&gt; s = pd.Series(data)
-&gt;&gt;&gt; print(s)
-0    1
-1    2
-2    3
-dtype: int64
-&gt;&gt;&gt; s2 = pd.Series(data, index=["jack", "lucy", "john"])
-&gt;&gt;&gt; print(s2)
-jack    1
-lucy    2
-john    3
-dtype: int64
-&gt;&gt;&gt; data2 = {"jack":1, "lucy":2, "john":3}
-&gt;&gt;&gt; s3 = pd.Series(data2)
-&gt;&gt;&gt; print(s3)
-jack    1
-lucy    2
-john    3
-dtype: int64
+&gt;&gt;&gt; d2 = {"name": ["jack", "lucy"], "age": [22,21]}
+&gt;&gt;&gt; df2 = pd.DataFrame(data=d2)
+&gt;&gt;&gt; print(df2)
+   name  age
+0  jack   22
+1  lucy   21
 
+&gt;&gt;&gt; df3 = pd.DataFrame(data=d3, index=["2020-01-01", "2020-01-02", "2020-01-03"])
+&gt;&gt;&gt; print(df3)
+            temp  cost
+2020-01-01    37     5
+2020-01-02    33     3
+2020-01-03    36     6
+
+
+&gt;&gt;&gt; print(df3.index)
+Index(['2020-01-01', '2020-01-02', '2020-01-03'], dtype='object')
+&gt;&gt;&gt; print(df3.columns)
+Index(['temp', 'cost'], dtype='object')
+&gt;&gt;&gt; print(df3.dtypes)
+temp    int64
+cost    int64
+dtype: object
+
+&gt;&gt;&gt; df3.iloc[0]
+temp    37
+cost     5
+Name: 2020-01-01, dtype: int64
 
 </code></pre> 
 <h3><a href="#参考资料" id="参考资料">参考资料</a></h3> 
-<p><a href="https://www.tutorialspoint.com/python_pandas/python_pandas_series.htm">https://www.tutorialspoint.com/python_pandas/python_pandas_series.htm</a></p></p>
+<p><a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html">https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html</a></p></p>
 	</div>		
 
 <div class="col-sm-4">
