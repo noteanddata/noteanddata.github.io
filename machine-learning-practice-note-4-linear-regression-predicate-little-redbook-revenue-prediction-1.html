@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>机器学习练习笔记4-用sklearn做线性回归，预测小红书销量1</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="machine learning 机器学习，线性回归，python sklearn linear regression "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>机器学习练习笔记4-用sklearn做线性回归，预测小红书销量1</h1>
+			</div>
+
+			<p><em>20 December 2020</em></p>
+
+			<p><h2><a href="#机器学习练习笔记4-用sklearn做线性回归预测小红书销量1" id="机器学习练习笔记4-用sklearn做线性回归预测小红书销量1">机器学习练习笔记4-用sklearn做线性回归，预测小红书销量1</a></h2> 
+<h3><a href="#参考资料" id="参考资料">参考资料</a></h3> 
+<ul> 
+ <li><a href="https://zhuanlan.zhihu.com/p/102403475">https://zhuanlan.zhihu.com/p/102403475</a>, 其中测试数据也来自于这篇文章</li> 
+ <li>之前线性回归的几篇练习<br> <a href="http://www.noteanddata.com/machine-learning-practice-note-3-linear-regression-predicate-power-with-temperature-and-hour-and-day-month.html">http://www.noteanddata.com/machine-learning-practice-note-3-linear-regression-predicate-power-with-temperature-and-hour-and-day-month.html</a><br> <a href="http://www.noteanddata.com/machine-learning-practice-note-2-linear-regression-predicate-power-with-temperature-and-hour.html">http://www.noteanddata.com/machine-learning-practice-note-2-linear-regression-predicate-power-with-temperature-and-hour.html</a><br> <a href="http://www.noteanddata.com/machine-learning-practice-note-1-linear-regression-predicate-power-with-temperature.html">http://www.noteanddata.com/machine-learning-practice-note-1-linear-regression-predicate-power-with-temperature.html</a></li> 
+</ul> 
+<h3><a href="#数据格式" id="数据格式">数据格式</a></h3> 
+<pre><code>Rvenue:用户的下单购买金额(预测目标)
+
+3rd_party_stores:用户过往在app中从第三方商家购买的数量，为0则代表只在自营产品中购买
+
+Gender:1为男，0为女，未知则空缺
+
+Age:年龄，未知为空缺
+
+Engaged_last_30:最近30天在app上有参与重点活动（讨论、买家秀等等）
+
+Lifecycle:生命周期分类A、B、C(分别对应注册后6个月内，1年内，2年内）
+
+days_since_last_order:最近一次下单距今的天数（小于1则代表当天有下单）
+
+previous_order_amount:以往累计的用户购买金额
+
+</code></pre> 
+<h3><a href="#代码" id="代码">代码</a></h3> 
+<p>代码依然非常直接， 读取数据， 然后打印结果， 然后直接选取一列做试图做线性回归，看看效果怎么样</p> 
+<pre><code>#!/usr/bin/env python
+# coding: utf-8
+
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+
+
+
+
+df = pd.read_csv("../mldata/little_red_book/little_red_book.csv")
+
+df.info()
+
+print(df.describe())
+
+
+x = pd.DataFrame(df['previous_order_amount'])
+y = pd.DataFrame(df['revenue'])
+
+
+model=LinearRegression()
+model.fit(x,y)
+score = model.score(x,y)
+print(score)
+
+</code></pre> 
+<h3><a href="#运行结果" id="运行结果">运行结果</a></h3> 
+<p>数据总共29452行， 里面有各列的基本统计信息（平均值等）,<br> 直接对“previous_order_amount”和"revenue"做回归的分数是0.028,</p> 
+<p>同样， 这里的分数是<a href="https://en.wikipedia.org/wiki/Coefficient_of_determination">Coefficient_of_determination</a><br> 这个分数最好的值是1，就是完美预测， 靠近0就比较差， 如果是负数的话就几乎完全不用</p> 
+<p>在之前的几篇文章中， 可以看到大约在0.8多， 现在0.028可以认为这个回归几乎完全不成立， 如果直接用来做预测几乎完全没有用。</p> 
+<p>后续再看能否进一步提高</p> 
+<pre><code>python linear-regression-little-redbook-1.py 
+&lt;class 'pandas.core.frame.DataFrame'&gt;
+RangeIndex: 29452 entries, 0 to 29451
+Data columns (total 8 columns):
+revenue                    29452 non-null float64
+gender                     17723 non-null float64
+age                        16716 non-null float64
+engaged_last_30            17723 non-null float64
+lifecycle                  29452 non-null object
+days_since_last_order     29452 non-null float64
+previous_order_amount      29452 non-null float64
+3rd_party_stores           29452 non-null int64
+dtypes: float64(6), int64(1), object(1)
+memory usage: 1.8+ MB
+            revenue        gender           age  engaged_last_30   days_since_last_order   previous_order_amount  3rd_party_stores
+count   29452.000000  17723.000000  16716.000000     17723.000000             29452.000000           29452.000000      29452.000000
+mean      398.288037      0.950742     60.397404         0.073069                 7.711348            2348.904830          2.286059
+std       960.251728      0.216412     14.823026         0.260257                 6.489289            2379.774213          3.538219
+min         0.020000      0.000000     18.000000         0.000000                 0.130000               0.000000          0.000000
+25%        74.970000      1.000000     50.000000         0.000000                 2.190000             773.506250          0.000000
+50%       175.980000      1.000000     60.000000         0.000000                 5.970000            1655.980000          0.000000
+75%       499.990000      1.000000     70.000000         0.000000                11.740000            3096.766500          3.000000
+max    103466.100000      1.000000     99.000000         1.000000                23.710000           11597.900000         10.000000
+
+0.02840574376132865
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
