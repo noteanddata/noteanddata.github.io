@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>机器学习练习笔记7-用sklearn做线性回归，预测小红书销量4</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="machine learning 机器学习，线性回归，python sklearn linear regression "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>机器学习练习笔记7-用sklearn做线性回归，预测小红书销量4</h1>
+			</div>
+
+			<p><em>23 December 2020</em></p>
+
+			<p><h2><a href="#机器学习练习笔记7-用sklearn做线性回归预测小红书销量4" id="机器学习练习笔记7-用sklearn做线性回归预测小红书销量4">机器学习练习笔记7-用sklearn做线性回归，预测小红书销量4</a></h2> 
+<h3><a href="#前两篇小红书数据做线性回归的笔记" id="前两篇小红书数据做线性回归的笔记">前两篇小红书数据做线性回归的笔记</a></h3> 
+<ul> 
+ <li><a href="http://www.noteanddata.com/machine-learning-practice-note-4-linear-regression-predicate-little-redbook-revenue-prediction-1.html">http://www.noteanddata.com/machine-learning-practice-note-4-linear-regression-predicate-little-redbook-revenue-prediction-1.html</a></li> 
+ <li><a href="http://www.noteanddata.com/machine-learning-practice-note-5-linear-regression-predicate-little-redbook-revenue-prediction-2.html">http://www.noteanddata.com/machine-learning-practice-note-5-linear-regression-predicate-little-redbook-revenue-prediction-2.html</a></li> 
+ <li><a href="http://www.noteanddata.com/machine-learning-practice-note-6-linear-regression-predicate-little-redbook-revenue-prediction-3.html">http://www.noteanddata.com/machine-learning-practice-note-6-linear-regression-predicate-little-redbook-revenue-prediction-3.html</a></li> 
+</ul> 
+<h3><a href="#一点数据观察" id="一点数据观察">一点数据观察</a></h3> 
+<ul> 
+ <li>因为观察到revenue的最大值和75%差别非常大， 猜想数据可能是非常不均衡的。 而且这也比较符合直觉， 大部分用户也就在小红书上买几百的东西， 那些买10万的用户， 可能很难用简单的线性模型去预测</li> 
+ <li>用下面的代码观察一下销量分布, 看看revenue分布在什么区间。</li> 
+ <li>先用sns.boxplot(df[‘revenue’])大概看一下图， 绝大部分数据分布在20000以内</li> 
+ <li>然后用pd.cut看看究竟分布在哪个区间的数据分布</li> 
+</ul> 
+<pre><code>#!/usr/bin/env python
+# coding: utf-8
+
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+
+
+
+
+df = pd.read_csv("../mldata/little_red_book/little_red_book.csv")
+
+print(df.describe())
+
+sns.boxplot(x=df['revenue'])
+plt.show()
+
+revenue_bins = (0,50,150,200,500, 1000,2000, 5000, 10000, 30000)
+df['revenue_level'] = pd.cut(df['revenue'], revenue_bins, right=False)
+print(df.groupby('revenue_level')['revenue'].describe())
+</code></pre> 
+<h3><a href="#打印结果如下" id="打印结果如下">打印结果如下</a></h3> 
+<p>可以看到在5000以上的数据总共就52条， 占整体数据不到0.1%<br> 而2000以上的数据总共584, 占整体数据不到2%。</p> 
+<pre><code>python linear-regression-little-redbook-4-1.py 
+             revenue        gender           age  engaged_last_30   days_since_last_order   previous_order_amount  3rd_party_stores
+count   29452.000000  17723.000000  16716.000000     17723.000000             29452.000000           29452.000000      29452.000000
+mean      398.288037      0.950742     60.397404         0.073069                 7.711348            2348.904830          2.286059
+std       960.251728      0.216412     14.823026         0.260257                 6.489289            2379.774213          3.538219
+min         0.020000      0.000000     18.000000         0.000000                 0.130000               0.000000          0.000000
+25%        74.970000      1.000000     50.000000         0.000000                 2.190000             773.506250          0.000000
+50%       175.980000      1.000000     60.000000         0.000000                 5.970000            1655.980000          0.000000
+75%       499.990000      1.000000     70.000000         0.000000                11.740000            3096.766500          3.000000
+max    103466.100000      1.000000     99.000000         1.000000                23.710000           11597.900000         10.000000
+                 count          mean          std       min         25%        50%         75%       max
+revenue_level                                                                                           
+[0, 50)         4134.0     32.201930    11.011726      0.02     24.9900     33.980     39.9800     49.99
+[50, 150)       9840.0     95.172801    29.228822     50.00     69.9500     90.970    119.9900    149.99
+[150, 200)      1615.0    177.138975    14.921851    150.00    164.9500    178.100    189.9900    199.99
+[200, 500)      6560.0    327.320034    88.207831    200.00    239.0000    307.975    399.9900    499.99
+[500, 1000)     4582.0    712.148450   137.405585    500.99    591.7525    696.000    817.9700    999.99
+[1000, 2000)    2135.0   1352.705177   263.700389   1000.06   1130.0900   1295.980   1529.2200   1999.95
+[2000, 5000)     532.0   2707.051090   657.146959   2000.04   2221.2400   2496.435   3015.7075   4970.42
+[5000, 10000)     39.0   6485.890769  1196.145429   5031.49   5545.2000   6301.930   7086.7800   9983.28
+[10000, 30000)    13.0  16746.191538  5955.865806  10689.11  11384.8300  15314.630  21068.1700  29080.80
+
+</code></pre> 
+<h3><a href="#去除尾部数据以后再次尝试线性回归" id="去除尾部数据以后再次尝试线性回归">去除尾部数据以后再次尝试线性回归</a></h3> 
+<p>把revenue &gt; 5000的数据去除， 然后进行回归， 看一下决定系数(R^2)是多少。<br> 同时因为是一元变量， 用statsmodels里面的最小二乘法尝试求解</p> 
+<pre><code>#!/usr/bin/env python
+# coding: utf-8
+
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from statsmodels.formula.api import ols 
+
+
+
+
+df = pd.read_csv("../mldata/little_red_book/little_red_book.csv")
+
+print(df.describe())
+
+
+df = df[df['revenue'] &lt; 5000]
+
+x = pd.DataFrame(df['previous_order_amount'])
+y = pd.DataFrame(df['revenue'])
+
+
+model=LinearRegression()
+model.fit(x,y)
+score = model.score(x,y)
+print(score)
+
+
+model_ols=ols('y~x', df).fit()
+print(model_ols.summary())
+
+</code></pre> 
+<h3><a href="#运行结果如下" id="运行结果如下">运行结果如下</a></h3> 
+<p>可以看到决定系数(R^2)变成了0.044, 比原来最好的成绩0.028提高了不少， 虽然还是比较差-_-</p> 
+<p>线性函数可以表达为<br> revenue = 274.0315 + 0.0442 * previous_order_amount</p> 
+<pre><code>python linear-regression-little-redbook-4-2.py 
+             revenue        gender           age  engaged_last_30   days_since_last_order   previous_order_amount  3rd_party_stores
+count   29452.000000  17723.000000  16716.000000     17723.000000             29452.000000           29452.000000      29452.000000
+mean      398.288037      0.950742     60.397404         0.073069                 7.711348            2348.904830          2.286059
+std       960.251728      0.216412     14.823026         0.260257                 6.489289            2379.774213          3.538219
+min         0.020000      0.000000     18.000000         0.000000                 0.130000               0.000000          0.000000
+25%        74.970000      1.000000     50.000000         0.000000                 2.190000             773.506250          0.000000
+50%       175.980000      1.000000     60.000000         0.000000                 5.970000            1655.980000          0.000000
+75%       499.990000      1.000000     70.000000         0.000000                11.740000            3096.766500          3.000000
+max    103466.100000      1.000000     99.000000         1.000000                23.710000           11597.900000         10.000000
+0.04383195393090411
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.044
+Model:                            OLS   Adj. R-squared:                  0.044
+Method:                 Least Squares   F-statistic:                     1348.
+Date:                Fri, 25 Dec 2020   Prob (F-statistic):          1.73e-288
+Time:                        22:45:30   Log-Likelihood:            -2.2368e+05
+No. Observations:               29398   AIC:                         4.474e+05
+Df Residuals:                   29396   BIC:                         4.474e+05
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P&gt;|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept    274.0315      4.002     68.469      0.000     266.187     281.876
+x              0.0442      0.001     36.709      0.000       0.042       0.047
+==============================================================================
+Omnibus:                    18147.474   Durbin-Watson:                   1.967
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):           214899.602
+Skew:                           2.830   Prob(JB):                         0.00
+Kurtosis:                      14.975   Cond. No.                     4.68e+03
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 4.68e+03. This might indicate that there are
+
+</code></pre> 
+<h3><a href="#尝试调整revenue-2000" id="尝试调整revenue-2000">尝试调整revenue &gt; 2000</a></h3> 
+<p>这里尝试一下把尾部数据再去掉一些, 本来以为数据变少了以后会更好一点， 结果决定系数反而是0.030。<br> 所以减少有效数据会降低回归的有效性</p> 
+<pre><code>python linear-regression-little-redbook-4-2.py 
+             revenue        gender           age  engaged_last_30   days_since_last_order   previous_order_amount  3rd_party_stores
+count   29452.000000  17723.000000  16716.000000     17723.000000             29452.000000           29452.000000      29452.000000
+mean      398.288037      0.950742     60.397404         0.073069                 7.711348            2348.904830          2.286059
+std       960.251728      0.216412     14.823026         0.260257                 6.489289            2379.774213          3.538219
+min         0.020000      0.000000     18.000000         0.000000                 0.130000               0.000000          0.000000
+25%        74.970000      1.000000     50.000000         0.000000                 2.190000             773.506250          0.000000
+50%       175.980000      1.000000     60.000000         0.000000                 5.970000            1655.980000          0.000000
+75%       499.990000      1.000000     70.000000         0.000000                11.740000            3096.766500          3.000000
+max    103466.100000      1.000000     99.000000         1.000000                23.710000           11597.900000         10.000000
+0.029587877533860385
+                            OLS Regression Results                            
+==============================================================================
+Dep. Variable:                      y   R-squared:                       0.030
+Model:                            OLS   Adj. R-squared:                  0.030
+Method:                 Least Squares   F-statistic:                     880.1
+Date:                Fri, 25 Dec 2020   Prob (F-statistic):          1.54e-190
+Time:                        22:48:44   Log-Likelihood:            -2.1191e+05
+No. Observations:               28866   AIC:                         4.238e+05
+Df Residuals:                   28864   BIC:                         4.238e+05
+Df Model:                           1                                         
+Covariance Type:            nonrobust                                         
+==============================================================================
+                 coef    std err          t      P&gt;|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+Intercept    269.7274      3.096     87.122      0.000     263.659     275.796
+x              0.0281      0.001     29.666      0.000       0.026       0.030
+==============================================================================
+Omnibus:                     9389.288   Durbin-Watson:                   1.994
+Prob(Omnibus):                  0.000   Jarque-Bera (JB):            25978.767
+Skew:                           1.760   Prob(JB):                         0.00
+Kurtosis:                       6.034   Cond. No.                     4.60e+03
+==============================================================================
+
+Notes:
+[1] Standard Errors assume that the covariance matrix of the errors is correctly specified.
+[2] The condition number is large, 4.6e+03. This might indicate that there are
+strong multicollinearity or other numerical problems.
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
