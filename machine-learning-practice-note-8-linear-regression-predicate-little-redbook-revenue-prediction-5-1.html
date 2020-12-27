@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>机器学习练习笔记8-用sklearn做线性回归，预测小红书销量5</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="machine learning 机器学习，线性回归，python sklearn linear regression "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>机器学习练习笔记8-用sklearn做线性回归，预测小红书销量5</h1>
+			</div>
+
+			<p><em>23 December 2020</em></p>
+
+			<p><h2><a href="#机器学习练习笔记8-用sklearn做线性回归预测小红书销量5" id="机器学习练习笔记8-用sklearn做线性回归预测小红书销量5">机器学习练习笔记8-用sklearn做线性回归，预测小红书销量5</a></h2> 
+<h3><a href="#前两篇小红书数据做线性回归的笔记" id="前两篇小红书数据做线性回归的笔记">前两篇小红书数据做线性回归的笔记</a></h3> 
+<ul> 
+ <li><a href="http://www.noteanddata.com/machine-learning-practice-note-4-linear-regression-predicate-little-redbook-revenue-prediction-1.html">http://www.noteanddata.com/machine-learning-practice-note-4-linear-regression-predicate-little-redbook-revenue-prediction-1.html</a></li> 
+ <li><a href="http://www.noteanddata.com/machine-learning-practice-note-5-linear-regression-predicate-little-redbook-revenue-prediction-2.html">http://www.noteanddata.com/machine-learning-practice-note-5-linear-regression-predicate-little-redbook-revenue-prediction-2.html</a></li> 
+ <li><a href="http://www.noteanddata.com/machine-learning-practice-note-6-linear-regression-predicate-little-redbook-revenue-prediction-3.html">http://www.noteanddata.com/machine-learning-practice-note-6-linear-regression-predicate-little-redbook-revenue-prediction-3.html</a></li> 
+ <li><a href="http://www.noteanddata.com/machine-learning-practice-note-7-linear-regression-predicate-little-redbook-revenue-prediction-4.html">http://www.noteanddata.com/machine-learning-practice-note-7-linear-regression-predicate-little-redbook-revenue-prediction-4.html</a></li> 
+</ul> 
+<h3><a href="#一点数据观察" id="一点数据观察">一点数据观察</a></h3> 
+<p>用下面的代码观察了一下空值的数据， 得出结论如下<br> 1. gender, age和engaged_last_30这三列数据缺失比例太大， 占据大约40%的空值<br> 2. 而且这三列数据缺失比较重合， 凡是gender缺失的，其他两列也都缺失</p> 
+<pre><code>#!/usr/bin/env python
+# coding: utf-8
+
+import math
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from statsmodels.formula.api import ols 
+
+df = pd.read_csv("../mldata/little_red_book/little_red_book.csv")
+
+print(df.describe())
+
+print(df.isnull().sum()/len(df))
+
+print(df["gender"].unique())
+
+df2 = df.loc[df["gender"].isnull()]
+
+print(df2)
+
+print(df2["age"].unique())
+print(df2["engaged_last_30"].unique())
+
+</code></pre> 
+<h4><a href="#运行结果" id="运行结果">运行结果</a></h4> 
+<pre><code>python linear-regression-little-redbook-5-1.py 
+             revenue        gender           age  engaged_last_30   days_since_last_order   previous_order_amount  3rd_party_stores
+count   29452.000000  17723.000000  16716.000000     17723.000000             29452.000000           29452.000000      29452.000000
+mean      398.288037      0.950742     60.397404         0.073069                 7.711348            2348.904830          2.286059
+std       960.251728      0.216412     14.823026         0.260257                 6.489289            2379.774213          3.538219
+min         0.020000      0.000000     18.000000         0.000000                 0.130000               0.000000          0.000000
+25%        74.970000      1.000000     50.000000         0.000000                 2.190000             773.506250          0.000000
+50%       175.980000      1.000000     60.000000         0.000000                 5.970000            1655.980000          0.000000
+75%       499.990000      1.000000     70.000000         0.000000                11.740000            3096.766500          3.000000
+max    103466.100000      1.000000     99.000000         1.000000                23.710000           11597.900000         10.000000
+revenue                    0.000000
+gender                     0.398241
+age                        0.432432
+engaged_last_30            0.398241
+lifecycle                  0.000000
+ days_since_last_order     0.000000
+previous_order_amount      0.000000
+3rd_party_stores           0.000000
+dtype: float64
+[ 1. nan  0.]
+       revenue  gender  age  engaged_last_30 lifecycle   days_since_last_order   previous_order_amount  3rd_party_stores
+3       649.99     NaN  NaN              NaN         C                    14.90               3498.846                 0
+4        83.59     NaN  NaN              NaN         C                    21.13               3968.490                 4
+8       587.99     NaN  NaN              NaN         C                    22.42                602.980                10
+9       349.99     NaN  NaN              NaN         C                     8.26                298.790                 3
+12       39.98     NaN  NaN              NaN         C                    17.03                923.814                 0
+...        ...     ...  ...              ...       ...                      ...                    ...               ...
+29444   297.98     NaN  NaN              NaN         A                     0.68               6578.937                 0
+29446   332.20     NaN  NaN              NaN         C                     4.77               3768.740                 1
+29447    43.19     NaN  NaN              NaN         C                     0.94                545.180                 1
+29449    87.26     NaN  NaN              NaN         C                    10.42               1279.530                 0
+29451   741.93     NaN  NaN              NaN         C                     7.13               2102.950                 0
+
+[11729 rows x 8 columns]
+[nan]
+[nan]
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
