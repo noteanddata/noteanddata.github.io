@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-144633326-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-144633326-1');
+</script>
+
+    
+    <meta charset="utf-8"/>
+    <title>机器学习练习笔记9-用sklearn做线性回归，预测小红书销量5-2</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="keywords" content="machine learning 机器学习，线性回归，python sklearn linear regression "/>
+    
+
+
+    <!-- Le styles -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/asciidoctor.css" rel="stylesheet">
+    <link href="css/base.css" rel="stylesheet">
+    <link href="css/prettify.css" rel="stylesheet">
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <!--<link rel="apple-touch-icon-precomposed" sizes="144x144" href="../assets/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../assets/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../assets/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="../assets/ico/apple-touch-icon-57-precomposed.png">-->
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    
+    <script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?04a176dece699ead462bf191872e2da6";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+  </head>
+  <body onload="prettyPrint()">
+    <div id="wrap">
+	
+	<!-- Fixed navbar -->
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="http://www.noteanddata.com">笔记和数据</a>
+        </div>
+      </div>
+    </div>
+    <div class="container">	<div class="row">
+		<div class="col-sm-8">
+
+			<div class="page-header">
+				<h1>机器学习练习笔记9-用sklearn做线性回归，预测小红书销量5-2</h1>
+			</div>
+
+			<p><em>23 December 2020</em></p>
+
+			<p><h2><a href="#机器学习练习笔记9-用sklearn做线性回归预测小红书销量5-2" id="机器学习练习笔记9-用sklearn做线性回归预测小红书销量5-2">机器学习练习笔记9-用sklearn做线性回归，预测小红书销量5-2</a></h2> 
+<p>根据前面一篇的数据观察 <a href="http://www.noteanddata.com/machine-learning-practice-note-8-linear-regression-predicate-little-redbook-revenue-prediction-5-1.html">http://www.noteanddata.com/machine-learning-practice-note-8-linear-regression-predicate-little-redbook-revenue-prediction-5-1.html</a><br> 数据缺失的那些行在其他列上也有数据缺失， 猜想是不是这些数据本身可能有点问题？</p> 
+<h3><a href="#代码和结果" id="代码和结果">代码和结果</a></h3> 
+<p>整体思路是尝试把有数据缺失的那些数据删除， 看看是否会有更好的效果。<br> 结果把gender是空的那些数据删除后， 不需要把revenue过大的数据删除后， 还是可以获得0.046的决定系数。<br> 当然， 从另外一个角度来说， 这样远远不如前面的效果， 因为之前只扔了0.1%的数据， 现在扔了大约40%的数据</p> 
+<h4><a href="#代码" id="代码">代码</a></h4> 
+<pre><code>#!/usr/bin/env python
+# coding: utf-8
+
+import math
+import pandas as pd
+import numpy as np 
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.linear_model import LinearRegression
+from statsmodels.formula.api import ols 
+
+df = pd.read_csv("../mldata/little_red_book/little_red_book.csv")
+
+print(df.describe())
+
+df = df.loc[df["gender"].notnull()]
+print(df)
+
+x = pd.DataFrame(df['previous_order_amount'])
+y = pd.DataFrame(df['revenue'])
+
+model=LinearRegression()
+model.fit(x,y)
+score = model.score(x,y)
+print(score)
+
+df = df[df['revenue'] &lt; 5000]
+
+x = pd.DataFrame(df['previous_order_amount'])
+y = pd.DataFrame(df['revenue'])
+
+model=LinearRegression()
+model.fit(x,y)
+score = model.score(x,y)
+print(score)
+
+
+</code></pre> 
+<h4><a href="#运行结果" id="运行结果">运行结果</a></h4> 
+<pre><code>python linear-regression-little-redbook-5-2.py 
+             revenue        gender           age  engaged_last_30   days_since_last_order   previous_order_amount  3rd_party_stores
+count   29452.000000  17723.000000  16716.000000     17723.000000             29452.000000           29452.000000      29452.000000
+mean      398.288037      0.950742     60.397404         0.073069                 7.711348            2348.904830          2.286059
+std       960.251728      0.216412     14.823026         0.260257                 6.489289            2379.774213          3.538219
+min         0.020000      0.000000     18.000000         0.000000                 0.130000               0.000000          0.000000
+25%        74.970000      1.000000     50.000000         0.000000                 2.190000             773.506250          0.000000
+50%       175.980000      1.000000     60.000000         0.000000                 5.970000            1655.980000          0.000000
+75%       499.990000      1.000000     70.000000         0.000000                11.740000            3096.766500          3.000000
+max    103466.100000      1.000000     99.000000         1.000000                23.710000           11597.900000         10.000000
+       revenue  gender   age  engaged_last_30 lifecycle   days_since_last_order   previous_order_amount  3rd_party_stores
+0        72.98     1.0  59.0              0.0         B                     4.26               2343.870                 0
+1       200.99     1.0  51.0              0.0         A                     0.94               8539.872                 0
+2        69.98     1.0  79.0              0.0         C                     4.29               1687.646                 1
+5       319.99     1.0  80.0              0.0         C                    15.13               2811.491                10
+6       140.00     1.0  60.0              0.0         C                    11.45                769.990                 4
+...        ...     ...   ...              ...       ...                      ...                    ...               ...
+29440    58.99     1.0  29.0              0.0         A                     0.84                808.980                 0
+29443    36.98     1.0  40.0              0.0         B                     1.77                138.990                 0
+29445   179.00     0.0   NaN              0.0         C                    13.42                  0.000                 0
+29448    62.97     1.0  53.0              0.0         C                     3.45               3738.912                 1
+29450    19.99     1.0  69.0              0.0         C                    16.87                669.580                 3
+
+[17723 rows x 8 columns]
+0.046507198326350085
+0.046683963370084514
+
+
+</code></pre></p>
+	</div>		
+
+<div class="col-sm-4">
+  <div>
+    <div >
+      扫一扫关注微信公众号
+    </div>
+    <div>
+      <img src="images/qrcode_noteanddata_258.jpg"></img>
+    </div>
+  </div>
+  <div>
+    <div> <a href="https://github.com/noteanddata" target="_blank">Github</a>
+  </div>
+  <div>
+    <div>
+      <a href="link.html?link=linode" target="_blank">Linode</a>
+    </div>
+    
+  </div>
+</div>
+</div>	
+
+	<hr />
+	
+		</div>
+		<div id="push"></div>
+    </div>
+    
+    <div id="footer">
+      <div class="container">
+      </div>
+    </div>
+    
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="js/jquery-1.11.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/prettify.js"></script>
+    
+  </body>
+</html>
